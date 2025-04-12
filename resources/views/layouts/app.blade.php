@@ -3,7 +3,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> -->
 </head>
 
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -20,13 +21,13 @@
                 <div class="menu-separator"></div>
             </h4>
             <li>
-                <a href="#">
+                <a href="{{ route('home') }}">
                     <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
                     <span class="text">Dasbor</span>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ route('data') }}">
                     <span class="icon"><i class="fas fa-database"></i></span>
                     <span class="text">Data</span>
                 </a>
@@ -94,11 +95,10 @@
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit">
-                        <span class="icon"><i class="fas fa-sign-out-alt" style="margin-left:10px"></i></span>
-                        <span class="text" style="margin-left:-6px">Keluar</span>
+                        <span class="icon"><i class="fas fa-sign-out-alt" style="margin-left:5px"></i></span>
+                        <span class="text" style="margin-left:-2px">Keluar</span>
                     </button>
                 </form>
-
             </li>
         </ul>
 
@@ -120,9 +120,11 @@
         </div>
     </aside>
 
+    <header class="header">
+        <h1>@yield('page_title')</h1>
+    </header>
+
     <main class="main">
         @yield('content')
     </main>
 </body>
-
-</html>
