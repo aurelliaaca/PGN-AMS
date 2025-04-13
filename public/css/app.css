@@ -36,7 +36,7 @@ body {
     color: #161a2d;
 }
 
-.sidebar:hover ~ .header {
+.sidebar:hover~.header {
     margin-left: 225px;
 }
 
@@ -239,7 +239,7 @@ body {
     border-radius: 4px;
 }
 
-.sidebar:hover .user-profile img  {
+.sidebar:hover .user-profile img {
     margin-left: 2px;
 }
 
@@ -247,8 +247,10 @@ body {
     display: none;
     position: fixed;
     z-index: 999;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.4);
     overflow: auto;
 }
@@ -259,17 +261,22 @@ body {
     width: 90%;
     max-width: 450px;
     border-radius: 10px;
-    position: absolute; /* Change to absolute positioning */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Shift it back by 50% of its width and height */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: absolute;
+    /* Change to absolute positioning */
+    top: 50%;
+    /* Center vertically */
+    left: 50%;
+    /* Center horizontally */
+    transform: translate(-50%, -50%);
+    /* Shift it back by 50% of its width and height */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 
 .close {
     position: absolute;
-    top: 10px; right: 15px;
+    top: 10px;
+    right: 15px;
     font-size: 24px;
     color: #888;
     cursor: pointer;
@@ -293,6 +300,7 @@ body {
     color: #161a2d;
     margin-bottom: 5px;
 }
+
 .form-control {
     width: 100%;
     padding: 12px;
@@ -307,4 +315,197 @@ body {
 .form-control:focus {
     border-color: #4f52ba;
     outline: none;
+}
+
+
+.btn-primary {
+    background-color: #4f52ba;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;
+    margin: 0px;
+}
+
+.btn-primary:hover {
+    background-color: rgb(209, 210, 241);
+    color: #4f52ba;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    /* default */
+}
+
+.btn-kanan {
+    justify-content: left;
+}
+
+.btn-normal {
+    justify-content: center;
+}
+
+.action-buttons button {
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-eye {
+    background-color: #9697D6;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.btn-edit {
+    background-color: #4f52ba;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.card-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.tiga {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
+    gap: 20px;
+}
+
+.toggle:nth-child(1),
+.toggle:nth-child(2),
+.toggle:nth-child(3) {
+    margin-top: 20px;
+}
+
+
+.card-section:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.card-item {
+    background: linear-gradient(50deg, #4f52ba 0%, rgb(209, 210, 241) 100%);
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease;
+    width: 100%;
+}
+
+.card-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-bigicon {
+    font-size: 7rem;
+    margin-right: 5px;
+    display: flex;
+    align-items: right;
+    justify-content: right;
+    opacity: 70%;
+    width: 100%;
+    color: #4f52ba;
+}
+
+.card-content h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.card-content p {
+    margin: 5px 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.table-responsive {
+    margin-top: 20px;
+    max-height: 78vh;
+    overflow: auto;
+    border-radius: 10px;
+    border: 2px solid rgb(209, 210, 241);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead {
+    background: #f1f1fb;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    padding: 12px;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table thead th {
+    color: #4f52ba;
+    font-weight: bold;
+}
+
+.table thead th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+
+th:last-child, td:last-child {
+    width: 20%;
+}
+
+.table tbody tr:hover {
+    background-color: #f3f3ff;
+}
+
+.tables-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.table-column {
+    flex: 1;
 }

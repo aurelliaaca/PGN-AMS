@@ -11,10 +11,9 @@ class Region extends Model
     protected $table = 'region';
     public $timestamps = false;
     protected $primaryKey = 'id_region'; 
-    protected $keyType = 'string';
+    protected $keyType = 'int';
 
     protected $fillable = [
-        'id_region',
         'nama_region',
         'kode_region',
         'email',
@@ -22,7 +21,7 @@ class Region extends Model
         'koordinat'
     ];
 
-    public function site()
+    public function sites()
     {
         return $this->hasMany(Site::class, 'kode_region', 'kode_region');
     }

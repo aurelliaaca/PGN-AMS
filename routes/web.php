@@ -52,3 +52,17 @@ Route::post('/jenis-alatukur/store', [DataController::class, 'storeJenisAlatukur
 Route::get('/jenis-alatukur/{kode_alatukur}/edit', [DataController::class, 'editJenisAlatukur'])->name('jenisalatukur.edit');
 Route::put('/jenis-alatukur/{kode_alatukur}', [DataController::class, 'updateJenisAlatukur'])->name('jenisalatukur.update');
 Route::delete('/jenis-alatukur/{kode_alatukur}', [DataController::class, 'destroyJenisAlatukur'])->name('jenisalatukur.destroy');
+
+Route::get('/menu/data/dataregion', [DataController::class, 'indexRegion'])->name('dataregion.index');
+Route::get('/region/create', [DataController::class, 'createRegion'])->name('region.create');
+Route::post('/region/store', [DataController::class, 'storeRegion'])->name('region.store');
+Route::get('/region/{id_region}/edit', [DataController::class, 'editRegion'])->name('region.edit');
+Route::put('/region/{id_region}', [DataController::class, 'updateRegion'])->name('region.update');
+Route::delete('/region/{id_region}', [DataController::class, 'destroyRegion'])->name('region.destroy');
+
+Route::get('/site/create', [DataController::class, 'createSite'])->name('site.create');
+Route::post('/site/store', [DataController::class, 'storeSite'])->name('site.store');
+Route::get('/site/{id_site}/edit', [DataController::class, 'editSite'])->name('site.edit');
+Route::put('/site/{id_site}', [DataController::class, 'updateSite'])->name('site.update');
+Route::delete('/site/{id_site}', [DataController::class, 'destroySite'])->name('site.destroy');
+

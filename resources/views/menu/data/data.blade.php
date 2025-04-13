@@ -143,7 +143,7 @@
                     </div>
                     <div class="kotak-body">
                         <p>Region dan Site</p>
-                        <button class="view-btn" onclick="window.location.href='/data/region'">
+                        <button class="view-btn" onclick="window.location.href='/menu/data/dataregion'">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>

@@ -9,6 +9,8 @@ use App\Models\BrandFasilitas;
 use App\Models\JenisFasilitas;
 use App\Models\BrandAlatukur;
 use App\Models\JenisAlatukur;
+use App\Models\Region;
+use App\Models\Site;
 
 class DataController extends Controller
 {
@@ -21,7 +23,7 @@ class DataController extends Controller
     }
 
     // ------------------------------- PERANGKAT -------------------------------
-    
+
     public function indexPerangkat()
     {
         $brandperangkat = BrandPerangkat::all();
@@ -218,101 +220,218 @@ class DataController extends Controller
     // ------------------------------- ALAT UKUR -------------------------------
 
 
-public function indexAlatukur()
-{
-    $brandalatukur = BrandAlatukur::all();
-    $jenisalatukur = JenisAlatukur::all();
-    return view('menu.data.dataalatukur', compact('brandalatukur', 'jenisalatukur'));
-}
-public function createBrandAlatukur()
-{
-    return view('brandalatukur.create');
-}
+    public function indexAlatukur()
+    {
+        $brandalatukur = BrandAlatukur::all();
+        $jenisalatukur = JenisAlatukur::all();
+        return view('menu.data.dataalatukur', compact('brandalatukur', 'jenisalatukur'));
+    }
+    public function createBrandAlatukur()
+    {
+        return view('brandalatukur.create');
+    }
 
-public function storeBrandAlatukur(Request $request)
-{
-    $request->validate([
-        'nama_brand' => 'required',
-        'kode_brand' => 'required|unique:brandalatukur,kode_brand',
-    ]);
+    public function storeBrandAlatukur(Request $request)
+    {
+        $request->validate([
+            'nama_brand' => 'required',
+            'kode_brand' => 'required|unique:brandalatukur,kode_brand',
+        ]);
 
-    BrandAlatukur::create($request->all());
+        BrandAlatukur::create($request->all());
 
-    return redirect()->route('dataalatukur.index')->with('success', 'Brand berhasil ditambahkan.');
-}
+        return redirect()->route('dataalatukur.index')->with('success', 'Brand berhasil ditambahkan.');
+    }
 
-public function editBrandAlatukur($kode_brand)
-{
-    $brandAlatukur = BrandAlatukur::findOrFail($kode_brand);
-    return view('brandalatukur.edit', compact('brandAlatukur'));
-}
-
-
-public function updateBrandAlatukur(Request $request, $kode_brand)
-{
-    $request->validate([
-        'nama_brand' => 'required',
-        'kode_brand' => 'required|unique:brandalatukur,kode_brand,' . $kode_brand . ',kode_brand',
-    ]);
-
-    $brandAlatukur = BrandAlatukur::findOrFail($kode_brand);
-    $brandAlatukur->update($request->all());
-
-    return redirect()->route('dataalatukur.index')->with('success', 'Brand berhasil diupdate.');
-}
-
-public function destroyBrandAlatukur($kode_brand)
-{
-    $brandAlatukur = BrandAlatukur::findOrFail($kode_brand);
-    $brandAlatukur->delete();
-
-    return redirect()->route('dataalatukur.index')->with('success', 'Brand berhasil dihapus.');
-}
-
-public function createJenisAlatukur()
-{
-    return view('jenisalatukur.create');
-}
-
-public function storeJenisAlatukur(Request $request)
-{
-    $request->validate([
-        'nama_alatukur' => 'required',
-        'kode_alatukur' => 'required|unique:jenisalatukur,kode_alatukur',
-    ]);
-
-    JenisAlatukur::create($request->all());
-
-    return redirect()->route('dataalatukur.index')->with('success', 'Jenis berhasil ditambahkan.');
-}
-
-public function editJenisAlatukur($kode_alatukur)
-{
-    $jenisAlatukur = JenisAlatukur::findOrFail($kode_alatukur);
-    return view('jenisalatukur.edit', compact('jenisAlatukur'));
-}
+    public function editBrandAlatukur($kode_brand)
+    {
+        $brandAlatukur = BrandAlatukur::findOrFail($kode_brand);
+        return view('brandalatukur.edit', compact('brandAlatukur'));
+    }
 
 
-public function updateJenisAlatukur(Request $request, $kode_alatukur)
-{
-    $request->validate([
-        'nama_alatukur' => 'required',
-        'kode_alatukur' => 'required|unique:jenisalatukur,kode_alatukur,' . $kode_alatukur . ',kode_alatukur',
-    ]);
+    public function updateBrandAlatukur(Request $request, $kode_brand)
+    {
+        $request->validate([
+            'nama_brand' => 'required',
+            'kode_brand' => 'required|unique:brandalatukur,kode_brand,' . $kode_brand . ',kode_brand',
+        ]);
 
-    $jenisAlatukur = JenisAlatukur::findOrFail($kode_alatukur);
-    $jenisAlatukur->update($request->all());
+        $brandAlatukur = BrandAlatukur::findOrFail($kode_brand);
+        $brandAlatukur->update($request->all());
 
-    return redirect()->route('dataalatukur.index')->with('success', 'Jenis berhasil diupdate.');
-}
+        return redirect()->route('dataalatukur.index')->with('success', 'Brand berhasil diupdate.');
+    }
 
-public function destroyJenisAlatukur($kode_alatukur)
-{
-    $jenisAlatukur = JenisAlatukur::findOrFail($kode_alatukur);
-    $jenisAlatukur->delete();
+    public function destroyBrandAlatukur($kode_brand)
+    {
+        $brandAlatukur = BrandAlatukur::findOrFail($kode_brand);
+        $brandAlatukur->delete();
 
-    return redirect()->route('dataalatukur.index')->with('success', 'Jenis berhasil dihapus.');
-}
+        return redirect()->route('dataalatukur.index')->with('success', 'Brand berhasil dihapus.');
+    }
+
+    public function createJenisAlatukur()
+    {
+        return view('jenisalatukur.create');
+    }
+
+    public function storeJenisAlatukur(Request $request)
+    {
+        $request->validate([
+            'nama_alatukur' => 'required',
+            'kode_alatukur' => 'required|unique:jenisalatukur,kode_alatukur',
+        ]);
+
+        JenisAlatukur::create($request->all());
+
+        return redirect()->route('dataalatukur.index')->with('success', 'Jenis berhasil ditambahkan.');
+    }
+
+    public function editJenisAlatukur($kode_alatukur)
+    {
+        $jenisAlatukur = JenisAlatukur::findOrFail($kode_alatukur);
+        return view('jenisalatukur.edit', compact('jenisAlatukur'));
+    }
+
+
+    public function updateJenisAlatukur(Request $request, $kode_alatukur)
+    {
+        $request->validate([
+            'nama_alatukur' => 'required',
+            'kode_alatukur' => 'required|unique:jenisalatukur,kode_alatukur,' . $kode_alatukur . ',kode_alatukur',
+        ]);
+
+        $jenisAlatukur = JenisAlatukur::findOrFail($kode_alatukur);
+        $jenisAlatukur->update($request->all());
+
+        return redirect()->route('dataalatukur.index')->with('success', 'Jenis berhasil diupdate.');
+    }
+
+    public function destroyJenisAlatukur($kode_alatukur)
+    {
+        $jenisAlatukur = JenisAlatukur::findOrFail($kode_alatukur);
+        $jenisAlatukur->delete();
+
+        return redirect()->route('dataalatukur.index')->with('success', 'Jenis berhasil dihapus.');
+    }
+
+    // ------------------------------- REGION -------------------------------
+
+
+    public function indexRegion()
+    {
+        $regions = Region::all();
+        $sites = Site::all();
+        return view('menu.data.dataregion', compact('regions', 'sites'));
+    }
+    public function createRegion()
+    {
+        return view('region.create');
+    }
+
+    public function storeRegion(Request $request)
+    {
+        // Validasi input dari user
+        $request->validate([
+            'nama_region' => 'required',
+            'kode_region' => 'required|unique:region,kode_region',
+            'email' => 'required|email',
+            'alamat' => 'nullable',
+            'koordinat' => 'nullable',
+        ]);
+
+        // Membuat data baru tanpa perlu menambahkan id_region secara manual
+        Region::create($request->all());
+
+        // Redirect dengan pesan sukses
+        return redirect()->route('dataregion.index')->with('success', 'Region berhasil ditambahkan.');
+    }
+
+    public function editRegion($id_region)
+    {
+        $region = Region::findOrFail($id_region);
+        return view('region.edit', compact('region'));
+    }
+
+
+    public function updateRegion(Request $request, $id_region)
+    {
+        $request->validate([
+            'nama_region' => 'required',
+            'kode_region' => 'required|unique:region,kode_region,' . $id_region . ',id_region',
+            'email' => 'required|email',
+            'alamat' => 'nullable',
+            'koordinat' => 'nullable',
+        ]);
+
+        $region = Region::findOrFail($id_region);
+        $region->update($request->all());
+
+        return redirect()->route('dataregion.index')->with('success', 'Region berhasil diupdate.');
+    }
+
+    public function destroyRegion($id_region)
+    {
+        $region = Region::findOrFail($id_region);
+        $region->delete();
+
+        return redirect()->route('dataregion.index')->with('success', 'Region berhasil dihapus.');
+    }
+
+    public function createSite()
+    {
+        return view('site.create');
+    }
+
+    public function storeSite(Request $request)
+    {
+        // Validasi input dari user
+        $request->validate([
+            'nama_site' => 'required',
+            'kode_site' => 'required|unique:site,kode_site',
+            'jenis_site' => 'required',
+            'kode_region' => 'required',
+            'jml_rack' => 'nullable',
+        ]);
+
+        // Membuat data baru tanpa perlu menambahkan id_region secara manual
+        Site::create($request->all());
+
+        // Redirect dengan pesan sukses
+        return redirect()->route('dataregion.index')->with('success', 'Site berhasil ditambahkan.');
+    }
+
+    public function editSite($id_site)
+    {
+        $site = Site::findOrFail($id_site);
+        return view('site.edit', compact('site'));
+    }
+
+
+    public function updateSite(Request $request, $id_site)
+    {
+        $request->validate([
+            'nama_site' => 'required',
+            'kode_site' => 'required|unique:site,kode_site,' . $id_site . ',id_site',
+            'jenis_site' => 'required',
+            'kode_region' => 'required',
+            'jml_rack' => 'nullable',
+        ]);
+
+        $site = Site::findOrFail($id_site);
+        $site->update($request->all());
+
+        return redirect()->route('dataregion.index')->with('success', 'Site berhasil diupdate.');
+    }
+
+    public function destroySite($id_site)
+    {
+        $site = Site::findOrFail($id_site);
+        $site->delete();
+
+        return redirect()->route('dataregion.index')->with('success', 'Site berhasil dihapus.');
+    }
     /**
      * Show the form for creating a new resource.
      */
