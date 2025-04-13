@@ -1,6 +1,3 @@
-<div>
-    <!-- Order your soul. Reduce your wants. - Augustine -->
-</div>
 @extends('layouts.app')
 
 @section('title', 'Aset Perangkat')
@@ -9,51 +6,119 @@
 @section('content')
     <div class="main">
         <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
+        <button type="button" class="btn btn-primary" onclick="openModal('importModal')">Impor Data Perangkat</button>
+
+        <div id="importModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('importModal')">&times;</span>
+                <h5>Impor Data Perangkat</h5>
+                <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label for="file">Pilih File (XLSX, XLS, CSV)</label>
+                    <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Impor Data</button>
+                </form>
+            </div>
+        </div>
+
+        <button class="btn btn-primary mb-3">
+            <a href="{{ url('export/perangkat') }}" style="color: white; text-decoration: none;">
+                Ekspor Data Perangkat
+            </a>
+        </button>
 
         <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Region</th>
-                        <th>Site</th>
-                        <th>No Rack</th>
-                        <th>Perangkat</th>
-                        <th>Perangkat Ke</th>
-                        <th>Brand</th>
-                        <th>Type</th>
-                        <th>U Awal</th>
-                        <th>U Akhir</th>
-                        <th>Actions</th>
+                    <th class="col-status"></th>
+                    <th class="col-no">No</th>
+                    <th class="col-region">Region</th>
+                    <th class="col-site">Site</th>
+                    <th class="col-rack">No Rack</th>
+                    <th class="col-nama">Perangkat</th>
+                    <th class="col-brand">Brand</th>
+                    <th class="col-type">Type</th>
+                    <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($listperangkat as $perangkat)
                         <tr>
+                            <td>
+                                <div class="status-box {{ $perangkat->no_rack ? 'bg-success' : 'bg-danger' }}"></div>
+                            </td>
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $perangkat->region->nama_region }}</td>
                             <td>{{ $perangkat->site->nama_site }}</td>
                             <td>{{ $perangkat->no_rack }}</td>
                             <td>{{ $perangkat->jenisperangkat->nama_perangkat }}</td>
-                            <td>{{ $perangkat->perangkat_ke }}</td>
                             <td>{{ optional($perangkat->brandperangkat)->nama_brand }}</td>
                             <td>{{ $perangkat->type }}</td>
-                            <td>{{ $perangkat->uawal }}</td>
-                            <td>{{ $perangkat->uakhir }}</td>
                             <td>
+                                <button class="btn btn-eye"
+                                    onclick="openModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>   
                                 <button class="btn btn-edit"
                                     onclick="openModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <form action="{{ route('perangkat.destroy', $perangkat->id_perangkat) }}" method="POST"
-                                    style="display:inline;">
+                                <button class="btn btn-delete" onclick="confirmDelete({{ $perangkat->id_perangkat }})">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+
+                                <form id="delete-form-{{ $perangkat->id_perangkat }}" 
+                                    action="{{ route('perangkat.destroy', $perangkat->id_perangkat) }}" 
+                                    method="POST" style="display: none;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-delete"
-                                        onclick="return confirm('Yakin hapus perangkat ini?')">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
                                 </form>
                             </td>
                         </tr>
+
+                        <!-- Modal View -->
+                        <div id="modalViewPerangkat{{ $perangkat->id_perangkat }}" class="modal">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">&times;</span>
+                                <h5>Detail Perangkat</h5>
+                                
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <!-- Kolom kiri -->
+                                    <div style="width: 48%;">
+                                        <label>Region</label>
+                                        <input type="text" value="{{ $perangkat->region->nama_region }}" readonly class="form-control">
+
+                                        <label>Site</label>
+                                        <input type="text" value="{{ $perangkat->site->nama_site }}" readonly class="form-control">
+
+                                        <label>No Rack</label>
+                                        <input type="text" value="{{ $perangkat->no_rack }}" readonly class="form-control">
+
+                                        <label>Jenis Perangkat</label>
+                                        <input type="text" value="{{ $perangkat->jenisperangkat->nama_perangkat }}" readonly class="form-control">
+                                    </div>
+
+                                    <!-- Kolom kanan -->
+                                    <div style="width: 48%;">
+                                        <label>Perangkat ke-</label>
+                                        <input type="text" value="{{ $perangkat->perangkat_ke }}" readonly class="form-control">
+
+                                        <label>Brand</label>
+                                        <input type="text" value="{{ optional($perangkat->brandperangkat)->nama_brand }}" readonly class="form-control">
+
+                                        <label>Tipe</label>
+                                        <input type="text" value="{{ $perangkat->type }}" readonly class="form-control">
+
+                                        <label>U Awal - U Akhir</label>
+                                        <input type="text" value="{{ $perangkat->uawal }} - {{ $perangkat->uakhir }}" readonly class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                         {{-- Modal Edit --}}
                         <div id="modalEditPerangkat{{ $perangkat->id_perangkat }}" class="modal">
@@ -102,7 +167,7 @@
                                             <option value="">Pilih Kode Perangkat</option>
                                             @foreach($types as $jenisperangkat)
                                                 <option value="{{ $jenisperangkat->kode_perangkat }}" 
-                                                    {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->kode_perangkat }}
+                                                    {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->nama_perangkat }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -145,27 +210,27 @@
 
         {{-- Modal Tambah --}}
         <div id="modalTambahPerangkat" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
-        <h5>Tambah Perangkat</h5>
-        <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
-            @csrf
-            <div class="mb-3">
-    <label>Kode Region</label>
-    <select id="regionSelectTambah" name="kode_region" class="form-control" required>
-        <option value="">Pilih Region</option>
-        @foreach($regions as $region)
-            <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
-        @endforeach
-    </select>
-</div>
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
+                <h5>Tambah Perangkat</h5>
+                <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
+                    @csrf
+                    <div class="mb-3">
+            <label>Kode Region</label>
+            <select id="regionSelectTambah" name="kode_region" class="form-control" required>
+                <option value="">Pilih Region</option>
+                @foreach($regions as $region)
+                    <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
+                @endforeach
+            </select>
+        </div>
 
-<div class="mb-3">
-    <label>Kode Site</label>
-    <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
-        <option value="">Pilih Site</option>
-    </select>
-</div>
+        <div class="mb-3">
+            <label>Kode Site</label>
+            <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
+                <option value="">Pilih Site</option>
+            </select>
+        </div>
 
             <div class="mb-3">
                 <label>No Rack</label>
@@ -178,7 +243,7 @@
                     <option value="">Pilih Kode Perangkat</option>
                     @foreach($types as $jenisperangkat)
                         <option value="{{ $jenisperangkat->kode_perangkat }}">
-                            {{ $jenisperangkat->kode_perangkat }}
+                            {{ $jenisperangkat->nama_perangkat }}
                         </option>
                     @endforeach
                 </select>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\PerangkatController;
+use App\Http\Controllers\HistoriController;
 
 
 Route::get('/', function () {
@@ -74,3 +75,14 @@ Route::get('/perangkat/{id_perangkat}/edit', [PerangkatController::class, 'edit'
 Route::put('/perangkat/{id_perangkat}', [PerangkatController::class, 'update'])->name('perangkat.update');
 Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
 
+use App\Http\Controllers\PerangkatImportController;
+
+Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
+use App\Exports\PerangkatExport;
+use Maatwebsite\Excel\Facades\Excel;
+
+Route::get('export/perangkat', function () {
+    return Excel::download(new PerangkatExport, 'data_perangkat.xlsx');
+});
+
+Route::get('/menu/data/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');

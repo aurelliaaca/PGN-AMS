@@ -449,6 +449,51 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
 }
+
+.status-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 20%; 
+    display: inline-block;
+}
+.bg-success {
+    background-color: green;
+}
+
+.bg-danger {
+    background-color: red;
+}
+.sort-icon {
+    display: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 0 5px;
+}
+
+.sort-icon.show {
+    display: inline-block; /* Menampilkan ikon yang memiliki kelas 'show' */
+}
+
+.text-success {
+    color: green;
+}
+
+.text-danger {
+    color: red;
+}
+
+.col-status { width: 20px; }
+.col-no { width: 40px; text-align: center; }
+.col-region { width: 100px; }
+.col-site { width: 100px; }
+.col-rack { width: 80px; }
+.col-nama { width: 120px; }
+.col-ke { width: 60px; }
+.col-brand { width: 100px; }
+.col-type { width: 100px; }
+.col-actions { width: 100px; text-align: center; }
+
+
 .table {
     width: 100%;
     border-collapse: collapse;

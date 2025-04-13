@@ -4,6 +4,7 @@
     <title>@yield('title')</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> -->
 </head>
 
@@ -45,7 +46,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ route('histori.index') }}">
                     <span class="icon"><i class="fas fa-history"></i></span>
                     <span class="text">Histori</span>
                 </a>
@@ -142,6 +143,45 @@
         document.querySelectorAll(".modal").forEach(modal => {
             if (event.target === modal) {
                 modal.style.display = "none";
+            }
+        });
+    }
+
+    @if (session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    @elseif (session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            showConfirmButton: true
+        });
+    @elseif (session('warning'))
+        Swal.fire({
+            icon: 'warning',
+            title: 'Peringatan!',
+            text: '{{ session('warning') }}',
+            showConfirmButton: true
+        });
+    @endif
+
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Yakin mau hapus?',
+            text: 'Data tidak bisa dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
             }
         });
     }
