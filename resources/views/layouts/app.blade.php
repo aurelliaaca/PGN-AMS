@@ -63,7 +63,7 @@
                 </li>
                 <li>
                     <a href="#">
-                        <span class="icon"><i class="fas fa-building"></i></span>
+                        <span class="icon"><i class="fas fa-warehouse"></i></span>
                         <span class="text">Fasilitas</span>
                     </a>
                 </li>
@@ -128,3 +128,21 @@
         @yield('content')
     </main>
 </body>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).style.display = "block";
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        document.querySelectorAll(".modal").forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    }
+</script>

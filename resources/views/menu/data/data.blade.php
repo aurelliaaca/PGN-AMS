@@ -42,7 +42,7 @@
         .kotak {
             background: rgba(209, 210, 241, 0.316);
             border-radius: 15px;
-            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Added border instead of box-shadow */
             transition: all 0.3s ease;
             overflow: hidden;
         }
@@ -151,7 +151,7 @@
                 </div>
 
                 <!-- Perangkat -->
-                <div class="kotak" onclick="window.location.href='/menu/perangkat/dataperangkat'" style="cursor: pointer;">
+                <div class="kotak" onclick="window.location.href='/menu/data/dataperangkat'" style="cursor: pointer;">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
                             <i class="fas fa-laptop"></i>
@@ -181,7 +181,7 @@
                     </div>
                     <div class="kotak-body">
                         <p>Jenis dan Brand Fasilitas</p>
-                        <button class="view-btn" onclick="window.location.href='/data/fasilitas'">
+                        <button class="view-btn" onclick="window.location.href='/menu/data/datafasilitas'">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
@@ -189,7 +189,7 @@
                 </div>
 
                 <!-- Alat Ukur -->
-                <div class="kotak" onclick="window.location.href='/data/alatukur'" style="cursor: pointer;">
+                <div class="kotak" onclick="window.location.href='/menu/data/dataalatukur'" style="cursor: pointer;">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
                             <i class="fas fa-ruler-combined"></i>
