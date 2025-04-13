@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\PerangkatController;
 
 
 Route::get('/', function () {
@@ -65,4 +66,11 @@ Route::post('/site/store', [DataController::class, 'storeSite'])->name('site.sto
 Route::get('/site/{id_site}/edit', [DataController::class, 'editSite'])->name('site.edit');
 Route::put('/site/{id_site}', [DataController::class, 'updateSite'])->name('site.update');
 Route::delete('/site/{id_site}', [DataController::class, 'destroySite'])->name('site.destroy');
+
+Route::get('/aset/perangkat', [PerangkatController::class, 'indexPerangkat'])->name('perangkat.index');
+Route::get('/perangkat/create', [PerangkatController::class, 'create'])->name('perangkat.create');
+Route::post('/perangkat/store', [PerangkatController::class, 'store'])->name('perangkat.store');
+Route::get('/perangkat/{id_perangkat}/edit', [PerangkatController::class, 'edit'])->name('perangkat.edit');
+Route::put('/perangkat/{id_perangkat}', [PerangkatController::class, 'update'])->name('perangkat.update');
+Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
 

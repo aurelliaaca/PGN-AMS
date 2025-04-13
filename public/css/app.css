@@ -449,18 +449,16 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
 }
-
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
 .table-responsive {
     margin-top: 20px;
     max-height: 78vh;
     overflow: auto;
     border-radius: 10px;
     border: 2px solid rgb(209, 210, 241);
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
 }
 
 .table thead {
@@ -476,7 +474,10 @@ body {
     padding: 12px;
     font-size: 14px;
     border-bottom: 1px solid #ddd;
+    word-wrap: break-word;  
+    white-space: normal;   
 }
+
 
 .table thead th {
     color: #4f52ba;
@@ -489,11 +490,6 @@ body {
 
 .table thead th:last-child {
     border-top-right-radius: 10px;
-}
-
-
-th:last-child, td:last-child {
-    width: 20%;
 }
 
 .table tbody tr:hover {

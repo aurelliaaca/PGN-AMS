@@ -30,10 +30,6 @@ class DataController extends Controller
         $jenisperangkat = JenisPerangkat::all();
         return view('menu.data.dataperangkat', compact('brandperangkat', 'jenisperangkat'));
     }
-    public function createBrandPerangkat()
-    {
-        return view('brandperangkat.create');
-    }
 
     public function storeBrandPerangkat(Request $request)
     {

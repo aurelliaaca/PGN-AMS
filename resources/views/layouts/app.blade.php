@@ -56,7 +56,7 @@
                     <div class="menu-separator"></div>
                 </h4>
                 <li>
-                    <a href="#">
+                    <a href="{{ route('perangkat.index') }}">
                         <span class="icon"><i class="fas fa-tools"></i></span>
                         <span class="text">Perangkat</span>
                     </a>

@@ -19,32 +19,32 @@
                             <!-- Action Buttons -->
                             <div
                                 class="action-buttons {{ Route::currentRouteName() == 'dataregion.index' ? 'btn-kanan' : 'btn-normal' }}">
-                                <button class="btn btn-eye" onclick="toggleSites('{{ $region->kode_region }}')">
+                                <button class="btn btn-eye mb-3" onclick="toggleSites('{{ $region->kode_region }}')">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn btn-edit" onclick="openModal('modalEditRegion{{ $region->id_region }}')">
+                                <button class="btn btn-edit mb-3" onclick="openModal('modalEditRegion{{ $region->id_region }}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form action="{{ route('region.destroy', $region->id_region) }}" method="POST"
                                     onsubmit="return confirm('Are you sure you want to delete this region?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-delete">
+                                    <button type="submit" class="btn btn-delete mb-3">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
-                                <button class="btn btn-primary mb-3" style="width:125px" onclick="openModal('modalTambahSite{{ $region->id_region }}')">+ Tambah Site</button>
+                                <button class="btn btn-primary mb-3" style="width:125px"
+                                    onclick="openModal('modalTambahSite{{ $region->id_region }}')">+ Tambah Site</button>
                             </div>
                         </div>
                         <div class="card-bigicon">
                             <i class="fa-solid fa-earth-americas"></i>
                         </div>
                     </div>
-                    <!-- Site List (Initially Hidden) - Displayed as a Table -->
-                    <div id="sites{{ $region->kode_region }}" class="site-list" style="display: none;">
-                        <div class="table-responsive">
-                            <div class="table">
-                                <table>
+                    <div class="tables-container">
+                        <div id="sites{{ $region->kode_region }}" style="display: none;">
+                            <div class="table-responsive">
+                                <table class="table">
                                     <thead>
                                         <tr>
                                             <th>Nama Site</th>
@@ -52,7 +52,7 @@
                                             <th>Jenis Site</th>
                                             <th>Kode Region</th>
                                             <th>Jumlah Rack</th>
-                                            <th>Actions</th> <!-- Add Actions Column -->
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -75,7 +75,7 @@
                                                         style="display:inline;">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-delete"
+                                                        <button type="submit" class="btn btn-delete mb-3"
                                                             onclick="return confirm('Are you sure you want to delete this site?')">
                                                             <i class="fas fa-trash-alt"></i>
                                                         </button>
@@ -90,36 +90,37 @@
                     </div>
 
                     <!-- Modal Tambah Site -->
-<div id="modalTambahSite{{ $region->id_region }}" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalTambahSite{{ $region->id_region }}')">&times;</span>
-        <h5>Tambah Site untuk Region {{ $region->nama_region }}</h5>
-        <form action="{{ route('site.store') }}" method="POST">
-            @csrf
-            <div class="mb-3">
-                <label>Nama Site</label>
-                <input type="text" name="nama_site" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Kode Site</label>
-                <input type="text" name="kode_site" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Jenis Site</label>
-                <input type="text" name="jenis_site" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Kode Region</label>
-                <input type="text" name="kode_region" class="form-control" value="{{ $region->kode_region }}" readonly>
-            </div>
-            <div class="mb-3">
-                <label>Jumlah Rack</label>
-                <input type="number" name="jml_rack" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-primary">Tambah Site</button>
-        </form>
-    </div>
-</div>
+                    <div id="modalTambahSite{{ $region->id_region }}" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('modalTambahSite{{ $region->id_region }}')">&times;</span>
+                            <h5>Tambah Site untuk Region {{ $region->nama_region }}</h5>
+                            <form action="{{ route('site.store') }}" method="POST">
+                                @csrf
+                                <div class="mb-3">
+                                    <label>Nama Site</label>
+                                    <input type="text" name="nama_site" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Kode Site</label>
+                                    <input type="text" name="kode_site" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Jenis Site</label>
+                                    <input type="text" name="jenis_site" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Kode Region</label>
+                                    <input type="text" name="kode_region" class="form-control"
+                                        value="{{ $region->kode_region }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Jumlah Rack</label>
+                                    <input type="number" name="jml_rack" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Tambah Site</button>
+                            </form>
+                        </div>
+                    </div>
 
 
                     <!-- Modal Edit Site -->
