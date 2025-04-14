@@ -5,6 +5,10 @@ use App\Http\Controllers\DataController;
 use App\Http\Controllers\PerangkatController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
+use App\Http\Controllers\PerangkatImportController;
+use App\Exports\PerangkatExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\VerifikasiDokumenController;
 
 
 Route::get('/', function () {
@@ -14,7 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Auth::routes(['verify' => true]);
-
+Route::middleware('auth')->group(function () {
 Route::get('/data', [App\Http\Controllers\DataController::class, 'index'])->name('data');
 
 Route::get('/menu/data/dataperangkat', [DataController::class, 'indexPerangkat'])->name('dataperangkat.index');
@@ -75,16 +79,39 @@ Route::post('/perangkat/store', [PerangkatController::class, 'store'])->name('pe
 Route::get('/perangkat/{id_perangkat}/edit', [PerangkatController::class, 'edit'])->name('perangkat.edit');
 Route::put('/perangkat/{id_perangkat}', [PerangkatController::class, 'update'])->name('perangkat.update');
 Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
-
-use App\Http\Controllers\PerangkatImportController;
-
 Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
-use App\Exports\PerangkatExport;
-use Maatwebsite\Excel\Facades\Excel;
-
 Route::get('export/perangkat', function () {
-    return Excel::download(new PerangkatExport, 'data_perangkat.xlsx');
+    return Excel::download(new PerangkatExport, 'dataperangkat.xlsx');
+});
+
+
+Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
+Route::get('/fasilitas/create', [FasilitasController::class, 'create'])->name('fasilitas.create');
+Route::post('/fasilitas/store', [FasilitasController::class, 'store'])->name('fasilitas.store');
+Route::get('/fasilitas/{id_fasilitas}/edit', [FasilitasController::class, 'edit'])->name('fasilitas.edit');
+Route::put('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+Route::delete('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+
+Route::post('/import-fasilitas', [FasilitasImportController::class, 'import'])->name('import.fasilitas');
+Route::get('export/fasilitas', function () {
+    return Excel::download(new FasilitasExport, 'datafasilitas.xlsx');
 });
 
 Route::get('/menu/data/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
 Route::get('/menu/rack', [RackController::class, 'indexRack'])->name('rack.index');
+Route::post('/rack/store', [RackController::class, 'storeRack'])->name('rack.store');
+Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
+Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
+
+
+// Superadmin - melihat dan memverifikasi dokumen
+    Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');
+    Route::post('/verifikasi/approve/{id}', [VerifikasiDokumenController::class, 'approve'])->name('verifikasi.approve');
+    Route::post('/verifikasi/reject/{id}', [VerifikasiDokumenController::class, 'reject'])->name('verifikasi.reject');
+    Route::post('/verifikasi/sign/{id}', [VerifikasiDokumenController::class, 'sign'])->name('verifikasi.sign');
+
+// User - upload dokumen dan lihat status
+    Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.user.index');
+    Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
+});
+

@@ -66,7 +66,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="{{ route('perangkat.index') }}">
                         <span class="icon"><i class="fas fa-warehouse"></i></span>
                         <span class="text">Fasilitas</span>
                     </a>
@@ -85,15 +85,16 @@
                 </li>
             @endif
             <h4>
-                <span>Portal VMS</span>
+                <span>VMS</span>
                 <div class="menu-separator"></div>
             </h4>
             <li>
                 <a href="{{ auth()->user()->role == 1 ? route('verifikasi.superadmin.index') : route('verifikasi.user.index') }}">
                     <span class="icon"><i class="fas fa-tools"></i></span>
-                    <span class="text">VMS</span>
+                    <span class="text">Verifikasi</span>
                 </a>
             </li>
+
             <h4>
                 <span>Akun</span>
                 <div class="menu-separator"></div>
@@ -141,102 +142,40 @@
     <main class="main">
         @yield('content')
     </main>
+
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    
+    <!-- Script untuk Modal -->
+    <script>
+        function openModal(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
+
+    <!-- Script untuk SweetAlert -->
+    <script>
+        // Tampilkan SweetAlert jika ada pesan
+        @if(session('swal'))
+            Swal.fire({
+                icon: '{{ session('swal')['icon'] }}',
+                title: '{{ session('swal')['title'] }}',
+                text: '{{ session('swal')['text'] }}',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        @endif
+    </script>
 </body>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-<script>
-    function openModal(id) {
-        document.getElementById(id).style.display = "block";
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = "none";
-    }
-
-    window.onclick = function (event) {
-        document.querySelectorAll(".modal").forEach(modal => {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        });
-    }
-
-    @if (session('success'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '{{ session('success') }}',
-            showConfirmButton: false,
-            timer: 2000
-        });
-    @elseif (session('error'))
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal!',
-            text: '{{ session('error') }}',
-            showConfirmButton: true
-        });
-    @elseif (session('warning'))
-        Swal.fire({
-            icon: 'warning',
-            title: 'Peringatan!',
-            text: '{{ session('warning') }}',
-            showConfirmButton: true
-        });
-    @endif
-
-    function confirmDelete(id) {
-        Swal.fire({
-            title: 'Yakin mau hapus?',
-            text: 'Data tidak bisa dikembalikan!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-form-' + id).submit();
-            }
-        });
-    }
-
-    function clearAllFilters() {
-    // Reset semua input select2
-    $('.select2').val(null).trigger('change');
-
-    // Kosongkan search input
-    document.getElementById('searchInput').value = '';
-
-    // Submit form setelah semua direset
-    document.getElementById('filterForm').submit();
-}
-
-
-    $(document).ready(function() {
-    // Inisialisasi Select2 untuk Kode Perangkat
-    $('select[name="region[]"]').select2({
-        placeholder: "Pilih Region",
-        allowClear: true
-    });
-
-    // Inisialisasi Select2 untuk Brand
-    $('select[name="site[]"]').select2({
-        placeholder: "Pilih Site",
-        allowClear: true
-    });
-    // Inisialisasi Select2 untuk Kode Perangkat
-    $('select[name="kode_perangkat[]"]').select2({
-        placeholder: "Pilih Perangkat",
-        allowClear: true
-    });
-
-    // Inisialisasi Select2 untuk Brand
-    $('select[name="brand[]"]').select2({
-        placeholder: "Pilih Brand",
-        allowClear: true
-    });
-});
-
-
-</script>

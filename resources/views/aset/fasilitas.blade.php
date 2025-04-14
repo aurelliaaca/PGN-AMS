@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Aset Perangkat')
-@section('page_title', 'Aset Perangkat')
+@section('title', 'Aset Fasilitas')
+@section('page_title', 'Aset Fasilitas')
 
 @section('content')
     <div class="main">
         <div class="button-wrapper">
-            <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
-            <button type="button" class="btn btn-primary" onclick="openModal('importModal')">Impor Data Perangkat</button>
+            <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
+            <button type="button" class="btn btn-primary" onclick="openModal('importModal')">Impor Data Fasilitas</button>
 
             <div id="importModal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal('importModal')">&times;</span>
-                    <h5>Impor Data Perangkat</h5>
-                    <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
+                    <h5>Impor Data Fasilitas</h5>
+                    <form action="{{ route('import.fasilitas') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label for="file">Pilih File (XLSX, XLS, CSV)</label>
@@ -25,8 +25,8 @@
             </div>
 
             <button class="btn btn-primary mb-3">
-                <a href="{{ url('export/perangkat') }}" style="color: white; text-decoration: none;">
-                    Ekspor Data Perangkat
+                <a href="{{ url('export/fasilitas') }}" style="color: white; text-decoration: none;">
+                    Ekspor Data Fasilitas
                 </a>
             </button>
 
@@ -34,7 +34,7 @@
         </div>
 
         <div class="filter">
-            <form method="GET" id="filterForm" action="{{ route('perangkat.index') }}">
+            <form method="GET" id="filterForm" action="{{ route('fasilitas.index') }}">
                 <div class="filter-container">
                     <div class="select-group">
                         <select name="region[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
@@ -55,11 +55,11 @@
                             @endforeach
                         </select>
 
-                        <select name="kode_perangkat[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
-                            <option value="" disabled>Pilih Perangkat</option>
+                        <select name="kode_fasilitas[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
+                            <option value="" disabled>Pilih Fasilitas</option>
                             @foreach ($types as $kode)
-                                <option value="{{ $kode->kode_perangkat }}" {{ in_array($kode->kode_perangkat, (array) request('kode_perangkat')) ? 'selected' : '' }}>
-                                    {{ $kode->nama_perangkat }}
+                                <option value="{{ $kode->kode_fasilitas }}" {{ in_array($kode->kode_fasilitas, (array) request('kode_fasilitas')) ? 'selected' : '' }}>
+                                    {{ $kode->nama_fasilitas }}
                                 </option>
                             @endforeach
                         </select>
@@ -85,7 +85,7 @@
             </form>
         </div>
 
-        <div class="table-responsive {{ Route::currentRouteName() == 'perangkat.index' ? 'table-responsive-aset' : '' }}">
+        <div class="table-responsive {{ Route::currentRouteName() == 'fasilitas.index' ? 'table-responsive-aset' : '' }}">
             <table class="table">
                 <thead>
                     <tr>
@@ -94,40 +94,40 @@
                     <th class="col-region">Region</th>
                     <th class="col-site">Site</th>
                     <th class="col-rack">No Rack</th>
-                    <th class="col-nama">Perangkat</th>
+                    <th class="col-nama">Fasilitas</th>
                     <th class="col-brand">Brand</th>
                     <th class="col-type">Type</th>
                     <th class="col-actions">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($dataperangkat as $perangkat)
+                    @foreach($datafasilitas as $fasilitas)
                         <tr>
                             <td>
-                                <div class="status-box {{ $perangkat->no_rack ? 'bg-success' : 'bg-danger' }}"></div>
+                                <div class="status-box {{ $fasilitas->no_rack ? 'bg-success' : 'bg-danger' }}"></div>
                             </td>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $perangkat->region->nama_region }}</td>
-                            <td>{{ $perangkat->site->nama_site }}</td>
-                            <td>{{ $perangkat->no_rack }}</td>
-                            <td>{{ $perangkat->jenisperangkat->nama_perangkat }}</td>
-                            <td>{{ optional($perangkat->brandperangkat)->nama_brand }}</td>
-                            <td>{{ $perangkat->type }}</td>
+                            <td>{{ $fasilitas->region->nama_region }}</td>
+                            <td>{{ $fasilitas->site->nama_site }}</td>
+                            <td>{{ $fasilitas->no_rack }}</td>
+                            <td>{{ $fasilitas->jenisfasilitas->nama_fasilitas }}</td>
+                            <td>{{ optional($fasilitas->brandfasilitas)->nama_brand }}</td>
+                            <td>{{ $fasilitas->type }}</td>
                             <td>
                                 <button class="btn btn-eye"
-                                    onclick="openModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">
+                                    onclick="openModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">
                                     <i class="fas fa-eye"></i>
                                 </button>   
                                 <button class="btn btn-edit"
-                                    onclick="openModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">
+                                    onclick="openModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-delete" onclick="confirmDelete({{ $perangkat->id_perangkat }})">
+                                <button class="btn btn-delete" onclick="confirmDelete({{ $fasilitas->id_fasilitas }})">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
 
-                                <form id="delete-form-{{ $perangkat->id_perangkat }}" 
-                                    action="{{ route('perangkat.destroy', $perangkat->id_perangkat) }}" 
+                                <form id="delete-form-{{ $fasilitas->id_fasilitas }}" 
+                                    action="{{ route('fasilitas.destroy', $fasilitas->id_fasilitas) }}" 
                                     method="POST" style="display: none;">
                                     @csrf
                                     @method('DELETE')
@@ -136,40 +136,40 @@
                         </tr>
 
                         <!-- Modal View -->
-                        <div id="modalViewPerangkat{{ $perangkat->id_perangkat }}" class="modal">
+                        <div id="modalViewFasilitas{{ $fasilitas->id_fasilitas }}" class="modal">
                             <div class="modal-content">
-                                <span class="close" onclick="closeModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">&times;</span>
-                                <h5>Detail Perangkat</h5>
+                                <span class="close" onclick="closeModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">&times;</span>
+                                <h5>Detail Fasilitas</h5>
                                 
                                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                                     <!-- Kolom kiri -->
                                     <div style="width: 48%;">
                                         <label>Region</label>
-                                        <input type="text" value="{{ $perangkat->region->nama_region }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->region->nama_region }}" readonly class="form-control">
 
                                         <label>Site</label>
-                                        <input type="text" value="{{ $perangkat->site->nama_site }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->site->nama_site }}" readonly class="form-control">
 
                                         <label>No Rack</label>
-                                        <input type="text" value="{{ $perangkat->no_rack }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->no_rack }}" readonly class="form-control">
 
-                                        <label>Jenis Perangkat</label>
-                                        <input type="text" value="{{ $perangkat->jenisperangkat->nama_perangkat }}" readonly class="form-control">
+                                        <label>Jenis Fasilitas</label>
+                                        <input type="text" value="{{ $fasilitas->jenisfasilitas->nama_fasilitas }}" readonly class="form-control">
                                     </div>
 
                                     <!-- Kolom kanan -->
                                     <div style="width: 48%;">
-                                        <label>Perangkat ke-</label>
-                                        <input type="text" value="{{ $perangkat->perangkat_ke }}" readonly class="form-control">
+                                        <label>Fasilitas ke-</label>
+                                        <input type="text" value="{{ $fasilitas->fasilitas_ke }}" readonly class="form-control">
 
                                         <label>Brand</label>
-                                        <input type="text" value="{{ optional($perangkat->brandperangkat)->nama_brand }}" readonly class="form-control">
+                                        <input type="text" value="{{ optional($fasilitas->brandfasilitas)->nama_brand }}" readonly class="form-control">
 
                                         <label>Tipe</label>
-                                        <input type="text" value="{{ $perangkat->type }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->type }}" readonly class="form-control">
 
                                         <label>U Awal - U Akhir</label>
-                                        <input type="text" value="{{ $perangkat->uawal }} - {{ $perangkat->uakhir }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->uawal }} - {{ $fasilitas->uakhir }}" readonly class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -177,21 +177,21 @@
 
 
                         {{-- Modal Edit --}}
-                        <div id="modalEditPerangkat{{ $perangkat->id_perangkat }}" class="modal">
+                        <div id="modalEditFasilitas{{ $fasilitas->id_fasilitas }}" class="modal">
                             <div class="modal-content">
                                 <span class="close"
-                                    onclick="closeModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">&times;</span>
-                                <h5>Edit Perangkat</h5>
-                                <form action="{{ route('perangkat.update', $perangkat->id_perangkat) }}" method="POST">
+                                    onclick="closeModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">&times;</span>
+                                <h5>Edit Fasilitas</h5>
+                                <form action="{{ route('fasilitas.update', $fasilitas->id_fasilitas) }}" method="POST">
                                     @csrf
                                     @method('PUT')
                                     <div class="mb-3">
                                         <label>Kode Region</label>
                                         <select name="kode_region" class="form-control regionSelectEdit"
-                                            data-id="{{ $perangkat->id_perangkat }}" required>
+                                            data-id="{{ $fasilitas->id_fasilitas }}" required>
                                             <option value="">Pilih Region</option>
                                             @foreach($regions as $region)
-                                                <option value="{{ $region->kode_region }}" {{ $perangkat->kode_region == $region->kode_region ? 'selected' : '' }}>
+                                                <option value="{{ $region->kode_region }}" {{ $fasilitas->kode_region == $region->kode_region ? 'selected' : '' }}>
                                                     {{ $region->nama_region }}
                                                 </option>
                                             @endforeach
@@ -200,11 +200,11 @@
                                     <div class="mb-3">
                                         <label>Kode Site</label>
                                         <select name="kode_site" class="form-control siteSelectEdit"
-                                            data-id="{{ $perangkat->id_perangkat }}" required>
+                                            data-id="{{ $fasilitas->id_fasilitas }}" required>
                                             <option value="">Pilih Site</option>
                                             @foreach($sites as $site)
-                                                @if($site->kode_region == $perangkat->kode_region)
-                                                    <option value="{{ $site->kode_site }}" {{ $perangkat->kode_site == $site->kode_site ? 'selected' : '' }}>
+                                                @if($site->kode_region == $fasilitas->kode_region)
+                                                    <option value="{{ $site->kode_site }}" {{ $fasilitas->kode_site == $site->kode_site ? 'selected' : '' }}>
                                                         {{ $site->nama_site }}
                                                     </option>
                                                 @endif
@@ -215,15 +215,15 @@
                                     <div class="mb-3">
                                         <label>No Rack</label>
                                         <input type="text" name="no_rack" class="form-control"
-                                            value="{{ $perangkat->no_rack ?? '' }}">
+                                            value="{{ $fasilitas->no_rack ?? '' }}">
                                     </div>
                                     <div class="mb-3">
-                                        <label>Kode Perangkat</label>
-                                        <select name="kode_perangkat" class="form-control" required>
-                                            <option value="">Pilih Kode Perangkat</option>
-                                            @foreach($types as $jenisperangkat)
-                                                <option value="{{ $jenisperangkat->kode_perangkat }}" 
-                                                    {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->nama_perangkat }}
+                                        <label>Kode Fasilitas</label>
+                                        <select name="kode_fasilitas" class="form-control" required>
+                                            <option value="">Pilih Kode Fasilitas</option>
+                                            @foreach($types as $jenisfasilitas)
+                                                <option value="{{ $jenisfasilitas->kode_fasilitas }}" 
+                                                    {{ $fasilitas->kode_fasilitas == $jenisfasilitas->kode_fasilitas ? 'selected' : '' }}>{{ $jenisfasilitas->nama_fasilitas }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -232,28 +232,28 @@
                                         <label>Kode Brand</label>
                                         <select name="kode_brand" class="form-control">
                                             <option value="">Pilih Kode Brand</option>
-                                            @foreach($brands as $brandperangkat)
-                                                <option value="{{ $brandperangkat->kode_brand }}" 
-                                                    {{ $perangkat->kode_brand == $brandperangkat->kode_brand ? 'selected' : '' }}>
-                                                    {{ $brandperangkat->nama_brand }}
+                                            @foreach($brands as $brandfasilitas)
+                                                <option value="{{ $brandfasilitas->kode_brand }}" 
+                                                    {{ $fasilitas->kode_brand == $brandfasilitas->kode_brand ? 'selected' : '' }}>
+                                                    {{ $brandfasilitas->nama_brand }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="mb-3">
                                         <label>Type</label>
-                                        <input type="text" name="type" class="form-control" value="{{ $perangkat->type ?? '' }}"
+                                        <input type="text" name="type" class="form-control" value="{{ $fasilitas->type ?? '' }}"
                                             >
                                     </div>
                                     <div class="mb-3">
                                         <label>U Awal</label>
                                         <input type="number" name="uawal" class="form-control"
-                                            value="{{ $perangkat->uawal ?? '' }}" >
+                                            value="{{ $fasilitas->uawal ?? '' }}" >
                                     </div>
                                     <div class="mb-3">
                                         <label>U Akhir</label>
                                         <input type="number" name="uakhir" class="form-control"
-                                            value="{{ $perangkat->uakhir ?? '' }}" >
+                                            value="{{ $fasilitas->uakhir ?? '' }}" >
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                 </form>
@@ -265,13 +265,13 @@
         </div>
 
         {{-- Modal Tambah --}}
-        <div id="modalTambahPerangkat" class="modal">
+        <div id="modalTambahFasilitas" class="modal">
             <div class="modal-content">
-                <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
-                <h5>Tambah Perangkat</h5>
-                <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
+                <span class="close" onclick="closeModal('modalTambahFasilitas')">&times;</span>
+                <h5>Tambah Fasilitas</h5>
+                <form action="{{ route('fasilitas.store') }}" method="POST" id="formTambahFasilitas">
                     @csrf
-        <div class="mb-3">
+                    <div class="mb-3">
             <label>Kode Region</label>
             <select id="regionSelectTambah" name="kode_region" class="form-control" required>
                 <option value="">Pilih Region</option>
@@ -294,12 +294,12 @@
             </div>
 
             <div class="mb-3">
-                <label>Kode Perangkat</label>
-                <select name="kode_perangkat" class="form-control" required>
-                    <option value="">Pilih Kode Perangkat</option>
-                    @foreach($types as $jenisperangkat)
-                        <option value="{{ $jenisperangkat->kode_perangkat }}">
-                            {{ $jenisperangkat->nama_perangkat }}
+                <label>Kode Fasilitas</label>
+                <select name="kode_fasilitas" class="form-control" required>
+                    <option value="">Pilih Kode Fasilitas</option>
+                    @foreach($types as $jenisfasilitas)
+                        <option value="{{ $jenisfasilitas->kode_fasilitas }}">
+                            {{ $jenisfasilitas->nama_fasilitas }}
                         </option>
                     @endforeach
                 </select>
@@ -309,9 +309,9 @@
                 <label>Kode Brand</label>
                 <select name="kode_brand" class="form-control" >
                     <option value="">Pilih Kode Brand</option>
-                    @foreach($brands as $brandperangkat)
-                        <option value="{{ $brandperangkat->kode_brand }}">
-                            {{ $brandperangkat->nama_brand }}
+                    @foreach($brands as $brandfasilitas)
+                        <option value="{{ $brandfasilitas->kode_brand }}">
+                            {{ $brandfasilitas->nama_brand }}
                         </option>
                     @endforeach
                 </select>
@@ -381,7 +381,7 @@
         });
 
         // Validasi form sebelum submit
-        document.getElementById('formTambahPerangkat').addEventListener('submit', function (event) {
+        document.getElementById('formTambahFasilitas').addEventListener('submit', function (event) {
             const uawal = parseFloat(document.getElementById('uawal').value);
             const uakhir = parseFloat(document.getElementById('uakhir').value);
 
@@ -401,8 +401,8 @@
         document.querySelectorAll('.regionSelectEdit').forEach(select => {
             select.addEventListener('change', function() {
                 const regionId = this.value;
-                const perangkatId = this.getAttribute('data-id');
-                const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${perangkatId}"]`);
+                const fasilitasId = this.getAttribute('data-id');
+                const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${fasilitasId}"]`);
 
                 // Reset dan nonaktifkan site select
                 siteSelect.innerHTML = '<option value="">Pilih Site</option>';
@@ -425,7 +425,7 @@
         });
 
         // Validasi form edit sebelum submit
-        document.querySelectorAll('form[action*="perangkat/update"]').forEach(form => {
+        document.querySelectorAll('form[action*="fasilitas/update"]').forEach(form => {
             form.addEventListener('submit', function(event) {
                 const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
                 const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);

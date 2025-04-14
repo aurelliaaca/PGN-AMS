@@ -362,12 +362,12 @@ body {
     /* default */
 }
 
-.btn-kanan {
+.btn-kiri {
     justify-content: left;
 }
 
-.btn-normal {
-    justify-content: center;
+.btn-kanan {
+    justify-content: right;
 }
 
 .action-buttons button {
@@ -406,9 +406,9 @@ body {
     gap: 20px;
 }
 
-.toggle:nth-child(1),
-.toggle:nth-child(2),
-.toggle:nth-child(3) {
+.tiga .toggle:nth-child(1),
+.tiga .toggle:nth-child(2),
+.tiga .toggle:nth-child(3) {
     margin-top: 20px;
 }
 
@@ -418,12 +418,11 @@ body {
     gap: 20px;
 }
 
-
 .card-section:not(:last-child) {
     margin-bottom: 20px;
 }
-
 .card-item {
+    position: relative;
     background: linear-gradient(50deg, #4f52ba 0%, rgb(209, 210, 241) 100%);
     border-radius: 16px;
     padding: 20px;
@@ -434,6 +433,40 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease;
     width: 100%;
+    overflow: visible; /* penting biar canvas gak bocor keluar */
+}
+
+.card-item-kanan {
+    position: relative;
+    background: linear-gradient(50deg, #4f52ba 0%, rgb(209, 210, 241) 100%);
+    border-radius: 16px;
+    padding: 30px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease;
+    width: 100%;
+    overflow: visible; /* penting biar canvas gak bocor keluar */
+}
+.icon-wrapper-chart {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    overflow: visible; /* ✅ Biar label nggak kepotong */
+}
+
+.toggle {
+    flex-direction: column; /* Menyesuaikan dengan layout vertikal */
 }
 
 .card-item:hover {
@@ -608,8 +641,9 @@ body {
 
 .tables-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     gap: 20px;
+    width: 100%; /* Memastikan lebar container sesuai dengan card-item */
 }
 
 .table-column {
@@ -750,3 +784,4 @@ input,
 select {
     transition: none !important;
 }
+

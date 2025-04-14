@@ -59,4 +59,9 @@ class ListFasilitas extends Model
     {
         return $this->belongsTo(BrandFasilitas::class, 'kode_brand', 'kode_brand');
     }
+
+    public function rack()
+    {
+        return $this->hasMany(Rack::class, 'id_fasilitas', 'id_fasilitas');
+    }
 }

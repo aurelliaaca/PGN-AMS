@@ -18,7 +18,7 @@
 
                             <!-- Action Buttons -->
                             <div
-                                class="action-buttons {{ Route::currentRouteName() == 'dataregion.index' ? 'btn-kanan' : 'btn-normal' }}">
+                                class="action-buttons {{ Route::currentRouteName() == 'dataregion.index' ? 'btn-kiri' : 'btn-kanan' }}">
                                 <button class="btn btn-eye mb-3" onclick="toggleSites('{{ $region->kode_region }}')">
                                     <i class="fas fa-eye"></i>
                                 </button>

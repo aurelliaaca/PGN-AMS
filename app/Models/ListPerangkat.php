@@ -65,6 +65,12 @@ class ListPerangkat extends Model
         return $this->hasMany(HistoriPerangkat::class, 'id_perangkat', 'id_perangkat');
     }
 
+    public function rack()
+    {
+        return $this->hasMany(Rack::class, 'id_perangkat', 'id_perangkat');
+    }
+
+
     // Event untuk mencatat perubahan data perangkat
     protected static function booted()
     {

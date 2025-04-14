@@ -89,97 +89,115 @@ class PerangkatController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Validasi dasar
-    $request->validate([
-        'kode_region' => 'required',
-        'kode_site' => 'required',
-        'no_rack' => 'nullable',
-        'kode_perangkat' => 'required',
-        'kode_brand' => 'nullable',
-        'type' => 'nullable',
-        'uawal' => 'nullable|numeric|min:1',
-        'uakhir' => 'nullable|numeric|min:1',
-    ]);
-
-    // Custom Validasi tambahan
-    if ($request->filled('no_rack')) {
-        if (!$request->filled('uawal') || !$request->filled('uakhir')) {
-            return redirect()->back()->withErrors([
-                'uawal' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.',
-                'uakhir' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.'
-            ])->withInput();
+    {
+        // Validasi dasar
+        $request->validate([
+            'kode_region' => 'required',
+            'kode_site' => 'required',
+            'no_rack' => 'nullable',
+            'kode_perangkat' => 'required',
+            'kode_brand' => 'nullable',
+            'type' => 'nullable',
+            'uawal' => 'nullable|numeric|min:1',
+            'uakhir' => 'nullable|numeric|min:1',
+        ]);
+    
+        // Custom Validasi tambahan
+        if ($request->filled('no_rack')) {
+            if (!$request->filled('uawal') || !$request->filled('uakhir')) {
+                return redirect()->back()->withErrors([
+                    'uawal' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.',
+                    'uakhir' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.'
+                ])->withInput();
+            }
+    
+            if ($request->uawal > $request->uakhir) {
+                return redirect()->back()->withErrors([
+                    'uawal' => 'UAwal tidak boleh lebih besar dari UAkhir.',
+                ])->withInput();
+            }
+    
+            if ($request->uawal < 1 || $request->uakhir < 1) {
+                return redirect()->back()->withErrors([
+                    'uawal' => 'UAwal dan UAkhir tidak boleh kurang dari 1.',
+                    'uakhir' => 'UAwal dan UAkhir tidak boleh kurang dari 1.'
+                ])->withInput();
+            }
+    
+            // Periksa apakah ada rentang 'u' yang tumpang tindih
+            for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
+                $existingRack = Rack::where('kode_region', $request->kode_region)
+                    ->where('kode_site', $request->kode_site)
+                    ->where('no_rack', $request->no_rack)
+                    ->where('u', $u)
+                    ->where(function ($query) {
+                        // Cek apakah sudah ada perangkat atau fasilitas pada rentang 'u' yang sama
+                        $query->whereNotNull('id_perangkat')
+                              ->orWhereNotNull('id_fasilitas');
+                    })
+                    ->exists();
+    
+                if ($existingRack) {
+                    return redirect()->route('perangkat.index')
+                        ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
+                }
+            }
         }
-
-        if ($request->uawal > $request->uakhir) {
-            return redirect()->back()->withErrors([
-                'uawal' => 'UAwal tidak boleh lebih besar dari UAkhir.',
-            ])->withInput();
+    
+        // Logic untuk menambahkan perangkat baru ke ListPerangkat
+        $jumlahPerangkat = ListPerangkat::where('kode_site', $request->kode_site)->max('perangkat_ke');
+        $perangkatKe = $jumlahPerangkat + 1;
+    
+        $perangkatBaru = ListPerangkat::create([
+            'kode_region' => $request->kode_region,
+            'kode_site' => $request->kode_site,
+            'no_rack' => $request->no_rack,
+            'kode_perangkat' => $request->kode_perangkat,
+            'perangkat_ke' => $perangkatKe,
+            'kode_brand' => $request->kode_brand,
+            'type' => $request->type,
+            'uawal' => $request->uawal,
+            'uakhir' => $request->uakhir,
+        ]);
+    
+        HistoriPerangkat::create([
+            'id_perangkat' => $perangkatBaru->id_perangkat,
+            'kode_region' => $request->kode_region,
+            'kode_site' => $request->kode_site,
+            'no_rack' => $request->no_rack,
+            'kode_perangkat' => $request->kode_perangkat,
+            'perangkat_ke' => $perangkatKe,
+            'kode_brand' => $request->kode_brand,
+            'type' => $request->type,
+            'uawal' => $request->uawal,
+            'uakhir' => $request->uakhir,
+            'histori' => 'Ditambahkan',
+        ]);
+    
+        // Masukkan atau update data Rack untuk setiap nilai 'u'
+        for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
+            // Menggunakan updateOrInsert untuk mencocokkan data yang sudah ada
+            Rack::updateOrInsert(
+                [
+                    'kode_region' => $request->kode_region,
+                    'kode_site' => $request->kode_site,
+                    'no_rack' => $request->no_rack,
+                    'u' => $u, // Mencocokkan berdasarkan 'u'
+                ],
+                [
+                    'id_perangkat' => $perangkatBaru->id_perangkat, // Menyimpan perangkat baru
+                    'updated_at' => now(), // Memperbarui kolom 'updated_at'
+                    'created_at' => now(), // Menyimpan waktu penciptaan
+                ]
+            );
         }
-
-        if ($request->uawal < 1 || $request->uakhir < 1) {
-            return redirect()->back()->withErrors([
-                'uawal' => 'UAwal dan UAkhir tidak boleh kurang dari 1.',
-                'uakhir' => 'UAwal dan UAkhir tidak boleh kurang dari 1.'
-            ])->withInput();
-        }
-
-        // Periksa apakah ada perangkat lain yang menggunakan kode_region, kode_site, no_rack yang sama
-        $existingRack = Rack::where('kode_region', $request->kode_region)
-            ->where('kode_site', $request->kode_site)
-            ->where('no_rack', $request->no_rack)
-            ->where(function ($query) use ($request) {
-                // Cek apakah rentang uawal - uakhir tumpang tindih dengan kolom 'u' yang ada
-                $query->whereBetween('u', [$request->uawal, $request->uakhir])
-                      ->orWhere(function ($query) use ($request) {
-                          // Jika rentang perangkat baru melibatkan nilai 'u' yang ada
-                          $query->where('u', '>=', $request->uawal)
-                                ->where('u', '<=', $request->uakhir);
-                      });
-            })
-            ->exists(); // Memastikan apakah ada data yang tumpang tindih
-
-        if ($existingRack) {
-            return redirect()->route('perangkat.index')
-                ->with('error', 'Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.');
-        }
+    
+        return redirect()->route('perangkat.index')
+            ->with('success', 'Perangkat berhasil ditambahkan.')
+            ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')
+            ->with('error', 'Terjadi kesalahan saat menambahkan perangkat. Silakan coba lagi.');
     }
-
-    // Logic untuk menambahkan perangkat baru ke ListPerangkat
-    $jumlahPerangkat = ListPerangkat::where('kode_site', $request->kode_site)->max('perangkat_ke');
-    $perangkatKe = $jumlahPerangkat + 1;
-
-    $perangkatBaru = ListPerangkat::create([
-        'kode_region' => $request->kode_region,
-        'kode_site' => $request->kode_site,
-        'no_rack' => $request->no_rack,
-        'kode_perangkat' => $request->kode_perangkat,
-        'perangkat_ke' => $perangkatKe,
-        'kode_brand' => $request->kode_brand,
-        'type' => $request->type,
-        'uawal' => $request->uawal,
-        'uakhir' => $request->uakhir,
-    ]);
-
-    HistoriPerangkat::create([
-        'id_perangkat' => $perangkatBaru->id_perangkat,
-        'kode_region' => $request->kode_region,
-        'kode_site' => $request->kode_site,
-        'no_rack' => $request->no_rack,
-        'kode_perangkat' => $request->kode_perangkat,
-        'perangkat_ke' => $perangkatKe,
-        'kode_brand' => $request->kode_brand,
-        'type' => $request->type,
-        'uawal' => $request->uawal,
-        'uakhir' => $request->uakhir,
-        'histori' => 'Ditambahkan',
-    ]);
-
-    return redirect()->route('perangkat.index')
-        ->with('success', 'Perangkat berhasil ditambahkan.')
-        ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')
-        ->with('error', 'Terjadi kesalahan saat menambahkan perangkat. Silakan coba lagi.');
-}
+    
 
 
     public function update(Request $request, $id)
