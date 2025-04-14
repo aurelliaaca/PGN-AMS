@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\PerangkatController;
 use App\Http\Controllers\HistoriController;
+use App\Http\Controllers\RackController;
 
 
 Route::get('/', function () {
@@ -86,3 +87,4 @@ Route::get('export/perangkat', function () {
 });
 
 Route::get('/menu/data/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
+Route::get('/menu/rack', [RackController::class, 'indexRack'])->name('rack.index');

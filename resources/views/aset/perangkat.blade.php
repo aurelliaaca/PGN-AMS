@@ -5,31 +5,87 @@
 
 @section('content')
     <div class="main">
-        <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
-        <button type="button" class="btn btn-primary" onclick="openModal('importModal')">Impor Data Perangkat</button>
+        <div class="button-wrapper">
+            <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
+            <button type="button" class="btn btn-primary" onclick="openModal('importModal')">Impor Data Perangkat</button>
 
-        <div id="importModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('importModal')">&times;</span>
-                <h5>Impor Data Perangkat</h5>
-                <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="form-group">
-                    <label for="file">Pilih File (XLSX, XLS, CSV)</label>
-                    <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
+            <div id="importModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('importModal')">&times;</span>
+                    <h5>Impor Data Perangkat</h5>
+                    <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="file">Pilih File (XLSX, XLS, CSV)</label>
+                        <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Impor Data</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-primary">Impor Data</button>
-                </form>
             </div>
+
+            <button class="btn btn-primary mb-3">
+                <a href="{{ url('export/perangkat') }}" style="color: white; text-decoration: none;">
+                    Ekspor Data Perangkat
+                </a>
+            </button>
+
+            <button class="btn btn-clear mb-3" onclick="clearAllFilters()">Clear All Filter</button>
         </div>
 
-        <button class="btn btn-primary mb-3">
-            <a href="{{ url('export/perangkat') }}" style="color: white; text-decoration: none;">
-                Ekspor Data Perangkat
-            </a>
-        </button>
+        <div class="filter">
+            <form method="GET" id="filterForm" action="{{ route('perangkat.index') }}">
+                <div class="filter-container">
+                    <div class="select-group">
+                        <select name="region[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
+                            <option value="" disabled>Pilih Region</option>
+                            @foreach($regions as $region)
+                                <option value="{{ $region->kode_region }}" {{ in_array($region->kode_region, (array) request('region')) ? 'selected' : '' }}>
+                                    {{ $region->nama_region }}
+                                </option>
+                            @endforeach
+                        </select>
 
-        <div class="table-responsive">
+                        <select name="site[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
+                            <option value="" disabled>Pilih Site</option>
+                            @foreach ($sites as $site)
+                                <option value="{{ $site->kode_site }}" {{ in_array($site->kode_site, (array) request('site')) ? 'selected' : '' }}>
+                                    {{ $site->nama_site }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <select name="kode_perangkat[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
+                            <option value="" disabled>Pilih Perangkat</option>
+                            @foreach ($types as $kode)
+                                <option value="{{ $kode->kode_perangkat }}" {{ in_array($kode->kode_perangkat, (array) request('kode_perangkat')) ? 'selected' : '' }}>
+                                    {{ $kode->nama_perangkat }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <select name="brand[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
+                            <option value="" disabled>Pilih Brand</option>
+                            @foreach ($brands as $brand)
+                                <option value="{{ $brand->kode_brand }}" {{ in_array($brand->kode_brand, (array) request('brand')) ? 'selected' : '' }}>
+                                    {{ $brand->nama_brand }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="search-bar">
+                        <form action="" method="GET" id="filterForm" style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" name="search" placeholder="Cari..." value="{{ request('search') }}" id="searchInput">
+                            <button type="submit" class="btn btn-search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive {{ Route::currentRouteName() == 'perangkat.index' ? 'table-responsive-aset' : '' }}">
             <table class="table">
                 <thead>
                     <tr>
@@ -45,7 +101,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($listperangkat as $perangkat)
+                    @foreach($dataperangkat as $perangkat)
                         <tr>
                             <td>
                                 <div class="status-box {{ $perangkat->no_rack ? 'bg-success' : 'bg-danger' }}"></div>

@@ -3,8 +3,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> -->
 </head>
 
@@ -34,7 +37,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ route('rack.index') }}">
                     <span class="icon"><i class="fas fa-server"></i></span>
                     <span class="text">Rack</span>
                 </a>
@@ -130,6 +133,8 @@
     </main>
 </body>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script>
     function openModal(id) {
         document.getElementById(id).style.display = "block";
@@ -185,4 +190,43 @@
             }
         });
     }
+
+    function clearAllFilters() {
+    // Reset semua input select2
+    $('.select2').val(null).trigger('change');
+
+    // Kosongkan search input
+    document.getElementById('searchInput').value = '';
+
+    // Submit form setelah semua direset
+    document.getElementById('filterForm').submit();
+}
+
+
+    $(document).ready(function() {
+    // Inisialisasi Select2 untuk Kode Perangkat
+    $('select[name="region[]"]').select2({
+        placeholder: "Pilih Region",
+        allowClear: true
+    });
+
+    // Inisialisasi Select2 untuk Brand
+    $('select[name="site[]"]').select2({
+        placeholder: "Pilih Site",
+        allowClear: true
+    });
+    // Inisialisasi Select2 untuk Kode Perangkat
+    $('select[name="kode_perangkat[]"]').select2({
+        placeholder: "Pilih Perangkat",
+        allowClear: true
+    });
+
+    // Inisialisasi Select2 untuk Brand
+    $('select[name="brand[]"]').select2({
+        placeholder: "Pilih Brand",
+        allowClear: true
+    });
+});
+
+
 </script>
