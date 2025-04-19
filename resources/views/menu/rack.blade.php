@@ -10,9 +10,6 @@
     <button class="btn btn-primary mb-3" onclick="openModal('modalTambahRack')">+ Tambah Rack</button>
     <div class="card-content {{ Route::currentRouteName() == 'rack.index' ? 'tiga' : '' }}">
 
-    <div id="loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center; z-index: 9999;">
-            <div class="dot-spin"></div>
-        </div>
     @foreach ($racksUnik as $index => $rack)
             <div class="toggle">
                 <div class="card-item" onclick="toggleTable({{ $index }})">

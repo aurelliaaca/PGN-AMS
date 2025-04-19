@@ -1,7 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title')</title>
+    <title><?php echo $__env->yieldContent('title'); ?></title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -11,12 +11,12 @@
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> -->
 </head>
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/app.css')); ?>">
 
 <body>
     <aside class="sidebar">
         <div class="sidebar-title">
-            <img src="{{ asset('img/pgncom.png') }}" alt="logo" />
+            <img src="<?php echo e(asset('img/pgncom.png')); ?>" alt="logo" />
             <h2>AMS</h2>
         </div>
         <ul class="sidebar-links">
@@ -25,19 +25,19 @@
                 <div class="menu-separator"></div>
             </h4>
             <li>
-                <a href="{{ route('home') }}">
+                <a href="<?php echo e(route('home')); ?>">
                     <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
                     <span class="text">Dasbor</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('data') }}">
+                <a href="<?php echo e(route('data')); ?>">
                     <span class="icon"><i class="fas fa-database"></i></span>
                     <span class="text">Data</span>
                 </a>
             </li>
             <li>
-                <a href="{{ route('rack.index') }}">
+                <a href="<?php echo e(route('rack.index')); ?>">
                     <span class="icon"><i class="fas fa-server"></i></span>
                     <span class="text">Rack</span>
                 </a>
@@ -49,24 +49,24 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('histori.index') }}">
+                <a href="<?php echo e(route('histori.index')); ?>">
                     <span class="icon"><i class="fas fa-history"></i></span>
                     <span class="text">Histori</span>
                 </a>
             </li>
-            @if(auth()->user()->role == '1' || auth()->user()->role == '2')
+            <?php if(auth()->user()->role == '1' || auth()->user()->role == '2'): ?>
                 <h4>
                     <span>Aset</span>
                     <div class="menu-separator"></div>
                 </h4>
                 <li>
-                    <a href="{{ route('perangkat.index') }}">
+                    <a href="<?php echo e(route('perangkat.index')); ?>">
                         <span class="icon"><i class="fas fa-tools"></i></span>
                         <span class="text">Perangkat</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('perangkat.index') }}">
+                    <a href="<?php echo e(route('perangkat.index')); ?>">
                         <span class="icon"><i class="fas fa-warehouse"></i></span>
                         <span class="text">Fasilitas</span>
                     </a>
@@ -83,13 +83,13 @@
                         <span class="text">Jaringan</span>
                     </a>
                 </li>
-            @endif
+            <?php endif; ?>
             <h4>
                 <span>Portal VMS</span>
                 <div class="menu-separator"></div>
             </h4>
             <li>
-                <a href="{{ auth()->user()->role == 1 ? route('verifikasi.superadmin.index') : route('verifikasi.user.index') }}">
+                <a href="<?php echo e(auth()->user()->role == 1 ? route('verifikasi.superadmin.index') : route('verifikasi.user.index')); ?>">
                     <span class="icon"><i class="fas fa-tools"></i></span>
                     <span class="text">VMS</span>
                 </a>
@@ -106,8 +106,8 @@
             </li>
 
             <li>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
+                <form action="<?php echo e(route('logout')); ?>" method="POST">
+                    <?php echo csrf_field(); ?>
                     <button type="submit">
                         <span class="icon"><i class="fas fa-sign-out-alt" style="margin-left:5px"></i></span>
                         <span class="text" style="margin-left:-2px">Keluar</span>
@@ -118,28 +118,28 @@
 
         <div class="user-account">
             <div class="user-profile">
-                <img src="{{ asset('img/profile-default.png') }}" alt="Profile Image" />
+                <img src="<?php echo e(asset('img/profile-default.png')); ?>" alt="Profile Image" />
                 <div class="user-detail">
-                    <h3>{{ auth()->user()->name }}</h3>
-                    @php
+                    <h3><?php echo e(auth()->user()->name); ?></h3>
+                    <?php
                         $roleText = [
                             1 => 'Superadmin',
                             2 => 'Admin',
                             3 => 'Guest',
                         ][auth()->user()->role] ?? 'Unknown'; // Default 'Unknown' jika role tidak dikenali
-                    @endphp
-                    <span>{{ $roleText }}</span>
+                    ?>
+                    <span><?php echo e($roleText); ?></span>
                 </div>
             </div>
         </div>
     </aside>
 
     <header class="header">
-        <h1>@yield('page_title')</h1>
+        <h1><?php echo $__env->yieldContent('page_title'); ?></h1>
     </header>
 
     <main class="main">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 </body>
 
@@ -162,29 +162,29 @@
         });
     }
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
         Swal.fire({
             icon: 'success',
             title: 'Berhasil!',
-            text: '{{ session('success') }}',
+            text: '<?php echo e(session('success')); ?>',
             showConfirmButton: false,
             timer: 2000
         });
-    @elseif (session('error'))
+    <?php elseif(session('error')): ?>
         Swal.fire({
             icon: 'error',
             title: 'Gagal!',
-            text: '{{ session('error') }}',
+            text: '<?php echo e(session('error')); ?>',
             showConfirmButton: true
         });
-    @elseif (session('warning'))
+    <?php elseif(session('warning')): ?>
         Swal.fire({
             icon: 'warning',
             title: 'Peringatan!',
-            text: '{{ session('warning') }}',
+            text: '<?php echo e(session('warning')); ?>',
             showConfirmButton: true
         });
-    @endif
+    <?php endif; ?>
 
     function confirmDelete(id) {
         Swal.fire({
@@ -240,3 +240,4 @@
 
 
 </script>
+<?php /**PATH /Users/aurelliaaca/PGN-AMS/resources/views/layouts/app.blade.php ENDPATH**/ ?>

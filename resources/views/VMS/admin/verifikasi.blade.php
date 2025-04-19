@@ -56,7 +56,7 @@
                             </form>
                             <form action="{{ route('verifikasi.reject', $d->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen ini?')">
+                                <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen ini?')">
                                     <i class="fas fa-times"></i> Tolak
                                 </button>
                             </form>

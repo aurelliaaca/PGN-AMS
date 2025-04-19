@@ -58,11 +58,11 @@ class DocumentSignatureService
                 
                 // Tambahkan tanda tangan di halaman terakhir
                 if ($i === $pageCount) {
-                    $signaturePath = public_path('img/profile-default.png');
+                    $signaturePath = public_path('img/ttd.png');
                     if (file_exists($signaturePath)) {
                         // Hitung posisi tanda tangan (pojok kanan bawah)
-                        $x = $size['width'] - 60; // 60 points dari kanan
-                        $y = $size['height'] - 60; // 60 points dari bawah
+                        $x = $size['width'] - 30; 
+                        $y = $size['height'] - 30;
                         $width = 50; // Lebar tanda tangan
                         
                         $pdf->Image($signaturePath, $x, $y, $width);
@@ -99,13 +99,13 @@ class DocumentSignatureService
             $phpWord = IOFactory::load($filePath);
             
             // Tambahkan tanda tangan di halaman terakhir
-            $lastSection = $phpWord->getSections()->last();
+            $lastSection = collect($phpWord->getSections())->last();
             
             // Tambahkan paragraf kosong untuk spacing
             $lastSection->addText('');
             
             // Tambahkan tanda tangan
-            $signaturePath = public_path('img/profile-default.png');
+            $signaturePath = public_path('img/ttd.png');
             if (file_exists($signaturePath)) {
                 $lastSection->addImage(
                     $signaturePath,

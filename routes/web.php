@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\PerangkatController;
+use App\Http\Controllers\FasiitasController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\PerangkatImportController;
@@ -99,9 +100,19 @@ Route::get('export/fasilitas', function () {
 
 Route::get('/menu/data/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
 Route::get('/menu/rack', [RackController::class, 'indexRack'])->name('rack.index');
+Route::get('/menu/rack/data', [RackController::class, 'getRackData'])->name('rack.data');
 Route::post('/rack/store', [RackController::class, 'storeRack'])->name('rack.store');
 Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
 Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
+// Add these to your routes file (web.php)
+
+// Get racks data via AJAX
+Route::get('/rack/data', [RackController::class, 'getRacks'])->name('rack.getData');
+
+// Make sure your existing routes support JSON response
+Route::post('/rack', [RackController::class, 'storeRack'])->name('rack.store');
+Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
+Route::delete('/datarack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
 
 
 // Superadmin - melihat dan memverifikasi dokumen
