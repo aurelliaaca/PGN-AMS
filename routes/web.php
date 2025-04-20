@@ -114,6 +114,14 @@ Route::post('/rack', [RackController::class, 'storeRack'])->name('rack.store');
 Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
 Route::delete('/datarack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
 
+Route::post('/load-racks', [App\Http\Controllers\RackController::class, 'loadRacks'])->name('load.racks');
+        Route::get('/get-racks-by-region/{kode_region}', [HomeController::class, 'getRacksByRegion']);
+    Route::get('/get-filtered-racks', [RackController::class, 'getFilteredRacks']);
+Route::get('/get-sites', [RackController::class, 'getSites'])->name(name: 'get.sites');
+Route::post('/rack/store', [RackController::class, 'store'])->name('rack.store');
+Route::post('/rack/destroydata', [RackController::class, 'destroyData'])->name('rack.destroydata');
+
+
 
 // Superadmin - melihat dan memverifikasi dokumen
     Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');
@@ -124,5 +132,7 @@ Route::delete('/datarack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackControll
 // User - upload dokumen dan lihat status
     Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.user.index');
     Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
+
+Route::post('/rack/destroy', [RackController::class, 'destroy'])->name('rack.destroy');
 });
 

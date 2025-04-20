@@ -421,6 +421,14 @@ body {
 .card-section:not(:last-child) {
     margin-bottom: 20px;
 }
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
 .card-item {
     position: relative;
     background: linear-gradient(50deg, #4f52ba 0%, rgb(209, 210, 241) 100%);
@@ -433,7 +441,7 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease;
     width: 100%;
-    overflow: visible; /* penting biar canvas gak bocor keluar */
+    overflow: visible;
 }
 
 .card-item-kanan {
@@ -466,7 +474,9 @@ body {
 }
 
 .toggle {
-    flex-direction: column; /* Menyesuaikan dengan layout vertikal */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .card-item:hover {
@@ -640,51 +650,86 @@ body {
 }
 
 .tables-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%; /* Memastikan lebar container sesuai dengan card-item */
+    display: none;
+    width: 100%;
+}
+
+.tables-container.show {
+    display: block;
 }
 
 .table-column {
     flex: 1;
 }
-
 .filter-container {
-    margin-top: 20px;
     display: flex;
-    gap: 5px;
+    gap: 20px;
     align-items: center;
-    flex-wrap: wrap;
     width: 100%;
+    margin-top: 20px;
 }
 
-.filter-container select {
+.filter-container > * {
     flex: 1;
-    min-width: 25%;
-    height: 100%;
+}
+
+select, .search-bar input {
+    width: 100%;
     font-size: 12px;
-    padding: 12px;
+    padding: 12px 12px;
     border: 1px solid #4f52ba;
     border-radius: 5px;
     background-color: #fff;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.3s;
 }
 
-.filter-container .search-bar input {
-    flex: 1;
-    width: 220px;
-    height: 100%;
+.search-bar input {
+    outline: none;
+}
+
+select:focus, .search-bar input:focus {
+    border-color: #4f52ba;
+    box-shadow: 0 0 5px rgba(79, 82, 186, 0.5);
+}
+
+.select2-container {
+    width: 100%;
+}
+
+.select2-selection {
+    width: 100%;
     font-size: 12px;
-    padding: 14.5px;
-    border: none;
-    border-left: 1px solid #4f52ba;
-    border-top: 1px solid #4f52ba;
-    border-bottom: 1px solid #4f52ba;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     background-color: #fff;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.3s;
+    border: 1px solid #4f52ba !important;
+}
+
+.select2-selection:focus {
+    border-color: #4f52ba !important;
+    box-shadow: 0 0 5px rgba(79, 82, 186, 0.5) !important;
+}
+
+.select2-selection__placeholder {
+    color: #4f52ba;
+    font-size: 12px;
+}
+
+.select2-container--open .select2-selection {
+    border-color: #4f52ba;
+    box-shadow: 0 0 5px rgba(79, 82, 186, 0.5);
+}
+
+.select2-results__option {
+    font-size: 12px;
+    padding: 10px;
+}
+
+.select2-results__option--highlighted {
+    background-color: #4f52ba !important;
+    color: #fff;
 }
 
 .btn-search {
