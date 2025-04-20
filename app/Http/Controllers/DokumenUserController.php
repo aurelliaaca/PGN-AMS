@@ -12,7 +12,7 @@ class DokumenUserController extends Controller
     public function index()
     {
         $dokumen = VerifikasiDokumen::where('user_id', Auth::id())->get();
-        return view('user.upload', compact('dokumen'));
+        return view('user.pendaftarankunjungan', compact('dokumen'));
     }
 
     public function store(Request $request)

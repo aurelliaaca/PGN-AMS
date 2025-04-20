@@ -39,17 +39,16 @@ class DokumenVerifikasiNotification extends Notification
     {
         $status = $this->dokumen->status === 'diterima' ? 'diterima' : 'ditolak';
         $message = $this->dokumen->status === 'diterima' 
-            ? 'Dokumen Anda telah diverifikasi dan diterima.' 
-            : 'Dokumen Anda telah diverifikasi dan ditolak.';
+            ? 'Dokumen NDA dan DCAF Anda telah diverifikasi dan diterima.' 
+            : 'Dokumen NDA dan DCAF Anda telah diverifikasi dan ditolak.';
         
         return (new MailMessage)
             ->subject('Status Verifikasi Dokumen')
             ->greeting('Halo ' . $notifiable->name)
             ->line($message)
-            ->line('Nama Dokumen: ' . $this->dokumen->nama_dokumen)
             ->line('Status: ' . ucfirst($status))
             ->line('Tanggal Verifikasi: ' . now()->format('d/m/Y H:i'))
-            ->line('Berlaku Hingga: ' . $this->dokumen->masa_berlaku)
+            ->line('Periode: ' . $this->dokumen->start_date->format('d/m/Y') . ' - ' . $this->dokumen->end_date->format('d/m/Y'))
             ->action('Lihat Detail', url('/verifikasi/user'))
             ->line('Terima kasih telah menggunakan layanan kami.');
     }
@@ -63,11 +62,10 @@ class DokumenVerifikasiNotification extends Notification
     {
         return [
             'dokumen_id' => $this->dokumen->id,
-            'nama_dokumen' => $this->dokumen->nama_dokumen,
             'status' => $this->dokumen->status,
             'message' => $this->dokumen->status === 'diterima' 
-                ? 'Dokumen Anda telah diverifikasi dan diterima.' 
-                : 'Dokumen Anda telah diverifikasi dan ditolak.',
+                ? 'Dokumen NDA dan DCAF Anda telah diverifikasi dan diterima.' 
+                : 'Dokumen NDA dan DCAF Anda telah diverifikasi dan ditolak.',
         ];
     }
 } 

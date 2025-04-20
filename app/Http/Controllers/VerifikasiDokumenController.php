@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\VerifikasiDokumen;
+use App\Models\VerifikasiNda;
+use App\Models\VerifikasiDcaf;
 use Carbon\Carbon;
 use App\Notifications\DokumenVerifikasiNotification;
 use App\Services\DocumentSignatureService;
@@ -19,12 +21,63 @@ class VerifikasiDokumenController extends Controller
         $this->documentSignatureService = $documentSignatureService;
     }
 
-    public function index()
+    public function indexNda()
     {
-        $dokumen = VerifikasiDokumen::with('user')->get();
-        return view('VMS.admin.verifikasi', compact('dokumen'));
-    }
+        $ndas = VerifikasiNda::with('user')
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pendingNdas = VerifikasiNda::where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
     
+        $historyNdas = VerifikasiNda::whereIn('status', ['diterima', 'ditolak'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $activeNdas = VerifikasiNda::where('status', 'diterima')
+            ->where('masa_berlaku', '>', Carbon::now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+        $expiredNdas = VerifikasiNda::where('status', 'diterima')
+            ->where('masa_berlaku', '<=', Carbon::now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+
+        return view('VMS.admin.verifikasi_nda', compact('ndas', 'pendingNdas', 'historyNdas', 'activeNdas', 'expiredNdas'));
+    }
+
+    public function indexDcaf()
+    {
+        $dcafs = VerifikasiDcaf::with(['user', 'nda'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pendingDcafs = VerifikasiDcaf::where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+        $historyDcafs = VerifikasiDcaf::whereIn('status', ['diterima', 'ditolak'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $activeDcafs = VerifikasiDcaf::where('status', 'diterima')
+            ->where('masa_berlaku', '>', Carbon::now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+        $expiredDcafs = VerifikasiDcaf::where('status', 'diterima')
+            ->where('masa_berlaku', '<=', Carbon::now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+        return view('VMS.admin.verifikasi_dcaf', compact('dcafs', 'pendingDcafs', 'historyDcafs', 'activeDcafs', 'expiredDcafs'));
+    }
+
     public function update(Request $request, $id)
     {
         $dokumen = VerifikasiDokumen::findOrFail($id);
@@ -44,17 +97,25 @@ class VerifikasiDokumenController extends Controller
         ]);
     }
 
-    public function userIndex()
+    public function userDcafIndex()
     {
         // Ambil data user yang sedang login
         $user = auth()->user();
 
-        // Ambil data verifikasi dokumen user
-        $dokumen = VerifikasiDokumen::where('user_id', $user->id)
+        // Ambil data NDA yang aktif
+        $activeNdas = VerifikasiNda::where('user_id', $user->id)
+            ->where('status', 'diterima')
+            ->where('masa_berlaku', '>', Carbon::now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+        // Ambil data DCAF yang diajukan
+        $dcafs = VerifikasiDcaf::with(['user', 'nda'])
+            ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('VMS.user.upload', compact('dokumen'));
+        return view('VMS.user.pendaftarankunjungan', compact('dcafs', 'activeNdas'));
     }
 
     // Untuk User mengunggah dokumen
@@ -63,92 +124,88 @@ class VerifikasiDokumenController extends Controller
         try {
             // Validasi inputan user
             $request->validate([
-                'nama_dokumen' => 'required|string|max:255',
-                'file' => 'required|mimes:pdf,doc,docx|max:10240', // Maksimum 10MB
+                'verifikasi_nda_id' => 'required|exists:verifikasi_nda,id',
+                'dcaf_file' => 'required|mimes:pdf,doc,docx|max:10240',
                 'catatan' => 'nullable|string',
             ]);
 
             // Ambil dokumen yang diunggah
-            $file = $request->file('file');
+            $dcafFile = $request->file('dcaf_file');
             
             // Generate nama file yang unik
-            $fileName = time() . '_' . $file->getClientOriginalName();
+            $dcafFileName = time() . '_dcaf_' . $dcafFile->getClientOriginalName();
             
             // Simpan dokumen ke storage
-            $path = $file->storeAs('dokumen_verifikasi', $fileName, 'public');
+            $dcafPath = $dcafFile->storeAs('dokumen_verifikasi', $dcafFileName, 'public');
 
             // Simpan data verifikasi ke tabel
-            $verifikasi = new VerifikasiDokumen();
+            $verifikasi = new VerifikasiDcaf();
             $verifikasi->user_id = auth()->user()->id;
-            $verifikasi->nama_dokumen = $request->nama_dokumen;
-            $verifikasi->file_path = $path;
-            $verifikasi->status = 'pending'; // Status awal adalah pending
+            $verifikasi->verifikasi_nda_id = $request->verifikasi_nda_id;
+            $verifikasi->file_path = $dcafPath;
+            $verifikasi->status = 'pending';
             $verifikasi->catatan = $request->catatan;
             $verifikasi->save();
 
-            return redirect()->route('verifikasi.user.index')->with('success', 'Dokumen berhasil diupload, menunggu verifikasi');
+            return redirect()->route('verifikasi.user.dcaf')->with('success', 'Dokumen berhasil diupload, menunggu verifikasi');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan saat mengupload dokumen: ' . $e->getMessage());
         }
     }
 
-    public function approve($id)
+    public function approveNda($id)
     {
         try {
-            $dokumen = VerifikasiDokumen::findOrFail($id);
-            
-            // Tambahkan tanda tangan ke dokumen
-            $originalPath = storage_path('app/public/' . $dokumen->file_path);
-            $outputPath = storage_path('app/public/signed_' . $dokumen->file_path);
-            
-            // Pastikan file asli ada
-            if (!file_exists($originalPath)) {
-                throw new \Exception('File dokumen tidak ditemukan');
-            }
-            
-            // Tambahkan tanda tangan
-            $this->documentSignatureService->addSignatureToDocument($originalPath, $outputPath);
-            
-            // Update data dokumen
-            $dokumen->status = 'diterima';
-            $dokumen->masa_berlaku = Carbon::now()->addMonths(3);
-            $dokumen->signed_by = auth()->user()->name;
-            $dokumen->signed_at = now();
-            $dokumen->file_path = 'signed_' . $dokumen->file_path;
-            $dokumen->save();
+            $nda = VerifikasiNda::findOrFail($id);
+            $nda->status = 'diterima';
+            $nda->masa_berlaku = Carbon::now()->addMonths(3);
+            $nda->save();
 
-            // Kirim notifikasi ke user
-            $dokumen->user->notify(new DokumenVerifikasiNotification($dokumen));
-
-            return redirect()->route('verifikasi.superadmin.index')->with('success', 'Dokumen berhasil diverifikasi dan diterima.');
+            return redirect()->route('verifikasi.superadmin.nda')->with('success', 'NDA berhasil diverifikasi dan diterima.');
         } catch (\Exception $e) {
-            \Log::error('Error in approve: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat memverifikasi dokumen: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-    public function reject($id)
+    public function rejectNda($id)
     {
         try {
-            $dokumen = VerifikasiDokumen::findOrFail($id);
-            $dokumen->status = 'ditolak';
-            $dokumen->masa_berlaku = null; // Hapus masa berlaku jika dokumen ditolak
-            $dokumen->save();
+            $nda = VerifikasiNda::findOrFail($id);
+            $nda->status = 'ditolak';
+            $nda->masa_berlaku = null;
+            $nda->save();
 
-            // Kirim notifikasi ke user
-            $dokumen->user->notify(new DokumenVerifikasiNotification($dokumen));
-
-            return redirect()->route('verifikasi.superadmin.index')->with('swal', [
-                'icon' => 'success',
-                'title' => 'Berhasil!',
-                'text' => 'Dokumen berhasil diverifikasi dan ditolak.'
-            ]);
+            return redirect()->route('verifikasi.superadmin.nda')->with('success', 'NDA berhasil diverifikasi dan ditolak.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('swal', [
-                'icon' => 'error',
-                'title' => 'Gagal!',
-                'text' => 'Terjadi kesalahan saat memverifikasi dokumen: ' . $e->getMessage()
-            ]);
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function approveDcaf($id)
+    {
+        try {
+            $dcaf = VerifikasiDcaf::findOrFail($id);
+            $dcaf->status = 'diterima';
+            $dcaf->masa_berlaku = Carbon::now()->addDays(7);
+            $dcaf->save();
+
+            return redirect()->route('verifikasi.superadmin.dcaf')->with('success', 'DCAF berhasil diverifikasi dan diterima.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function rejectDcaf($id)
+    {
+        try {
+            $dcaf = VerifikasiDcaf::findOrFail($id);
+            $dcaf->status = 'ditolak';
+            $dcaf->masa_berlaku = null;
+            $dcaf->save();
+
+            return redirect()->route('verifikasi.superadmin.dcaf')->with('success', 'DCAF berhasil diverifikasi dan ditolak.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -198,6 +255,52 @@ class VerifikasiDokumenController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function create()
+    {
+        $activeNdas = VerifikasiNda::where('user_id', auth()->id())
+            ->where('status', 'diterima')
+            ->where('masa_berlaku', '>', Carbon::now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+        return view('VMS.user.pendaftarankunjungan', compact('activeNdas'));
+    }
+    
+
+    public function userNdaIndex()
+    {
+        $ndas = VerifikasiNda::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('VMS.user.pendaftarannda', compact('ndas'));
+    }
+
+    public function storeNda(Request $request)
+    {
+        try {
+            $request->validate([
+                'file_path' => 'required|mimes:pdf,doc,docx|max:10240',
+                'catatan' => 'nullable|string'
+            ]);
+
+            $file = $request->file('file_path');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('dokumen_verifikasi', $fileName, 'public');
+
+            VerifikasiNda::create([
+                'user_id' => auth()->id(),
+                'file_path' => $path,
+                'status' => 'pending',
+                'catatan' => $request->catatan
+            ]);
+
+            return redirect()->route('verifikasi.user.nda')->with('success', 'NDA berhasil diajukan, menunggu verifikasi');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

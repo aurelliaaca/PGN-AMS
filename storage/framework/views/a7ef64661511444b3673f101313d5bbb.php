@@ -88,12 +88,34 @@
                 <span>Portal VMS</span>
                 <div class="menu-separator"></div>
             </h4>
-            <li>
-                <a href="<?php echo e(auth()->user()->role == 1 ? route('verifikasi.superadmin.index') : route('verifikasi.user.index')); ?>">
-                    <span class="icon"><i class="fas fa-tools"></i></span>
-                    <span class="text">VMS</span>
-                </a>
-            </li>
+            <?php if(auth()->user()->role == '1'): ?>
+                <li>
+                    <a href="<?php echo e(route('verifikasi.superadmin.nda')); ?>">
+                        <span class="icon"><i class="fas fa-warehouse"></i></span>
+                        <span class="text">Verifikasi NDA</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('verifikasi.superadmin.dcaf')); ?>">
+                        <span class="icon"><i class="fas fa-warehouse"></i></span>
+                        <span class="text">Verifikasi DCAF</span>
+                    </a>
+                </li>
+            <?php endif; ?>
+            <?php if(auth()->user()->role == '3'): ?>
+                <li>
+                    <a href="<?php echo e(route('verifikasi.user.nda')); ?>">
+                        <span class="icon"><i class="fas fa-warehouse"></i></span>
+                        <span class="text">NDA</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('verifikasi.user.dcaf')); ?>">
+                        <span class="icon"><i class="fas fa-ruler"></i></span>
+                        <span class="text">DCAF</span>
+                    </a>
+                </li>
+            <?php endif; ?>
             <h4>
                 <span>Akun</span>
                 <div class="menu-separator"></div>

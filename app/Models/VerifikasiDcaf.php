@@ -5,31 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class VerifikasiDokumen extends Model
+class VerifikasiDcaf extends Model
 {
     use HasFactory;
 
-    protected $table = 'verifikasi_dokumen';
+    protected $table = 'verifikasi_dcaf';
     
     protected $casts = [
-        'nda_masa_berlaku' => 'datetime',
-        'dcaf_masa_berlaku' => 'datetime'
+        'masa_berlaku' => 'datetime'
     ];
     
-
     protected $fillable = [
         'user_id',
-        'nda_file_path',
-        'dcaf_file_path',
-        'nda_status',
-        'dcaf_status',
+        'verifikasi_nda_id',
+        'file_path',
+        'status',
         'catatan',
-        'nda_masa_berlaku',
-        'dcaf_masa_berlaku'
+        'masa_berlaku'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-}
+
+    public function nda()
+    {
+        return $this->belongsTo(VerifikasiNda::class, 'verifikasi_nda_id');
+    }
+} 

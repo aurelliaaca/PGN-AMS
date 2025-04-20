@@ -11,11 +11,13 @@
                 <tr>
                     <th>No</th>
                     <th>Nama User</th>
-                    <th>Nama Dokumen</th>
                     <th>Tanggal Upload</th>
-                    <th>Status</th>
-                    <th>Masa Berlaku</th>
-                    <th>File</th>
+                    <th>Status NDA</th>
+                    <th>Masa Berlaku NDA</th>
+                    <th>Status DCAF</th>
+                    <th>Masa Berlaku DCAF</th>
+                    <th>NDA</th>
+                    <th>DCAF</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -24,43 +26,66 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $d->user->name }}</td>
-                    <td>{{ $d->nama_dokumen }}</td>
                     <td>{{ $d->created_at->format('d/m/Y H:i') }}</td>
                     <td>
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $d->status == 'pending' ? '#ffc107' : 
-                                    ($d->status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                                    {{ $d->nda_status == 'pending' ? '#ffc107' : 
+                                    ($d->nda_status == 'diterima' ? '#28a745' : '#dc3545') }};">
                             </span>
-                            {{ ucfirst($d->status) }}
+                            {{ ucfirst($d->nda_status) }}
                         </span>
                     </td>
-                    <td>{{ $d->masa_berlaku ? $d->masa_berlaku->translatedFormat('d F Y H:i') : '' }}</td>
+                    <td>{{ $d->nda_masa_berlaku ? $d->nda_masa_berlaku->translatedFormat('d F Y H:i') : '' }}</td>
                     <td>
-                        <a href="{{ asset('storage/' . $d->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat</a>
-                        @if($d->signature)
-                            <br>
-                            <small class="text-muted">Ditandatangani oleh: {{ $d->signed_by }}</small><br>
-                            <small class="text-muted">Pada: {{ $d->signed_at->format('d/m/Y H:i') }}</small>
-                        @endif
+                        <span style="display: inline-flex; align-items: center;">
+                            <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
+                                background-color: 
+                                    {{ $d->dcaf_status == 'pending' ? '#ffc107' : 
+                                    ($d->dcaf_status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                            </span>
+                            {{ ucfirst($d->dcaf_status) }}
+                        </span>
+                    </td>
+                    <td>{{ $d->dcaf_masa_berlaku ? $d->dcaf_masa_berlaku->translatedFormat('d F Y H:i') : '' }}</td>
+                    <td>
+                        <a href="{{ asset('storage/' . $d->nda_file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat NDA</a>
+                    </td>
+                    <td>
+                        <a href="{{ asset('storage/' . $d->dcaf_file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat DCAF</a>
                     </td>
                     <td>
                         <div class="action-buttons">
-                        @if($d->status == 'pending')
-                            <form action="{{ route('verifikasi.approve', $d->id) }}" method="POST" class="d-inline">
+                        @if($d->nda_status == 'pending')
+                            <form action="{{ route('verifikasi.approve.nda', $d->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Apakah Anda yakin ingin menerima dokumen ini?')">
-                                    <i class="fas fa-check"></i> Terima
+                                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Apakah Anda yakin ingin menerima dokumen NDA ini?')">
+                                    <i class="fas fa-check"></i> Terima NDA
                                 </button>
                             </form>
-                            <form action="{{ route('verifikasi.reject', $d->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('verifikasi.reject.nda', $d->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen ini?')">
-                                    <i class="fas fa-times"></i> Tolak
+                                <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen NDA ini?')">
+                                    <i class="fas fa-times"></i> Tolak NDA
                                 </button>
                             </form>
-                        @else
+                        @endif
+                        @if($d->dcaf_status == 'pending')
+                            <form action="{{ route('verifikasi.approve.dcaf', $d->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Apakah Anda yakin ingin menerima dokumen DCAF ini?')">
+                                    <i class="fas fa-check"></i> Terima DCAF
+                                </button>
+                            </form>
+                            <form action="{{ route('verifikasi.reject.dcaf', $d->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen DCAF ini?')">
+                                    <i class="fas fa-times"></i> Tolak DCAF
+                                </button>
+                            </form>
+                        @endif
+                        @if($d->nda_status != 'pending' && $d->dcaf_status != 'pending')
                             <span class="text-muted">Sudah diverifikasi</span>
                         @endif
                         </div>
@@ -68,7 +93,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center">Tidak ada dokumen yang perlu diverifikasi</td>
+                    <td colspan="10" class="text-center">Tidak ada dokumen yang perlu diverifikasi</td>
                 </tr>
                 @endforelse
             </tbody>

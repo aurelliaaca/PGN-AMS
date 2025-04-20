@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('verifikasi_dokumen', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('nda_file_path')->nullable();
+            $table->string('dcaf_file_path')->nullable();
+            $table->string('nda_status')->default('pending'); // pending, diterima, ditolak
+            $table->string('dcaf_status')->default('pending'); // pending, diterima, ditolak
+            $table->text('catatan')->nullable();
+            $table->timestamp('nda_masa_berlaku')->nullable();
+            $table->timestamp('dcaf_masa_berlaku')->nullable();
             $table->timestamps();
         });
     }

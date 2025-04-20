@@ -130,9 +130,25 @@ Route::post('/rack/destroydata', [RackController::class, 'destroyData'])->name('
     Route::post('/verifikasi/sign/{id}', [VerifikasiDokumenController::class, 'sign'])->name('verifikasi.sign');
 
 // User - upload dokumen dan lihat status
-    Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.user.index');
+    Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.dcaf.index');
     Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
 
 Route::post('/rack/destroy', [RackController::class, 'destroy'])->name('rack.destroy');
+
+// Routes untuk verifikasi NDA
+Route::get('/verifikasi/nda', [VerifikasiDokumenController::class, 'indexNda'])->name('verifikasi.superadmin.nda');
+Route::get('/pendaftaran/nda', [VerifikasiDokumenController::class, 'userNdaIndex'])->name('verifikasi.user.nda');
+Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeNda'])->name('verifikasi.nda.store');
+
+// Routes untuk verifikasi DCAF
+Route::get('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'indexDcaf'])->name('verifikasi.superadmin.dcaf');
+Route::get('/pendaftaran/dcaf', [VerifikasiDokumenController::class, 'userDcafIndex'])->name('verifikasi.user.dcaf');
+Route::post('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'storeDcaf'])->name('verifikasi.dcaf.store');
+
+// Routes untuk aksi verifikasi
+Route::post('/verifikasi/nda/approve/{id}', [VerifikasiDokumenController::class, 'approveNda'])->name('verifikasi.approve.nda');
+Route::post('/verifikasi/nda/reject/{id}', [VerifikasiDokumenController::class, 'rejectNda'])->name('verifikasi.reject.nda');
+Route::post('/verifikasi/dcaf/approve/{id}', [VerifikasiDokumenController::class, 'approveDcaf'])->name('verifikasi.approve.dcaf');
+Route::post('/verifikasi/dcaf/reject/{id}', [VerifikasiDokumenController::class, 'rejectDcaf'])->name('verifikasi.reject.dcaf');
 });
 
