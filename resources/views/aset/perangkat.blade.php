@@ -74,7 +74,6 @@
                                 <h5>Detail Perangkat</h5>
                                 
                                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                    <!-- Kolom kiri -->
                                     <div style="width: 48%;">
                                         <label>Region</label>
                                         <input type="text" value="{{ $perangkat->region->nama_region }}" readonly class="form-control">
@@ -89,7 +88,6 @@
                                         <input type="text" value="{{ $perangkat->jenisperangkat->nama_perangkat }}" readonly class="form-control">
                                     </div>
 
-                                    <!-- Kolom kanan -->
                                     <div style="width: 48%;">
                                         <label>Perangkat ke-</label>
                                         <input type="text" value="{{ $perangkat->perangkat_ke }}" readonly class="form-control">
@@ -108,7 +106,6 @@
                         </div>
 
 
-                        {{-- Modal Edit --}}
                         <div id="modalEditPerangkat{{ $perangkat->id_perangkat }}" class="modal">
                             <div class="modal-content">
                                 <span class="close"
@@ -196,7 +193,6 @@
             </table>
         </div>
 
-        <!-- Modal Import -->
         <div id="importModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('importModal')">&times;</span>
@@ -212,7 +208,6 @@
             </div>
         </div>
 
-        <!-- Modal Export -->
         <div id="exportModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('exportModal')">&times;</span>
@@ -245,7 +240,6 @@
             </div>
         </div>
 
-        <!-- Modal Tambah -->
         <div id="modalTambahPerangkat" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>

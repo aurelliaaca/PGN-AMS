@@ -7,7 +7,9 @@ use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\PerangkatImportController;
+use App\Http\Controllers\FasilitasImportController;
 use App\Exports\PerangkatExport;
+use App\Exports\FasilitasExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\VerifikasiDokumenController;
 use Illuminate\Http\Request;
@@ -138,13 +140,28 @@ Route::middleware('auth')->group(function () {
     });
 
 
-    Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
-    Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
-    Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
-    Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
-    Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
-    Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
 
+    Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
+    Route::get('/fasilitas/create', [FasilitasController::class, 'create'])->name('fasilitas.create');
+    Route::post('/fasilitas/store', [FasilitasController::class, 'store'])->name('fasilitas.store');
+    Route::get('/fasilitas/{id_fasilitas}/edit', [FasilitasController::class, 'edit'])->name('fasilitas.edit');
+    Route::put('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+    Route::delete('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+    Route::post('/import-fasilitas', [FasilitasImportController::class, 'import'])->name('import.fasilitas');
+    Route::post('export/fasilitas', function (Request $request) {
+        $regions = $request->input('regions'); // array atau null
+        $format = $request->input('format');   // excel atau pdf
+        if ($format === 'excel') {
+            return Excel::download(new FasilitasExport($regions), 'datafasilitas.xlsx');
+        } elseif ($format === 'pdf') {
+            $data = (new FasilitasExport($regions))->collection();
+
+            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            return $pdf->download('datafasilitas.pdf');
+        } else {
+            return back()->with('error', 'Format file tidak dikenali.');
+        }
+    });
 
     // Superadmin - melihat dan memverifikasi dokumen
     Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');
@@ -161,9 +178,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeVerifNda'])->name('verifikasi.nda.store');
     Route::get('/pendaftaran/nda', [VerifikasiDokumenController::class, 'userNdaIndex'])->name('verifikasi.user.nda');
     Route::post('/pendaftaran/nda/store', [VerifikasiDokumenController::class, 'storeNda'])->name('nda.store');
-     Route::get('pendaftaran/nda/download/{id}', [VerifikasiDokumenController::class, 'downloadNda'])->name('nda.download');
-     Route::put('/nda/{nda}', [VerifikasiDokumenController::class, 'update'])->name('nda.update');
-     Route::delete('/nda/{nda}', [VerifikasiDokumenController::class, 'destroy'])->name('nda.destroy');
+    Route::get('pendaftaran/nda/download/{id}', [VerifikasiDokumenController::class, 'downloadNda'])->name('nda.download');
+    Route::put('/nda/{nda}', [VerifikasiDokumenController::class, 'update'])->name('nda.update');
+    Route::delete('/nda/{nda}', [VerifikasiDokumenController::class, 'destroy'])->name('nda.destroy');
 
     // Routes untuk verifikasi DCAF
     Route::get('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'indexDcaf'])->name('verifikasi.superadmin.dcaf');
@@ -176,22 +193,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/verifikasi/dcaf/approve/{id}', [VerifikasiDokumenController::class, 'approveDcaf'])->name('verifikasi.approve.dcaf');
     Route::post('/verifikasi/dcaf/reject/{id}', [VerifikasiDokumenController::class, 'rejectDcaf'])->name('verifikasi.reject.dcaf');
 
-    // Routes for Fasilitas
-    Route::get('/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
-    Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
-    Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
-    Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
-    Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
-    Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
+    // Route untuk upload foto
+    Route::post('/upload-photo', [SemantikController::class, 'uploadPhoto'])->name('upload.photo');
 
+    // Route untuk menghapus foto
+    Route::delete('/photos/{id}', [SemantikController::class, 'deletePhoto'])->name('photos.delete');
 
-     // Route untuk upload foto
-     Route::post('/upload-photo', [SemantikController::class, 'uploadPhoto'])->name('upload.photo');
-
-     // Route untuk menghapus foto
-     Route::delete('/photos/{id}', [SemantikController::class, 'deletePhoto'])->name('photos.delete');
- 
-     // Semantik
-     Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
+    // Semantik
+    Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
 });
 

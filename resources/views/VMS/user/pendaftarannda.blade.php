@@ -150,7 +150,7 @@
                             <tbody>
                                 @if($NDA->isEmpty())
                                     <tr>
-                                        <td colspan="7" class="no-data">Tidak ada data NDA.</td>
+                                        <td colspan="7" class="no-data">Tidak ada data NDA</td>
                                     </tr>
                                 @else
                                     @foreach($NDA as $index => $nda)
