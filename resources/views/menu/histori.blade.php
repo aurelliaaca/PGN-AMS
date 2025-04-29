@@ -143,17 +143,16 @@
                     </div>
                     <div class="kotak-body">
                         <p>Histori Perangkat</p>
-                        <button class="view-btn" onclick="showDetail('perangkat')">
+                        <button class="view-btn" onclick="window.location.href='{{ route('histori.perangkat') }}'">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
-
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
-                            <i class="fas fa-tools"></i>
+                            <i class="fas fa-laptop"></i>
                         </div>
                         <div class="header-text">
                             <h3>Fasilitas</h3>
@@ -161,17 +160,16 @@
                     </div>
                     <div class="kotak-body">
                         <p>Histori Fasilitas</p>
-                        <button class="view-btn" onclick="showDetail('fasilitas')">
+                        <button class="view-btn" onclick="window.location.href='{{ route('histori.fasilitas') }}'">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
-
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
-                            <i class="fas fa-ruler-combined"></i>
+                            <i class="fas fa-laptop"></i>
                         </div>
                         <div class="header-text">
                             <h3>Alat Ukur</h3>
@@ -179,17 +177,16 @@
                     </div>
                     <div class="kotak-body">
                         <p>Histori Alat Ukur</p>
-                        <button class="view-btn" onclick="showDetail('alatukur')">
+                        <button class="view-btn" onclick="window.location.href='{{ route('histori.alatukur') }}'">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
-
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
-                            <i class="fas fa-circle-nodes"></i>
+                            <i class="fas fa-laptop"></i>
                         </div>
                         <div class="header-text">
                             <h3>Jaringan</h3>
@@ -197,7 +194,7 @@
                     </div>
                     <div class="kotak-body">
                         <p>Histori Jaringan</p>
-                        <button class="view-btn" onclick="showDetail('jaringan')">
+                        <button class="view-btn" onclick="window.location.href='{{ route('histori.jaringan') }}'">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>

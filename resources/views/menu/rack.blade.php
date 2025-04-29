@@ -98,10 +98,8 @@
 </style>
 
 <script>
-// Store charts to destroy them when reloading data
 let pieCharts = {};
 
-// Function to toggle table visibility
 function toggleTable(tableId) {
     const table = document.getElementById(tableId);
     
@@ -112,9 +110,7 @@ function toggleTable(tableId) {
     }
 }
 
-// Function to create pie chart
 function createPieChart(elementId, filledU, emptyU) {
-    // Destroy existing chart if it exists
     if (pieCharts[elementId]) {
         pieCharts[elementId].destroy();
     }
@@ -441,7 +437,6 @@ function confirmDeleteU(kode_region, kode_site, no_rack, u) {
 }
 
 $(document).ready(function() {
-    // Initialize Select2
     $('#region-filter').select2({
         placeholder: "Pilih Region",
         allowClear: true
@@ -452,7 +447,6 @@ $(document).ready(function() {
         allowClear: true
     });
 
-    // Handle region filter change
     $('#region-filter').on('change', function() {
         const selectedRegions = $(this).val();
         $('#site-filter').prop('disabled', true).empty().append('<option value="">Pilih Site</option>');
@@ -465,7 +459,6 @@ $(document).ready(function() {
                 });
             });
         } else {
-            // If no regions selected, load all sites
             $.get('/get-sites', function(data) {
                 $('#site-filter').prop('disabled', false);
                 $.each(data, function(key, value) {
@@ -476,16 +469,13 @@ $(document).ready(function() {
         loadRacks();
     });
 
-    // Menangani perubahan pada Region
     document.getElementById('regionSelectTambah').addEventListener('change', function() {
             const regionId = this.value;
             const siteSelect = document.getElementById('siteSelectTambah');
 
-            // Reset dan nonaktifkan site select
             siteSelect.innerHTML = '<option value="">Pilih Site</option>';
             siteSelect.disabled = true;
 
-            // Jika Region dipilih, aktifkan site select dan filter site berdasarkan region
             if (regionId) {
                 siteSelect.disabled = false;
                 const sites = @json($sites);
@@ -500,12 +490,10 @@ $(document).ready(function() {
             }
         });
 
-    // Handle site filter change
     $('#site-filter').on('change', function() {
         loadRacks();
     });
 
-    // Handle search input with debounce
     let searchTimeout;
     $('#searchInput').on('keyup', function() {
         clearTimeout(searchTimeout);
@@ -514,7 +502,6 @@ $(document).ready(function() {
         }, 300);
     });
 
-    // Initial load
     loadRacks();
 });
 </script>

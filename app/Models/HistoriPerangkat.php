@@ -35,4 +35,24 @@ class HistoriPerangkat extends Model
         return $this->belongsTo(ListPerangkat::class, 'id_perangkat', 'id_perangkat');
     }
 
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'kode_region', 'kode_region'); // 'kode_region' is the foreign key, 'id' is the primary key in Region model
+    }
+
+    public function site()
+    {
+        return $this->belongsTo(Site::class, 'kode_site', 'kode_site');
+    }
+
+    public function jenisperangkat()
+    {
+        return $this->belongsTo(JenisPerangkat::class, 'kode_perangkat', 'kode_perangkat');
+    }
+
+    public function brandperangkat()
+    {
+        return $this->belongsTo(BrandPerangkat::class, 'kode_brand', 'kode_brand');
+    }
+
 }

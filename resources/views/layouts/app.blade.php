@@ -34,7 +34,7 @@
             <li><a href="{{ route('home') }}"><span class="icon"><i class="fas fa-tachometer-alt"></i></span><span class="text">Dasbor</span></a></li>
             <li><a href="{{ route('data') }}"><span class="icon"><i class="fas fa-database"></i></span><span class="text">Data</span></a></li>
             <li><a href="{{ route('rack.index') }}"><span class="icon"><i class="fas fa-server"></i></span><span class="text">Rack</span></a></li>
-            <li><a href="#"><span class="icon"><i class="fas fa-image"></i></span><span class="text">Semantik</span></a></li>
+            <li><a href="{{ route('semantik') }}"><span class="icon"><i class="fas fa-image"></i></span><span class="text">Semantik</span></a></li>
             <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span class="text">Histori</span></a></li>
 
             @if(auth()->user()->role == '1' || auth()->user()->role == '2')

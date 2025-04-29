@@ -16,26 +16,15 @@ class PerangkatController extends Controller
 {
     public function indexPerangkat(Request $request)
 {
-    // Get data for dropdowns
     $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
     $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
     $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
     $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
 
-    // Build query with eager loading
     $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
 
-    // Get all data without any filters
     $dataperangkat = $query->get();
 
-    // If it's an AJAX request, return JSON
-    if ($request->ajax()) {
-        return response()->json([
-            'data' => $dataperangkat
-        ]);
-    }
-
-    // Otherwise return view with data
     return view('aset.perangkat', compact(
         'regions',
         'sites',

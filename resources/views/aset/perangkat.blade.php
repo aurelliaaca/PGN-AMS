@@ -252,71 +252,70 @@
                 <h5>Tambah Perangkat</h5>
                 <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
                     @csrf
-        <div class="mb-3">
-            <label>Kode Region</label>
-            <select id="regionSelectTambah" name="kode_region" class="form-control" required>
-                <option value="">Pilih Region</option>
-                @foreach($regions as $region)
-                    <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
-                @endforeach
-            </select>
+                    <div class="mb-3">
+                        <label>Kode Region</label>
+                        <select id="regionSelectTambah" name="kode_region" class="form-control" required>
+                            <option value="">Pilih Region</option>
+                            @foreach($regions as $region)
+                                <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kode Site</label>
+                        <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
+                            <option value="">Pilih Site</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>No Rack</label>
+                        <input type="text" name="no_rack" class="form-control" id="no_rack" value="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kode Perangkat</label>
+                        <select name="kode_perangkat" class="form-control" required>
+                            <option value="">Pilih Kode Perangkat</option>
+                            @foreach($types as $jenisperangkat)
+                                <option value="{{ $jenisperangkat->kode_perangkat }}">
+                                    {{ $jenisperangkat->nama_perangkat }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Kode Brand</label>
+                        <select name="kode_brand" class="form-control" >
+                            <option value="">Pilih Kode Brand</option>
+                            @foreach($brands as $brandperangkat)
+                                <option value="{{ $brandperangkat->kode_brand }}">
+                                    {{ $brandperangkat->nama_brand }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Type</label>
+                        <input type="text" name="type" class="form-control" value="">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>U Awal</label>
+                        <input type="number" name="uawal" class="form-control" value="" id="uawal">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>U Akhir</label>
+                        <input type="number" name="uakhir" class="form-control" value="" id="uakhir">
+                    </div>
+                <button type="submit" class="btn btn-primary">Tambah</button>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label>Kode Site</label>
-            <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
-                <option value="">Pilih Site</option>
-            </select>
-        </div>
-
-            <div class="mb-3">
-                <label>No Rack</label>
-                <input type="text" name="no_rack" class="form-control" id="no_rack" value="">
-            </div>
-
-            <div class="mb-3">
-                <label>Kode Perangkat</label>
-                <select name="kode_perangkat" class="form-control" required>
-                    <option value="">Pilih Kode Perangkat</option>
-                    @foreach($types as $jenisperangkat)
-                        <option value="{{ $jenisperangkat->kode_perangkat }}">
-                            {{ $jenisperangkat->nama_perangkat }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label>Kode Brand</label>
-                <select name="kode_brand" class="form-control" >
-                    <option value="">Pilih Kode Brand</option>
-                    @foreach($brands as $brandperangkat)
-                        <option value="{{ $brandperangkat->kode_brand }}">
-                            {{ $brandperangkat->nama_brand }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label>Type</label>
-                <input type="text" name="type" class="form-control" value="">
-            </div>
-
-            <div class="mb-3">
-                <label>U Awal</label>
-                <input type="number" name="uawal" class="form-control" value="" id="uawal">
-            </div>
-
-            <div class="mb-3">
-                <label>U Akhir</label>
-                <input type="number" name="uakhir" class="form-control" value="" id="uakhir">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Tambah</button>
-        </form>
     </div>
-</div>
 
     </div>
 

@@ -11,7 +11,10 @@ use App\Exports\PerangkatExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\VerifikasiDokumenController;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf; // Tambahin ini kalau mau export PDF
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\SemantikController;
+use App\Http\Controllers\NdaController;
+
 
 
 
@@ -23,150 +26,172 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Auth::routes(['verify' => true]);
 Route::middleware('auth')->group(function () {
-Route::get('/data', [App\Http\Controllers\DataController::class, 'index'])->name('data');
 
-Route::get('/menu/data/dataperangkat', [DataController::class, 'indexPerangkat'])->name('dataperangkat.index');
-Route::get('/brand-perangkat/create', [DataController::class, 'createBrandPerangkat'])->name('brandperangkat.create');
-Route::post('/brand-perangkat/store', [DataController::class, 'storeBrandPerangkat'])->name('brandperangkat.store');
-Route::get('/brand-perangkat/{kode_brand}/edit', [DataController::class, 'editBrandPerangkat'])->name('brandperangkat.edit');
-Route::put('/brand-perangkat/{kode_brand}', [DataController::class, 'updateBrandPerangkat'])->name('brandperangkat.update');
-Route::delete('/brand-perangkat/{kode_brand}', [DataController::class, 'destroyBrandPerangkat'])->name('brandperangkat.destroy');
+    // ------------------------------------------------------------------------ DATA ------------------------------------------------------------------------
+    Route::get('/data', [App\Http\Controllers\DataController::class, 'index'])->name('data');
 
-Route::get('/jenis-perangkat/create', [DataController::class, 'createJenisPerangkat'])->name('jenisperangkat.create');
-Route::post('/jenis-perangkat/store', [DataController::class, 'storeJenisPerangkat'])->name('jenisperangkat.store');
-Route::get('/jenis-perangkat/{kode_perangkat}/edit', [DataController::class, 'editJenisPerangkat'])->name('jenisperangkat.edit');
-Route::put('/jenis-perangkat/{kode_perangkat}', [DataController::class, 'updateJenisPerangkat'])->name('jenisperangkat.update');
-Route::delete('/jenis-perangkat/{kode_perangkat}', [DataController::class, 'destroyJenisPerangkat'])->name('jenisperangkat.destroy');
+    Route::get('/menu/data/dataperangkat', [DataController::class, 'indexPerangkat'])->name('dataperangkat.index');
+    Route::get('/brand-perangkat/create', [DataController::class, 'createBrandPerangkat'])->name('brandperangkat.create');
+    Route::post('/brand-perangkat/store', [DataController::class, 'storeBrandPerangkat'])->name('brandperangkat.store');
+    Route::get('/brand-perangkat/{kode_brand}/edit', [DataController::class, 'editBrandPerangkat'])->name('brandperangkat.edit');
+    Route::put('/brand-perangkat/{kode_brand}', [DataController::class, 'updateBrandPerangkat'])->name('brandperangkat.update');
+    Route::delete('/brand-perangkat/{kode_brand}', [DataController::class, 'destroyBrandPerangkat'])->name('brandperangkat.destroy');
 
-Route::get('/menu/data/datafasilitas', [DataController::class, 'indexFasilitas'])->name('datafasilitas.index');
-Route::get('/brand-fasilitas/create', [DataController::class, 'createBrandFasilitas'])->name('brandfasilitas.create');
-Route::post('/brand-fasilitas/store', [DataController::class, 'storeBrandFasilitas'])->name('brandfasilitas.store');
-Route::get('/brand-fasilitas/{kode_brand}/edit', [DataController::class, 'editBrandFasilitas'])->name('brandfasilitas.edit');
-Route::put('/brand-fasilitas/{kode_brand}', [DataController::class, 'updateBrandFasilitas'])->name('brandfasilitas.update');
-Route::delete('/brand-fasilitas/{kode_brand}', [DataController::class, 'destroyBrandFasilitas'])->name('brandfasilitas.destroy');
+    Route::get('/jenis-perangkat/create', [DataController::class, 'createJenisPerangkat'])->name('jenisperangkat.create');
+    Route::post('/jenis-perangkat/store', [DataController::class, 'storeJenisPerangkat'])->name('jenisperangkat.store');
+    Route::get('/jenis-perangkat/{kode_perangkat}/edit', [DataController::class, 'editJenisPerangkat'])->name('jenisperangkat.edit');
+    Route::put('/jenis-perangkat/{kode_perangkat}', [DataController::class, 'updateJenisPerangkat'])->name('jenisperangkat.update');
+    Route::delete('/jenis-perangkat/{kode_perangkat}', [DataController::class, 'destroyJenisPerangkat'])->name('jenisperangkat.destroy');
 
-Route::get('/jenis-fasilitas/create', [DataController::class, 'createJenisFasilitas'])->name('jenisfasilitas.create');
-Route::post('/jenis-fasilitas/store', [DataController::class, 'storeJenisFasilitas'])->name('jenisfasilitas.store');
-Route::get('/jenis-fasilitas/{kode_fasilitas}/edit', [DataController::class, 'editJenisFasilitas'])->name('jenisfasilitas.edit');
-Route::put('/jenis-fasilitas/{kode_fasilitas}', [DataController::class, 'updateJenisFasilitas'])->name('jenisfasilitas.update');
-Route::delete('/jenis-fasilitas/{kode_fasilitas}', [DataController::class, 'destroyJenisFasilitas'])->name('jenisfasilitas.destroy');
+    Route::get('/menu/data/datafasilitas', [DataController::class, 'indexFasilitas'])->name('datafasilitas.index');
+    Route::get('/brand-fasilitas/create', [DataController::class, 'createBrandFasilitas'])->name('brandfasilitas.create');
+    Route::post('/brand-fasilitas/store', [DataController::class, 'storeBrandFasilitas'])->name('brandfasilitas.store');
+    Route::get('/brand-fasilitas/{kode_brand}/edit', [DataController::class, 'editBrandFasilitas'])->name('brandfasilitas.edit');
+    Route::put('/brand-fasilitas/{kode_brand}', [DataController::class, 'updateBrandFasilitas'])->name('brandfasilitas.update');
+    Route::delete('/brand-fasilitas/{kode_brand}', [DataController::class, 'destroyBrandFasilitas'])->name('brandfasilitas.destroy');
 
-Route::get('/menu/data/dataalatukur', [DataController::class, 'indexAlatukur'])->name('dataalatukur.index');
-Route::get('/brand-alatukur/create', [DataController::class, 'createBrandAlatukur'])->name('brandalatukur.create');
-Route::post('/brand-alatukur/store', [DataController::class, 'storeBrandAlatukur'])->name('brandalatukur.store');
-Route::get('/brand-alatukur/{kode_brand}/edit', [DataController::class, 'editBrandAlatukur'])->name('brandalatukur.edit');
-Route::put('/brand-alatukur/{kode_brand}', [DataController::class, 'updateBrandAlatukur'])->name('brandalatukur.update');
-Route::delete('/brand-alatukur/{kode_brand}', [DataController::class, 'destroyBrandAlatukur'])->name('brandalatukur.destroy');
+    Route::get('/jenis-fasilitas/create', [DataController::class, 'createJenisFasilitas'])->name('jenisfasilitas.create');
+    Route::post('/jenis-fasilitas/store', [DataController::class, 'storeJenisFasilitas'])->name('jenisfasilitas.store');
+    Route::get('/jenis-fasilitas/{kode_fasilitas}/edit', [DataController::class, 'editJenisFasilitas'])->name('jenisfasilitas.edit');
+    Route::put('/jenis-fasilitas/{kode_fasilitas}', [DataController::class, 'updateJenisFasilitas'])->name('jenisfasilitas.update');
+    Route::delete('/jenis-fasilitas/{kode_fasilitas}', [DataController::class, 'destroyJenisFasilitas'])->name('jenisfasilitas.destroy');
 
-Route::get('/jenis-alatukur/create', [DataController::class, 'createJenisAlatukur'])->name('jenisalatukur.create');
-Route::post('/jenis-alatukur/store', [DataController::class, 'storeJenisAlatukur'])->name('jenisalatukur.store');
-Route::get('/jenis-alatukur/{kode_alatukur}/edit', [DataController::class, 'editJenisAlatukur'])->name('jenisalatukur.edit');
-Route::put('/jenis-alatukur/{kode_alatukur}', [DataController::class, 'updateJenisAlatukur'])->name('jenisalatukur.update');
-Route::delete('/jenis-alatukur/{kode_alatukur}', [DataController::class, 'destroyJenisAlatukur'])->name('jenisalatukur.destroy');
+    Route::get('/menu/data/dataalatukur', [DataController::class, 'indexAlatukur'])->name('dataalatukur.index');
+    Route::get('/brand-alatukur/create', [DataController::class, 'createBrandAlatukur'])->name('brandalatukur.create');
+    Route::post('/brand-alatukur/store', [DataController::class, 'storeBrandAlatukur'])->name('brandalatukur.store');
+    Route::get('/brand-alatukur/{kode_brand}/edit', [DataController::class, 'editBrandAlatukur'])->name('brandalatukur.edit');
+    Route::put('/brand-alatukur/{kode_brand}', [DataController::class, 'updateBrandAlatukur'])->name('brandalatukur.update');
+    Route::delete('/brand-alatukur/{kode_brand}', [DataController::class, 'destroyBrandAlatukur'])->name('brandalatukur.destroy');
 
-Route::get('/menu/data/dataregion', [DataController::class, 'indexRegion'])->name('dataregion.index');
-Route::get('/region/create', [DataController::class, 'createRegion'])->name('region.create');
-Route::post('/region/store', [DataController::class, 'storeRegion'])->name('region.store');
-Route::get('/region/{id_region}/edit', [DataController::class, 'editRegion'])->name('region.edit');
-Route::put('/region/{id_region}', [DataController::class, 'updateRegion'])->name('region.update');
-Route::delete('/region/{id_region}', [DataController::class, 'destroyRegion'])->name('region.destroy');
+    Route::get('/jenis-alatukur/create', [DataController::class, 'createJenisAlatukur'])->name('jenisalatukur.create');
+    Route::post('/jenis-alatukur/store', [DataController::class, 'storeJenisAlatukur'])->name('jenisalatukur.store');
+    Route::get('/jenis-alatukur/{kode_alatukur}/edit', [DataController::class, 'editJenisAlatukur'])->name('jenisalatukur.edit');
+    Route::put('/jenis-alatukur/{kode_alatukur}', [DataController::class, 'updateJenisAlatukur'])->name('jenisalatukur.update');
+    Route::delete('/jenis-alatukur/{kode_alatukur}', [DataController::class, 'destroyJenisAlatukur'])->name('jenisalatukur.destroy');
 
-Route::get('/site/create', [DataController::class, 'createSite'])->name('site.create');
-Route::post('/site/store', [DataController::class, 'storeSite'])->name('site.store');
-Route::get('/site/{id_site}/edit', [DataController::class, 'editSite'])->name('site.edit');
-Route::put('/site/{id_site}', [DataController::class, 'updateSite'])->name('site.update');
-Route::delete('/site/{id_site}', [DataController::class, 'destroySite'])->name('site.destroy');
+    Route::get('/menu/data/dataregion', [DataController::class, 'indexRegion'])->name('dataregion.index');
+    Route::get('/region/create', [DataController::class, 'createRegion'])->name('region.create');
+    Route::post('/region/store', [DataController::class, 'storeRegion'])->name('region.store');
+    Route::get('/region/{id_region}/edit', [DataController::class, 'editRegion'])->name('region.edit');
+    Route::put('/region/{id_region}', [DataController::class, 'updateRegion'])->name('region.update');
+    Route::delete('/region/{id_region}', [DataController::class, 'destroyRegion'])->name('region.destroy');
 
-Route::get('/aset/perangkat', [PerangkatController::class, 'indexPerangkat'])->name('perangkat.index');
-Route::get('/perangkat/create', [PerangkatController::class, 'create'])->name('perangkat.create');
-Route::post('/perangkat/store', [PerangkatController::class, 'store'])->name('perangkat.store');
-Route::get('/perangkat/{id_perangkat}/edit', [PerangkatController::class, 'edit'])->name('perangkat.edit');
-Route::put('/perangkat/{id_perangkat}', [PerangkatController::class, 'update'])->name('perangkat.update');
-Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
-Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
-Route::post('export/perangkat', function (Request $request) {
-    $regions = $request->input('regions'); // array atau null
-    $format = $request->input('format');   // excel atau pdf
+    Route::get('/site/create', [DataController::class, 'createSite'])->name('site.create');
+    Route::post('/site/store', [DataController::class, 'storeSite'])->name('site.store');
+    Route::get('/site/{id_site}/edit', [DataController::class, 'editSite'])->name('site.edit');
+    Route::put('/site/{id_site}', [DataController::class, 'updateSite'])->name('site.update');
+    Route::delete('/site/{id_site}', [DataController::class, 'destroySite'])->name('site.destroy');
 
-    if ($format === 'excel') {
-        return Excel::download(new PerangkatExport($regions), 'dataperangkat.xlsx');
-    } elseif ($format === 'pdf') {
-        $data = (new PerangkatExport($regions))->collection(); 
+    // ------------------------------------------------------------------------ RACK ------------------------------------------------------------------------
 
-        $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
-        return $pdf->download('dataperangkat.pdf');
-    } else {
-        return back()->with('error', 'Format file tidak dikenali.');
-    }
-});
+    Route::get('/menu/rack', [RackController::class, 'indexRack'])->name('rack.index');
+    Route::get('/menu/rack/data', [RackController::class, 'getRackData'])->name('rack.data');
+    Route::post('/rack/store', [RackController::class, 'storeRack'])->name('rack.store');
+    Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
+    Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
 
+    Route::get('/rack/data', [RackController::class, 'getRacks'])->name('rack.getData');
 
-Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
-Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
-Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
-Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
-Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
-Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
+    Route::post('/rack', [RackController::class, 'storeRack'])->name('rack.store');
+    Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
+    Route::delete('/datarack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
 
-Route::get('/menu/data/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
-Route::get('/menu/rack', [RackController::class, 'indexRack'])->name('rack.index');
-Route::get('/menu/rack/data', [RackController::class, 'getRackData'])->name('rack.data');
-Route::post('/rack/store', [RackController::class, 'storeRack'])->name('rack.store');
-Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
-Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
-// Add these to your routes file (web.php)
-
-// Get racks data via AJAX
-Route::get('/rack/data', [RackController::class, 'getRacks'])->name('rack.getData');
-
-// Make sure your existing routes support JSON response
-Route::post('/rack', [RackController::class, 'storeRack'])->name('rack.store');
-Route::delete('/rack/{kode_region}/{kode_site}/{no_rack}', [RackController::class, 'destroy'])->name('rack.destroy');
-Route::delete('/datarack/{kode_region}/{kode_site}/{no_rack}/{u}', [RackController::class, 'destroyData'])->name('datarack.destroy');
-
-Route::post('/load-racks', [App\Http\Controllers\RackController::class, 'loadRacks'])->name('load.racks');
-        Route::get('/get-racks-by-region/{kode_region}', [HomeController::class, 'getRacksByRegion']);
+    Route::post('/load-racks', [App\Http\Controllers\RackController::class, 'loadRacks'])->name('load.racks');
+    Route::get('/get-racks-by-region/{kode_region}', [HomeController::class, 'getRacksByRegion']);
     Route::get('/get-filtered-racks', [RackController::class, 'getFilteredRacks']);
-Route::get('/get-sites', [RackController::class, 'getSites'])->name(name: 'get.sites');
-Route::post('/rack/store', [RackController::class, 'store'])->name('rack.store');
-Route::post('/rack/destroydata', [RackController::class, 'destroyData'])->name('rack.destroydata');
+    Route::get('/get-sites', [RackController::class, 'getSites'])->name(name: 'get.sites');
+    Route::post('/rack/store', [RackController::class, 'store'])->name('rack.store');
+    Route::post('/rack/destroydata', [RackController::class, 'destroyData'])->name('rack.destroydata');
+    Route::post('/rack/destroy', [RackController::class, 'destroy'])->name('rack.destroy');
 
 
+    // ------------------------------------------------------------------------ HISTORI ------------------------------------------------------------------------
 
-// Superadmin - melihat dan memverifikasi dokumen
+    Route::get('/menu/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
+    Route::get('/historiperangkat', [HistoriController::class, 'showHistoriPerangkat'])->name('histori.perangkat');
+    Route::get('/historifasilitas', [HistoriController::class, 'showHistoriFasilitas'])->name('histori.fasilitas');
+    Route::get('/historialatur', [HistoriController::class, 'showHistoriAlatUkuran'])->name('histori.alatukur');
+    Route::get('/historijaringan', [HistoriController::class, 'showHistoriJaringan'])->name('histori.jaringan');
+
+    // ------------------------------------------------------------------------ ASET ------------------------------------------------------------------------
+
+    Route::get('/aset/perangkat', [PerangkatController::class, 'indexPerangkat'])->name('perangkat.index');
+    Route::get('/perangkat/create', [PerangkatController::class, 'create'])->name('perangkat.create');
+    Route::post('/perangkat/store', [PerangkatController::class, 'store'])->name('perangkat.store');
+    Route::get('/perangkat/{id_perangkat}/edit', [PerangkatController::class, 'edit'])->name('perangkat.edit');
+    Route::put('/perangkat/{id_perangkat}', [PerangkatController::class, 'update'])->name('perangkat.update');
+    Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
+    Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
+    Route::post('export/perangkat', function (Request $request) {
+        $regions = $request->input('regions'); // array atau null
+        $format = $request->input('format');   // excel atau pdf
+        if ($format === 'excel') {
+            return Excel::download(new PerangkatExport($regions), 'dataperangkat.xlsx');
+        } elseif ($format === 'pdf') {
+            $data = (new PerangkatExport($regions))->collection();
+
+            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            return $pdf->download('dataperangkat.pdf');
+        } else {
+            return back()->with('error', 'Format file tidak dikenali.');
+        }
+    });
+
+
+    Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
+    Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+    Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+    Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+    Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
+    Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
+
+
+    // Superadmin - melihat dan memverifikasi dokumen
     Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');
     Route::post('/verifikasi/approve/{id}', [VerifikasiDokumenController::class, 'approve'])->name('verifikasi.approve');
     Route::post('/verifikasi/reject/{id}', [VerifikasiDokumenController::class, 'reject'])->name('verifikasi.reject');
     Route::post('/verifikasi/sign/{id}', [VerifikasiDokumenController::class, 'sign'])->name('verifikasi.sign');
 
-// User - upload dokumen dan lihat status
+    // User - upload dokumen dan lihat status
     Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.dcaf.index');
     Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
 
-Route::post('/rack/destroy', [RackController::class, 'destroy'])->name('rack.destroy');
+    // Routes untuk verifikasi NDA
+    Route::get('/verifikasi/nda', [VerifikasiDokumenController::class, 'indexNda'])->name('verifikasi.superadmin.nda');
+    Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeVerifNda'])->name('verifikasi.nda.store');
+    Route::get('/pendaftaran/nda', [VerifikasiDokumenController::class, 'userNdaIndex'])->name('verifikasi.user.nda');
+    Route::post('/pendaftaran/nda/store', [VerifikasiDokumenController::class, 'storeNda'])->name('nda.store');
+     Route::get('pendaftaran/nda/download/{id}', [VerifikasiDokumenController::class, 'downloadNda'])->name('nda.download');
+     Route::put('/nda/{nda}', [VerifikasiDokumenController::class, 'update'])->name('nda.update');
+     Route::delete('/nda/{nda}', [VerifikasiDokumenController::class, 'destroy'])->name('nda.destroy');
 
-// Routes untuk verifikasi NDA
-Route::get('/verifikasi/nda', [VerifikasiDokumenController::class, 'indexNda'])->name('verifikasi.superadmin.nda');
-Route::get('/pendaftaran/nda', [VerifikasiDokumenController::class, 'userNdaIndex'])->name('verifikasi.user.nda');
-Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeNda'])->name('verifikasi.nda.store');
+    // Routes untuk verifikasi DCAF
+    Route::get('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'indexDcaf'])->name('verifikasi.superadmin.dcaf');
+    Route::get('/pendaftaran/dcaf', [VerifikasiDokumenController::class, 'userDcafIndex'])->name('verifikasi.user.dcaf');
+    Route::post('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'storeDcaf'])->name('verifikasi.dcaf.store');
 
-// Routes untuk verifikasi DCAF
-Route::get('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'indexDcaf'])->name('verifikasi.superadmin.dcaf');
-Route::get('/pendaftaran/dcaf', [VerifikasiDokumenController::class, 'userDcafIndex'])->name('verifikasi.user.dcaf');
-Route::post('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'storeDcaf'])->name('verifikasi.dcaf.store');
+    // Routes untuk aksi verifikasi
+    Route::post('/verifikasi/nda/approve/{id}', [VerifikasiDokumenController::class, 'approveNda'])->name('verifikasi.approve.nda');
+    Route::post('/verifikasi/nda/reject/{id}', [VerifikasiDokumenController::class, 'rejectNda'])->name('verifikasi.reject.nda');
+    Route::post('/verifikasi/dcaf/approve/{id}', [VerifikasiDokumenController::class, 'approveDcaf'])->name('verifikasi.approve.dcaf');
+    Route::post('/verifikasi/dcaf/reject/{id}', [VerifikasiDokumenController::class, 'rejectDcaf'])->name('verifikasi.reject.dcaf');
 
-// Routes untuk aksi verifikasi
-Route::post('/verifikasi/nda/approve/{id}', [VerifikasiDokumenController::class, 'approveNda'])->name('verifikasi.approve.nda');
-Route::post('/verifikasi/nda/reject/{id}', [VerifikasiDokumenController::class, 'rejectNda'])->name('verifikasi.reject.nda');
-Route::post('/verifikasi/dcaf/approve/{id}', [VerifikasiDokumenController::class, 'approveDcaf'])->name('verifikasi.approve.dcaf');
-Route::post('/verifikasi/dcaf/reject/{id}', [VerifikasiDokumenController::class, 'rejectDcaf'])->name('verifikasi.reject.dcaf');
+    // Routes for Fasilitas
+    Route::get('/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
+    Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+    Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+    Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+    Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
+    Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
 
-// Routes for Fasilitas
-Route::get('/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
-Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
-Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
-Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
-Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
-Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
+
+     // Route untuk upload foto
+     Route::post('/upload-photo', [SemantikController::class, 'uploadPhoto'])->name('upload.photo');
+
+     // Route untuk menghapus foto
+     Route::delete('/photos/{id}', [SemantikController::class, 'deletePhoto'])->name('photos.delete');
+ 
+     // Semantik
+     Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
 });
 

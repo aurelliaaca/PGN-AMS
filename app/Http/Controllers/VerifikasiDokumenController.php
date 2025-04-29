@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\VerifikasiDokumen;
 use App\Models\VerifikasiNda;
 use App\Models\VerifikasiDcaf;
+use App\Models\Nda;
+use App\Models\Region;
 use Carbon\Carbon;
 use App\Notifications\DokumenVerifikasiNotification;
 use App\Services\DocumentSignatureService;
+use PDF; // Pastikan Anda mengimpor PDF
 use Illuminate\Support\Facades\Storage;
 
 
@@ -31,7 +34,7 @@ class VerifikasiDokumenController extends Controller
         $pendingNdas = VerifikasiNda::where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         $historyNdas = VerifikasiNda::whereIn('status', ['diterima', 'ditolak'])
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -60,7 +63,7 @@ class VerifikasiDokumenController extends Controller
         $pendingDcafs = VerifikasiDcaf::where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         $historyDcafs = VerifikasiDcaf::whereIn('status', ['diterima', 'ditolak'])
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -81,15 +84,15 @@ class VerifikasiDokumenController extends Controller
     public function update(Request $request, $id)
     {
         $dokumen = VerifikasiDokumen::findOrFail($id);
-    
+
         if ($request->action == 'terima') {
             $dokumen->status = 'diterima';
         } elseif ($request->action == 'tolak') {
             $dokumen->status = 'ditolak';
         }
-    
+
         $dokumen->save();
-    
+
         return redirect()->back()->with('swal', [
             'icon' => 'success',
             'title' => 'Berhasil!',
@@ -131,10 +134,10 @@ class VerifikasiDokumenController extends Controller
 
             // Ambil dokumen yang diunggah
             $dcafFile = $request->file('dcaf_file');
-            
+
             // Generate nama file yang unik
             $dcafFileName = time() . '_dcaf_' . $dcafFile->getClientOriginalName();
-            
+
             // Simpan dokumen ke storage
             $dcafPath = $dcafFile->storeAs('dokumen_verifikasi', $dcafFileName, 'public');
 
@@ -213,7 +216,7 @@ class VerifikasiDokumenController extends Controller
     {
         try {
             $dokumen = VerifikasiDokumen::findOrFail($id);
-            
+
             // Validasi input
             $request->validate([
                 'signature' => 'required|string',
@@ -225,16 +228,16 @@ class VerifikasiDokumenController extends Controller
             $dokumen->signed_by = auth()->user()->name;
             $dokumen->signed_at = now();
             $dokumen->status = $request->status;
-            
+
             if ($request->status == 'diterima') {
                 $dokumen->masa_berlaku = now()->addMonths(3);
-                
+
                 // Tambahkan tanda tangan ke dokumen
                 $originalPath = storage_path('app/public/' . $dokumen->file_path);
                 $outputPath = storage_path('app/public/signed_' . $dokumen->file_path);
-                
+
                 $this->documentSignatureService->addSignatureToDocument($originalPath, $outputPath);
-                
+
                 // Update path file
                 $dokumen->file_path = 'signed_' . $dokumen->file_path;
             } else {
@@ -268,18 +271,19 @@ class VerifikasiDokumenController extends Controller
 
         return view('VMS.user.pendaftarankunjungan', compact('activeNdas'));
     }
-    
+
 
     public function userNdaIndex()
     {
-        $ndas = VerifikasiNda::where('user_id', auth()->id())
+        $VerNdas = VerifikasiNda::where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
-
-        return view('VMS.user.pendaftarannda', compact('ndas'));
+        $NDA = Nda::all();
+        $regions = Region::all();
+        return view('VMS.user.pendaftarannda', compact('VerNdas', 'NDA', 'regions'));
     }
 
-    public function storeNda(Request $request)
+    public function storeVerifNda(Request $request)
     {
         try {
             $request->validate([
@@ -302,5 +306,54 @@ class VerifikasiDokumenController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function storeNda(Request $request)
+    {
+        $request->validate([
+            'nda_name' => 'required|string|max:255',
+            'no_ktp' => 'required|string|max:20',
+            'alamat' => 'required|string|max:255',
+            'perusahaan' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
+            'bagian' => 'nullable|string|max:255',
+        ]);
+
+        $tanggal = now(); // Tanggal sekarang
+        $tanggal_berlaku = now()->addMonths(3); // Tanggal berlaku 3 bulan dari sekarang
+
+        $nda = new Nda();
+        $nda->name = $request->nda_name;
+        $nda->no_ktp = $request->no_ktp;
+        $nda->alamat = $request->alamat;
+        $nda->perusahaan = $request->perusahaan;
+        $region = \App\Models\Region::where('kode_region', $request->kode_region)->first();
+        $nda->region = $region ? $region->nama_region : null;
+                $nda->bagian = $request->bagian;
+        $nda->tanggal = $tanggal;
+        $nda->tanggal_berlaku = $tanggal_berlaku;
+        $nda->signature = $request->signature;
+        $nda->save();
+
+        // Tentukan tipe NDA berdasarkan ada tidaknya data perusahaan
+        $type = $nda->perusahaan ? 'eksternal' : 'internal';
+        
+        // Generate PDF sesuai tipe
+        $pdf = PDF::loadView('exports.nda' . $type . 'pdf', compact(var_name: 'nda'));
+        $pdf->save(public_path('pdf/nda_' . $type . '_' . $nda->id . '.pdf'));
+
+        return redirect()->route('verifikasi.user.nda')->with('success', 'NDA berhasil ditambahkan.');
+    }
+
+    public function downloadNda($id)
+    {
+        $nda = Nda::findOrFail($id);
+        
+        // Tentukan tipe NDA berdasarkan ada tidaknya data perusahaan
+        $type = $nda->perusahaan ? 'eksternal' : 'internal';
+        
+        // Generate PDF sesuai tipe
+        $pdf = PDF::loadView('exports.nda' . $type . 'pdf', compact(var_name: 'nda'));
+        return $pdf->download('nda_' . $type . '_' . $nda->id . '.pdf');
     }
 }
