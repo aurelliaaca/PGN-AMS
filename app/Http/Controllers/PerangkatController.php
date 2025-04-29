@@ -15,78 +15,35 @@ use Carbon\Carbon;
 class PerangkatController extends Controller
 {
     public function indexPerangkat(Request $request)
-    {
-        // Ambil data unik buat dropdown filter
-        $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
-        $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
-        $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
-        $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
+{
+    // Get data for dropdowns
+    $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
+    $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
+    $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
+    $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
 
-        // Ini bagian filter-nya
-        $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']); // eager loading relasi
+    // Build query with eager loading
+    $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
 
-        // Cek filter berdasarkan multiple selection
-        if ($request->region) {
-            $query->whereIn('kode_region', $request->region); // Menggunakan whereIn untuk filter berdasarkan array
-        }
+    // Get all data without any filters
+    $dataperangkat = $query->get();
 
-        if ($request->site) {
-            $query->whereIn('kode_site', $request->site); // Menggunakan whereIn untuk filter berdasarkan array
-        }
-
-        if ($request->kode_perangkat) {
-            $query->whereIn('kode_perangkat', $request->kode_perangkat); // Menggunakan whereIn untuk filter berdasarkan array
-        }
-
-        if ($request->brand) {
-            $query->whereIn('kode_brand', $request->brand); // Menggunakan whereIn untuk filter berdasarkan array
-        }
-
-        if ($request->search) {
-            $search = $request->search;
-
-            $query->where(function ($q) use ($search) {
-                $q->where('kode_region', 'like', "%$search%")
-                    ->orWhere('kode_site', 'like', "%$search%")
-                    ->orWhere('no_rack', 'like', "%$search%")
-                    ->orWhere('kode_perangkat', 'like', "%$search%")
-                    ->orWhere('perangkat_ke', 'like', "%$search%")
-                    ->orWhere('kode_brand', 'like', "%$search%")
-                    ->orWhere('type', 'like', "%$search%")
-                    ->orWhere('uawal', 'like', "%$search%")
-                    ->orWhere('uakhir', 'like', "%$search%")
-                    ->orWhereHas('region', function ($q2) use ($search) {
-                        $q2->where('nama_region', 'like', "%$search%");
-                    })
-                    ->orWhereHas('site', function ($q3) use ($search) {
-                        $q3->where('nama_site', 'like', "%$search%");
-                    })
-                    ->orWhereHas('jenisperangkat', function ($q2) use ($search) {
-                        $q2->where('nama_perangkat', 'like', "%$search%");
-                    })
-                    ->orWhereHas('brandperangkat', function ($q2) use ($search) {
-                        $q2->where('nama_brand', 'like', "%$search%");
-                    });
-            });
-        }
-
-        // Ambil hasil query-nya
-        $dataperangkat = $query->get();
-
-        $dataperangkat = $dataperangkat->sortBy('kode_site');
-        $dataperangkat = $dataperangkat->sortBy('no_rack');
-        $dataperangkat = $dataperangkat->sortBy('kode_region');
-
-        // Kirim ke view
-        return view('aset.perangkat', compact(
-            'regions',
-            'sites',
-            'types',
-            'brands',
-            'dataperangkat'
-        ));
-
+    // If it's an AJAX request, return JSON
+    if ($request->ajax()) {
+        return response()->json([
+            'data' => $dataperangkat
+        ]);
     }
+
+    // Otherwise return view with data
+    return view('aset.perangkat', compact(
+        'regions',
+        'sites',
+        'types',
+        'brands',
+        'dataperangkat'
+    ));
+}
 
     public function store(Request $request)
     {

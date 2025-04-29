@@ -3,22 +3,24 @@
 @section('title', 'Data Fasilitas')
 @section('page_title', 'Data Fasilitas')
 
-@section('content')
+@section('styles')
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+@endsection
 
+@section('content')
     <div class="main">
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <div class="tables-container">
-            <!-- Tabel Jenis Fasilitas -->
+        <div class="tables-container dua">
             <div class="table-column">
                 <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
                     <button class="btn btn-primary mb-3" onclick="openModal('modalTambahJenis')">+ Tambah Jenis</button>
                     <h3>Data Jenis</h3>
                 </div>
                 <div class="table-responsive">
-                    <table class="table">
+                    <table id="jenisTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>Nama Fasilitas</th>
@@ -33,22 +35,21 @@
                                     <td>{{ $item->kode_fasilitas }}</td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-edit mb-3"
+                                            <button class="btn btn-edit btn-sm mb-1"
                                                 onclick="openModal('modalEditJenis{{ $item->kode_fasilitas }}')">
-                                                <i class="fas fa-edit"></i>
+                                                <i class="fas fa-edit"></i> Edit
                                             </button>
                                             <form action="{{ route('jenisfasilitas.destroy', $item->kode_fasilitas) }}"
                                                 method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete mb-3">
-                                                    <i class="fas fa-trash-alt"></i>
+                                                <button type="submit" class="btn btn-delete btn-sm">
+                                                    <i class="fas fa-trash-alt"></i> Hapus
                                                 </button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- Modal Edit Jenis -->
                                 <div id="modalEditJenis{{ $item->kode_fasilitas }}" class="modal">
                                     <div class="modal-content">
                                         <span class="close"
@@ -74,7 +75,7 @@
                                 </div>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="no-data">Belum ada data jenis fasilitas.</td>
+                                    <td colspan="3" class="text-center">Belum ada data jenis fasilitas.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -82,14 +83,13 @@
                 </div>
             </div>
 
-            <!-- Tabel Brand -->
             <div class="table-column">
                 <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
                     <button class="btn btn-primary mb-3" onclick="openModal('modalTambahBrand')">+ Tambah Brand</button>
                     <h3>Data Brand</h3>
                 </div>
                 <div class="table-responsive">
-                    <table class="table">
+                    <table id="brandTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>Nama Brand</th>
@@ -104,22 +104,21 @@
                                     <td>{{ $item->kode_brand }}</td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-edit mb-3"
+                                            <button class="btn btn-edit btn-sm mb-1"
                                                 onclick="openModal('modalEdit{{ $item->kode_brand }}')">
-                                                <i class="fas fa-edit"></i>
+                                                <i class="fas fa-edit"></i> Edit
                                             </button>
                                             <form action="{{ route('brandfasilitas.destroy', $item->kode_brand) }}"
                                                 method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete mb-3">
-                                                    <i class="fas fa-trash-alt"></i>
+                                                <button type="submit" class="btn btn-delete btn-sm">
+                                                    <i class="fas fa-trash-alt"></i> Hapus
                                                 </button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- Modal Edit -->
                                 <div id="modalEdit{{ $item->kode_brand }}" class="modal">
                                     <div class="modal-content">
                                         <span class="close"
@@ -144,7 +143,7 @@
                                 </div>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="no-data">Belum ada data brand.</td>
+                                    <td colspan="3" class="text-center">Belum ada data brand.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -154,7 +153,6 @@
         </div>
     </div>
 
-    <!-- Modal Tambah Jenis -->
     <div id="modalTambahJenis" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('modalTambahJenis')">&times;</span>
@@ -163,18 +161,17 @@
                 @csrf
                 <div class="mb-3">
                     <label>Nama Jenis</label>
-                    <input type="text" name="nama_jenis" class="form-control" required>
+                    <input type="text" name="nama_fasilitas" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label>Kode Jenis</label>
-                    <input type="text" name="kode_jenis" class="form-control" required>
+                    <input type="text" name="kode_fasilitas" class="form-control" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Tambah</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal Tambah Brand -->
     <div id="modalTambahBrand" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('modalTambahBrand')">&times;</span>
@@ -193,4 +190,71 @@
             </form>
         </div>
     </div>
+
+    @section('scripts')
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#jenisTable').DataTable({
+                    "language": {
+                        "search": "Cari",
+                        "lengthMenu": "_MENU_",
+                        "zeroRecords": "Tidak ada data yang ditemukan",
+                        "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                        "infoEmpty": "Tidak ada data yang tersedia",
+                        "infoFiltered": "(difilter dari _MAX_ total data)",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "<i class='fas fa-arrow-right'></i>",
+                            "previous": "<i class='fas fa-arrow-left'></i>"
+                        }
+                    },
+                    "pageLength": 10,
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    "columnDefs": [
+                        {
+                            "targets": 2, 
+                            "orderable": false 
+                        }
+                    ]
+                });
+
+                $('#brandTable').DataTable({
+                    "language": {
+                        "search": "Cari",
+                        "lengthMenu": "_MENU_",
+                        "zeroRecords": "Tidak ada data yang ditemukan",
+                        "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                        "infoEmpty": "Tidak ada data yang tersedia",
+                        "infoFiltered": "(difilter dari _MAX_ total data)",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "<i class='fas fa-arrow-right'></i>",
+                            "previous": "<i class='fas fa-arrow-left'></i>"
+                        }
+                    },
+                    "pageLength": 10,
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    "columnDefs": [
+                        {
+                            "targets": 2, 
+                            "orderable": false 
+                        }
+                    ]
+                });
+            });
+
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+            }
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+        </script>
+    @endsection
 @endsection

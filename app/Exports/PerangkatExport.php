@@ -8,15 +8,26 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class PerangkatExport implements FromCollection, WithHeadings
 {
+    protected $regions;
+
+    public function __construct($regions = null)
+    {
+        $this->regions = $regions;
+    }
+
     public function collection()
     {
-        // Ambil semua data perangkat yang ingin diekspor
-        return ListPerangkat::all();
+        $query = ListPerangkat::query();
+
+        if (!empty($this->regions)) {
+            $query->whereIn('kode_region', $this->regions);
+        }
+
+        return $query->get();
     }
 
     public function headings(): array
     {
-        // Tentukan heading untuk kolom yang akan diekspor
         return [
             'No',
             'Region',

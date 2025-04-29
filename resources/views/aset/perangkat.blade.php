@@ -3,101 +3,31 @@
 @section('title', 'Aset Perangkat')
 @section('page_title', 'Aset Perangkat')
 
+@section('styles')
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+@endsection
+
 @section('content')
     <div class="main">
         <div class="button-wrapper">
             <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
-            <button type="button" class="btn btn-primary" onclick="openModal('importModal')">Impor Data Perangkat</button>
-
-            <div id="importModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal('importModal')">&times;</span>
-                    <h5>Impor Data Perangkat</h5>
-                    <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-group">
-                        <label for="file">Pilih File (XLSX, XLS, CSV)</label>
-                        <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Impor Data</button>
-                    </form>
-                </div>
-            </div>
-
-            <button class="btn btn-primary mb-3">
-                <a href="{{ url('export/perangkat') }}" style="color: white; text-decoration: none;">
-                    Ekspor Data Perangkat
-                </a>
-            </button>
-
-            <button class="btn btn-clear mb-3" onclick="clearAllFilters()">Clear All Filter</button>
+            <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Perangkat</button>
+            <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Perangkat</button>
         </div>
 
-        <div class="filter">
-            <form method="GET" id="filterForm" action="{{ route('perangkat.index') }}">
-                <div class="filter-container">
-                    <div class="select-group">
-                        <select name="region[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
-                            <option value="" disabled>Pilih Region</option>
-                            @foreach($regions as $region)
-                                <option value="{{ $region->kode_region }}" {{ in_array($region->kode_region, (array) request('region')) ? 'selected' : '' }}>
-                                    {{ $region->nama_region }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        <select name="site[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
-                            <option value="" disabled>Pilih Site</option>
-                            @foreach ($sites as $site)
-                                <option value="{{ $site->kode_site }}" {{ in_array($site->kode_site, (array) request('site')) ? 'selected' : '' }}>
-                                    {{ $site->nama_site }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        <select name="kode_perangkat[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
-                            <option value="" disabled>Pilih Perangkat</option>
-                            @foreach ($types as $kode)
-                                <option value="{{ $kode->kode_perangkat }}" {{ in_array($kode->kode_perangkat, (array) request('kode_perangkat')) ? 'selected' : '' }}>
-                                    {{ $kode->nama_perangkat }}
-                                </option>
-                            @endforeach
-                        </select>
-
-                        <select name="brand[]" class="select2" multiple onchange="document.getElementById('filterForm').submit()">
-                            <option value="" disabled>Pilih Brand</option>
-                            @foreach ($brands as $brand)
-                                <option value="{{ $brand->kode_brand }}" {{ in_array($brand->kode_brand, (array) request('brand')) ? 'selected' : '' }}>
-                                    {{ $brand->nama_brand }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="search-bar">
-                        <form action="" method="GET" id="filterForm" style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" name="search" placeholder="Cari..." value="{{ request('search') }}" id="searchInput">
-                            <button type="submit" class="btn btn-search">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="table-responsive {{ Route::currentRouteName() == 'perangkat.index' ? 'table-responsive-aset' : '' }}">
-            <table class="table">
+        <div class="table-responsive">
+            <table id="perangkatTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                    <th class="col-status"></th>
-                    <th class="col-no">No</th>
-                    <th class="col-region">Region</th>
-                    <th class="col-site">Site</th>
-                    <th class="col-rack">No Rack</th>
-                    <th class="col-nama">Perangkat</th>
-                    <th class="col-brand">Brand</th>
-                    <th class="col-type">Type</th>
-                    <th class="col-actions">Actions</th>
+                        <th></th>
+                        <th>No</th>
+                        <th>Region</th>
+                        <th>Site</th>
+                        <th>No Rack</th>
+                        <th>Perangkat</th>
+                        <th>Brand</th>
+                        <th>Type</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -114,27 +44,29 @@
                             <td>{{ optional($perangkat->brandperangkat)->nama_brand }}</td>
                             <td>{{ $perangkat->type }}</td>
                             <td>
-                                <button class="btn btn-eye"
-                                    onclick="openModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">
-                                    <i class="fas fa-eye"></i>
-                                </button>   
-                                <button class="btn btn-edit"
-                                    onclick="openModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-delete" onclick="confirmDelete({{ $perangkat->id_perangkat }})">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
+                                <div class="action-buttons">
+                                    <button class="btn btn-eye btn-sm mb-1"
+                                        onclick="openModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">
+                                        <i class="fas fa-eye"></i> Lihat
+                                    </button>   
+                                    <button class="btn btn-edit btn-sm mb-1"
+                                        onclick="openModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-delete btn-sm"
+                                        onclick="confirmDelete({{ $perangkat->id_perangkat }})">
+                                        <i class="fas fa-trash-alt"></i> Hapus
+                                    </button>
 
-                                <form id="delete-form-{{ $perangkat->id_perangkat }}" 
-                                    action="{{ route('perangkat.destroy', $perangkat->id_perangkat) }}" 
-                                    method="POST" style="display: none;">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
+                                    <form id="delete-form-{{ $perangkat->id_perangkat }}" 
+                                        action="{{ route('perangkat.destroy', $perangkat->id_perangkat) }}" 
+                                        method="POST" style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-
                         <!-- Modal View -->
                         <div id="modalViewPerangkat{{ $perangkat->id_perangkat }}" class="modal">
                             <div class="modal-content">
@@ -264,7 +196,56 @@
             </table>
         </div>
 
-        {{-- Modal Tambah --}}
+        <!-- Modal Import -->
+        <div id="importModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('importModal')">&times;</span>
+                <h5>Impor Data Perangkat</h5>
+                <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="file">Pilih File (XLSX, XLS, CSV)</label>
+                        <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Impor Data</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Export -->
+        <div id="exportModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('exportModal')">&times;</span>
+                <h5>Ekspor Data Perangkat</h5>
+                <form action="{{ url('export/perangkat') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="regions">Pilih Region:</label>
+                        <div id="regions">
+                            @foreach ($regions as $region)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="regions[]" value="{{ $region['kode_region'] }}" id="region-{{ $loop->index }}">
+                                    <a class="form-check-label" for="region-{{ $loop->index }}">
+                                        {{ $region['nama_region'] }}
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="mb-3" style="margin-top: 20px;">
+                            <label for="format">Pilih Format File:</label>
+                            <select name="format" id="format" class="form-select" required>
+                                <option value="excel">Excel (.xlsx)</option>
+                                <option value="pdf">PDF (.pdf)</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">*Jika tidak memilih, semua data region akan diekspor.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Ekspor</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Tambah -->
         <div id="modalTambahPerangkat" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
@@ -337,78 +318,47 @@
     </div>
 </div>
 
-
     </div>
-    <script>
-        // Menangani perubahan pada Region
-        document.getElementById('regionSelectTambah').addEventListener('change', function() {
-            const regionId = this.value;
-            const siteSelect = document.getElementById('siteSelectTambah');
 
-            // Reset dan nonaktifkan site select
-            siteSelect.innerHTML = '<option value="">Pilih Site</option>';
-            siteSelect.disabled = true;
-
-            // Jika Region dipilih, aktifkan site select dan filter site berdasarkan region
-            if (regionId) {
-                siteSelect.disabled = false;
-                const sites = @json($sites);
-                const filteredSites = sites.filter(site => site.kode_region == regionId);
-
-                filteredSites.forEach(site => {
-                    const option = document.createElement('option');
-                    option.value = site.kode_site;
-                    option.textContent = site.nama_site;
-                    siteSelect.appendChild(option);
+    @section('scripts')
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#perangkatTable').DataTable({
+                    "language": {
+                        "search": "Cari",
+                        "lengthMenu": "_MENU_",
+                        "zeroRecords": "Tidak ada data yang ditemukan",
+                        "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                        "infoEmpty": "Tidak ada data yang tersedia",
+                        "infoFiltered": "(difilter dari _MAX_ total data)",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "<i class='fas fa-arrow-right'></i>",
+                            "previous": "<i class='fas fa-arrow-left'></i>"
+                        }
+                    },
+                    "pageLength": 10,
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    "columnDefs": [
+                        {
+                            "targets": [0, 8], 
+                            "orderable": false
+                        }
+                    ]
                 });
-            }
-        });
+            });
 
-        // Menangani perubahan pada input no_rack
-        document.getElementById('no_rack').addEventListener('input', function () {
-            const noRack = this.value;
-            const uawalField = document.getElementById('uawal');
-            const uakhirField = document.getElementById('uakhir');
-
-            // Jika no_rack diisi, uawal dan uakhir menjadi required
-            if (noRack) {
-                uawalField.setAttribute('required', 'required');
-                uakhirField.setAttribute('required', 'required');
-            } else {
-                uawalField.removeAttribute('required');
-                uakhirField.removeAttribute('required');
-            }
-        });
-
-        // Validasi form sebelum submit
-        document.getElementById('formTambahPerangkat').addEventListener('submit', function (event) {
-            const uawal = parseFloat(document.getElementById('uawal').value);
-            const uakhir = parseFloat(document.getElementById('uakhir').value);
-
-            // Pastikan uawal < uakhir dan tidak bernilai negatif
-            if (uawal >= uakhir) {
-                alert('U Awal harus lebih kecil dari U Akhir.');
-                event.preventDefault(); // Cegah form untuk dikirim
-            }
-
-            if (uawal < 0 || uakhir < 0) {
-                alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
-                event.preventDefault(); // Cegah form untuk dikirim
-            }
-        });
-
-        // Menangani perubahan pada Region di form edit
-        document.querySelectorAll('.regionSelectEdit').forEach(select => {
-            select.addEventListener('change', function() {
+            document.getElementById('regionSelectTambah').addEventListener('change', function() {
                 const regionId = this.value;
-                const perangkatId = this.getAttribute('data-id');
-                const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${perangkatId}"]`);
+                const siteSelect = document.getElementById('siteSelectTambah');
 
-                // Reset dan nonaktifkan site select
                 siteSelect.innerHTML = '<option value="">Pilih Site</option>';
                 siteSelect.disabled = true;
 
-                // Jika Region dipilih, aktifkan site select dan filter site berdasarkan region
                 if (regionId) {
                     siteSelect.disabled = false;
                     const sites = @json($sites);
@@ -422,33 +372,83 @@
                     });
                 }
             });
-        });
 
-        // Validasi form edit sebelum submit
-        document.querySelectorAll('form[action*="perangkat/update"]').forEach(form => {
-            form.addEventListener('submit', function(event) {
-                const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
-                const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);
-                const noRack = this.querySelector('input[name="no_rack"]').value;
+            document.getElementById('no_rack').addEventListener('input', function () {
+                const noRack = this.value;
+                const uawalField = document.getElementById('uawal');
+                const uakhirField = document.getElementById('uakhir');
 
-                // Jika no_rack diisi, pastikan uawal dan uakhir juga diisi
-                if (noRack && (!uawal || !uakhir)) {
-                    alert('U Awal dan U Akhir wajib diisi jika No Rack diisi.');
-                    event.preventDefault();
-                    return;
+                if (noRack) {
+                    uawalField.setAttribute('required', 'required');
+                    uakhirField.setAttribute('required', 'required');
+                } else {
+                    uawalField.removeAttribute('required');
+                    uakhirField.removeAttribute('required');
                 }
+            });
 
-                // Pastikan uawal < uakhir dan tidak bernilai negatif
+            document.getElementById('formTambahPerangkat').addEventListener('submit', function (event) {
+                const uawal = parseFloat(document.getElementById('uawal').value);
+                const uakhir = parseFloat(document.getElementById('uakhir').value);
+
                 if (uawal >= uakhir) {
                     alert('U Awal harus lebih kecil dari U Akhir.');
-                    event.preventDefault();
+                    event.preventDefault(); 
                 }
 
                 if (uawal < 0 || uakhir < 0) {
                     alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
-                    event.preventDefault();
+                    event.preventDefault(); 
                 }
             });
-        });
-    </script>
+
+            document.querySelectorAll('.regionSelectEdit').forEach(select => {
+                select.addEventListener('change', function() {
+                    const regionId = this.value;
+                    const perangkatId = this.getAttribute('data-id');
+                    const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${perangkatId}"]`);
+
+                    siteSelect.innerHTML = '<option value="">Pilih Site</option>';
+                    siteSelect.disabled = true;
+
+                    if (regionId) {
+                        siteSelect.disabled = false;
+                        const sites = @json($sites);
+                        const filteredSites = sites.filter(site => site.kode_region == regionId);
+
+                        filteredSites.forEach(site => {
+                            const option = document.createElement('option');
+                            option.value = site.kode_site;
+                            option.textContent = site.nama_site;
+                            siteSelect.appendChild(option);
+                        });
+                    }
+                });
+            });
+
+            document.querySelectorAll('form[action*="perangkat/update"]').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
+                    const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);
+                    const noRack = this.querySelector('input[name="no_rack"]').value;
+
+                    if (noRack && (!uawal || !uakhir)) {
+                        alert('U Awal dan U Akhir wajib diisi jika No Rack diisi.');
+                        event.preventDefault();
+                        return;
+                    }
+
+                    if (uawal >= uakhir) {
+                        alert('U Awal harus lebih kecil dari U Akhir.');
+                        event.preventDefault();
+                    }
+
+                    if (uawal < 0 || uakhir < 0) {
+                        alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
+                        event.preventDefault();
+                    }
+                });
+            });
+        </script>
+    @endsection
 @endsection

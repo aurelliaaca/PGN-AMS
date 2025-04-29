@@ -3,13 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\PerangkatController;
-use App\Http\Controllers\FasiitasController;
+use App\Http\Controllers\FasilitasController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\PerangkatImportController;
 use App\Exports\PerangkatExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\VerifikasiDokumenController;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf; // Tambahin ini kalau mau export PDF
+
 
 
 Route::get('/', function () {
@@ -81,22 +84,29 @@ Route::get('/perangkat/{id_perangkat}/edit', [PerangkatController::class, 'edit'
 Route::put('/perangkat/{id_perangkat}', [PerangkatController::class, 'update'])->name('perangkat.update');
 Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
 Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
-Route::get('export/perangkat', function () {
-    return Excel::download(new PerangkatExport, 'dataperangkat.xlsx');
+Route::post('export/perangkat', function (Request $request) {
+    $regions = $request->input('regions'); // array atau null
+    $format = $request->input('format');   // excel atau pdf
+
+    if ($format === 'excel') {
+        return Excel::download(new PerangkatExport($regions), 'dataperangkat.xlsx');
+    } elseif ($format === 'pdf') {
+        $data = (new PerangkatExport($regions))->collection(); 
+
+        $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+        return $pdf->download('dataperangkat.pdf');
+    } else {
+        return back()->with('error', 'Format file tidak dikenali.');
+    }
 });
 
 
 Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
-Route::get('/fasilitas/create', [FasilitasController::class, 'create'])->name('fasilitas.create');
-Route::post('/fasilitas/store', [FasilitasController::class, 'store'])->name('fasilitas.store');
-Route::get('/fasilitas/{id_fasilitas}/edit', [FasilitasController::class, 'edit'])->name('fasilitas.edit');
-Route::put('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'update'])->name('fasilitas.update');
-Route::delete('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
-
-Route::post('/import-fasilitas', [FasilitasImportController::class, 'import'])->name('import.fasilitas');
-Route::get('export/fasilitas', function () {
-    return Excel::download(new FasilitasExport, 'datafasilitas.xlsx');
-});
+Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
+Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
 
 Route::get('/menu/data/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
 Route::get('/menu/rack', [RackController::class, 'indexRack'])->name('rack.index');
@@ -150,5 +160,13 @@ Route::post('/verifikasi/nda/approve/{id}', [VerifikasiDokumenController::class,
 Route::post('/verifikasi/nda/reject/{id}', [VerifikasiDokumenController::class, 'rejectNda'])->name('verifikasi.reject.nda');
 Route::post('/verifikasi/dcaf/approve/{id}', [VerifikasiDokumenController::class, 'approveDcaf'])->name('verifikasi.approve.dcaf');
 Route::post('/verifikasi/dcaf/reject/{id}', [VerifikasiDokumenController::class, 'rejectDcaf'])->name('verifikasi.reject.dcaf');
+
+// Routes for Fasilitas
+Route::get('/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
+Route::post('/fasilitas', [FasilitasController::class, 'store'])->name('fasilitas.store');
+Route::put('/fasilitas/{id}', [FasilitasController::class, 'update'])->name('fasilitas.update');
+Route::delete('/fasilitas/{id}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+Route::post('/fasilitas/import', [FasilitasController::class, 'import'])->name('fasilitas.import');
+Route::get('/fasilitas/export', [FasilitasController::class, 'export'])->name('fasilitas.export');
 });
 

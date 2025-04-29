@@ -6,7 +6,7 @@
 @section('content')
     <div class="main">
         <button class="btn btn-primary mb-3" onclick="openModal('modalTambahRegion')">+ Tambah Region</button>
-        <div class="card-content {{ Route::currentRouteName() == 'dataregion.index' ? 'tiga' : '' }}">
+        <div class="card-grid">
             @foreach($regions as $region)
                 <div class="toggle">
                     <div class="card-item">
@@ -18,7 +18,7 @@
 
                             <!-- Action Buttons -->
                             <div
-                                class="action-buttons {{ Route::currentRouteName() == 'dataregion.index' ? 'btn-kiri' : 'btn-kanan' }}">
+                                class="action-buttons">
                                 <button class="btn btn-eye mb-3" onclick="toggleSites('{{ $region->kode_region }}')">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -41,7 +41,7 @@
                             <i class="fa-solid fa-earth-americas"></i>
                         </div>
                     </div>
-                    <div class="tables-container">
+                    <div class="tables-container show">
                         <div id="sites{{ $region->kode_region }}" style="display: none;">
                             <div class="table-responsive">
                                 <table class="table">

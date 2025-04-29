@@ -231,8 +231,8 @@ function loadRacks() {
                             <h4>Rack ${rack.no_rack}</h4>
                             <p>${rack.site.nama_site}, ${rack.region.nama_region}</p>
                             <p>Jumlah Perangkat: ${rack.device_count} | Jumlah Fasilitas: ${rack.facility_count}</p>
-                            <div class="action-buttons">
-                                <button class="btn btn-delete" onclick="confirmDeleteRack('${rack.kode_region}', '${rack.kode_site}', '${rack.no_rack}')">
+                            <div class="action-buttons left-align">
+                                <button class="btn btn-delete" style="margin-top:10px;" onclick="confirmDeleteRack('${rack.kode_region}', '${rack.kode_site}', '${rack.no_rack}')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
