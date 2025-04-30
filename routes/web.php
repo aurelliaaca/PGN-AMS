@@ -1,21 +1,32 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DataController;
+
 use App\Http\Controllers\PerangkatController;
+use App\Http\Controllers\PerangkatImportController;
+use App\Exports\PerangkatExport;
+
 use App\Http\Controllers\FasilitasController;
+use App\Http\Controllers\FasilitasImportController;
+use App\Exports\FasilitasExport;
+
+use App\Http\Controllers\AlatukurController;
+use App\Http\Controllers\AlatukurImportController;
+use App\Exports\AlatukurExport;
+
+use App\Http\Controllers\JaringanController;
+use App\Http\Controllers\JaringanImportController;
+use App\Exports\JaringanExport;
+
+use App\Http\Controllers\DataController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
-use App\Http\Controllers\PerangkatImportController;
-use App\Http\Controllers\FasilitasImportController;
-use App\Exports\PerangkatExport;
-use App\Exports\FasilitasExport;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\VerifikasiDokumenController;
+
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\SemantikController;
-use App\Http\Controllers\NdaController;
 
 
 
@@ -112,7 +123,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/menu/histori', [HistoriController::class, 'indexHistori'])->name('histori.index');
     Route::get('/historiperangkat', [HistoriController::class, 'showHistoriPerangkat'])->name('histori.perangkat');
     Route::get('/historifasilitas', [HistoriController::class, 'showHistoriFasilitas'])->name('histori.fasilitas');
-    Route::get('/historialatur', [HistoriController::class, 'showHistoriAlatUkuran'])->name('histori.alatukur');
+    Route::get('/historialatur', [HistoriController::class, 'showHistoriAlatukur'])->name('histori.alatukur');
     Route::get('/historijaringan', [HistoriController::class, 'showHistoriJaringan'])->name('histori.jaringan');
 
     // ------------------------------------------------------------------------ ASET ------------------------------------------------------------------------
@@ -162,6 +173,64 @@ Route::middleware('auth')->group(function () {
             return back()->with('error', 'Format file tidak dikenali.');
         }
     });
+
+    Route::get('/aset/alatukur', [AlatukurController::class, 'indexAlatukur'])->name('alatukur.index');
+    Route::get('/alatukur/create', [AlatukurController::class, 'create'])->name('alatukur.create');
+    Route::post('/alatukur/store', [AlatukurController::class, 'store'])->name('alatukur.store');
+    Route::get('/alatukur/{id_alatukur}/edit', [AlatukurController::class, 'edit'])->name('alatukur.edit');
+    Route::put('/alatukur/{id_alatukur}', [AlatukurController::class, 'update'])->name('alatukur.update');
+    Route::delete('/alatukur/{id_alatukur}', [AlatukurController::class, 'destroy'])->name('alatukur.destroy');
+    Route::post('/import-alatukur', [AlatukurImportController::class, 'import'])->name('import.alatukur');
+    Route::post('export/alatukur', function (Request $request) {
+        $regions = $request->input('regions'); // array atau null
+        $format = $request->input('format');   // excel atau pdf
+        if ($format === 'excel') {
+            return Excel::download(new AlatukurExport($regions), 'dataalatukur.xlsx');
+        } elseif ($format === 'pdf') {
+            $data = (new AlatukurExport($regions))->collection();
+
+            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            return $pdf->download('dataalatukur.pdf');
+        } else {
+            return back()->with('error', 'Format file tidak dikenali.');
+        }
+    });
+
+    // Route::get('/aset/jaringan', [JaringanController::class, 'indexJaringan'])->name('jaringan.index');
+    // Route::get('/jaringan/create', [JaringanController::class, 'create'])->name('jaringan.create');
+    // Route::post('/jaringan/store', [JaringanController::class, 'store'])->name('jaringan.store');
+    // Route::get('/jaringan/{id_jaringan}/edit', [JaringanController::class, 'edit'])->name('jaringan.edit');
+    // Route::put('/jaringan/{id_jaringan}', [JaringanController::class, 'update'])->name('jaringan.update');
+    // Route::delete('/jaringan/{id_jaringan}', [JaringanController::class, 'destroy'])->name('jaringan.destroy');
+    // Route::post('/import-jaringan', [JaringanImportController::class, 'import'])->name('import.jaringan');
+    // Route::post('export/jaringan', function (Request $request) {
+    //     $regions = $request->input('regions'); // array atau null
+    //     $format = $request->input('format');   // excel atau pdf
+    //     if ($format === 'excel') {
+    //         return Excel::download(new JaringanExport($regions), 'datajaringan.xlsx');
+    //     } elseif ($format === 'pdf') {
+    //         $data = (new JaringanExport($regions))->collection();
+
+    //         $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+    //         return $pdf->download('datajaringan.pdf');
+    //     } else {
+    //         return back()->with('error', 'Format file tidak dikenali.');
+    //     }
+    // });
+
+    Route::get('/jaringan', [JaringanController::class, 'jaringan'])->name('jaringan');
+    Route::post('/store-jaringan', [JaringanController::class, 'store'])->name('jaringan.store');
+    Route::get('/jaringan/tipes/{tipe}', [JaringanController::class, 'getTipeJaringan']);
+    Route::get('/jaringan/filter', [JaringanController::class, 'getJaringanByRegionAndTipe']);
+    Route::delete('/delete-jaringan/{id_jaringan}', [JaringanController::class, 'deleteJaringan'])->name('jaringan.delete');
+    Route::get('/edit-jaringan/{id_jaringan}', [JaringanController::class, 'editJaringan'])->name('jaringan.edit');
+    Route::post('/update-jaringan/{id_jaringan}', [JaringanController::class, 'updateJaringan'])->name('jaringan.update');
+    Route::get('/jaringan/{id_jaringan}/detail', [JaringanController::class, 'getDetail'])->name('jaringan.detail');
+    Route::get('/get-last-kode-site-insan', [JaringanController::class, 'getLastKodeSiteInsan']);
+    Route::post('/jaringan/import', [JaringanController::class, 'import'])->name('jaringan.import');
+    Route::post('/jaringan/export', [JaringanController::class, 'export'])->name('jaringan.export');
+    Route::get('/jaringan/{id}/lihat-detail', [JaringanController::class, 'lihatDetail'])->name('jaringan.lihatDetail');
+    
 
     // Superadmin - melihat dan memverifikasi dokumen
     Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');

@@ -2,11 +2,11 @@
 
 namespace App\Exports;
 
-use App\Models\ListFasilitas;
+use App\Models\ListAlatukur;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class FasilitasExport implements FromCollection, WithHeadings
+class AlatukurExport implements FromCollection, WithHeadings
 {
     protected $regions;
 
@@ -17,7 +17,7 @@ class FasilitasExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        $query = ListFasilitas::query();
+        $query = ListAlatukur::query();
 
         if (!empty($this->regions)) {
             $query->whereIn('kode_region', $this->regions);
@@ -31,17 +31,13 @@ class FasilitasExport implements FromCollection, WithHeadings
         return [
             'No',
             'Region',
-            'Site',
-            'No Rack',
-            'Fasilitas',
-            'Fasilitas ke',
+            'Alat Ukur',
+            'Alat Ukur ke',
             'Brand',
             'Type',
-            'Serial Number',
-            'Jumlah Fasilitas',
-            'Status',
-            'UAwal',
-            'UAkhir',
+            'Tahun Perolehan',
+            'Kondisi',
+            'Keterangan',
         ];
     }
 }

@@ -21,6 +21,7 @@
                     <tr>
                         <th></th>
                         <th>No</th>
+                        <th>Hostname</th>
                         <th>Region</th>
                         <th>Site</th>
                         <th>No Rack</th>
@@ -37,6 +38,7 @@
                                 <div class="status-box {{ $perangkat->no_rack ? 'bg-success' : 'bg-danger' }}"></div>
                             </td>
                             <td>{{ $loop->iteration }}</td>
+                            <td>{{ $perangkat->region->kode_region }}-{{ $perangkat->site->kode_site }}</td>
                             <td>{{ $perangkat->region->nama_region }}</td>
                             <td>{{ $perangkat->site->nama_site }}</td>
                             <td>{{ $perangkat->no_rack }}</td>
@@ -212,7 +214,7 @@
             <div class="modal-content">
                 <span class="close" onclick="closeModal('exportModal')">&times;</span>
                 <h5>Ekspor Data Perangkat</h5>
-                <form action="{{ url('export/perangkat') }}" method="POST">
+                <form id="exportForm" action="{{ url('export/perangkat') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label for="regions">Pilih Region:</label>

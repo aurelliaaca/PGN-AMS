@@ -41,19 +41,19 @@
                 <h4><span>Aset</span><div class="menu-separator"></div></h4>
                 <li><a href="{{ route('perangkat.index') }}"><span class="icon"><i class="fas fa-tools"></i></span><span class="text">Perangkat</span></a></li>
                 <li><a href="{{ route('fasilitas.index') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span class="text">Fasilitas</span></a></li>
-                <li><a href="#"><span class="icon"><i class="fas fa-ruler"></i></span><span class="text">Alat Ukur</span></a></li>
-                <li><a href="#"><span class="icon"><i class="fas fa-network-wired"></i></span><span class="text">Jaringan</span></a></li>
+                <li><a href="{{ route('alatukur.index') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span class="text">Alat Ukur</span></a></li>
+                <li><a href="{{ route('jaringan') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span class="text">Jaringan</span></a></li>
             @endif
 
             <h4><span>Portal VMS</span><div class="menu-separator"></div></h4>
             @if(auth()->user()->role == '1')
-                <li><a href="{{ route('verifikasi.superadmin.nda') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span class="text">Verifikasi NDA</span></a></li>
-                <li><a href="{{ route('verifikasi.superadmin.dcaf') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span class="text">Verifikasi DCAF</span></a></li>
+                <li><a href="{{ route('verifikasi.superadmin.nda') }}"><span class="icon"><i class="fas fa-paperclip"></i></span><span class="text">Verifikasi NDA</span></a></li>
+                <li><a href="{{ route('verifikasi.superadmin.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span class="text">Verifikasi DCAF</span></a></li>
             @endif
 
             @if(auth()->user()->role == '3')
-                <li><a href="{{ route('verifikasi.user.nda') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span class="text">NDA</span></a></li>
-                <li><a href="{{ route('verifikasi.user.dcaf') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span class="text">DCAF</span></a></li>
+                <li><a href="{{ route('verifikasi.user.nda') }}"><span class="icon"><i class="fas fa-paperclip"></i></span><span class="text">NDA</span></a></li>
+                <li><a href="{{ route('verifikasi.user.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span class="text">DCAF</span></a></li>
             @endif
 
             <h4><span>Akun</span><div class="menu-separator"></div></h4>

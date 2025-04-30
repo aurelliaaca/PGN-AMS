@@ -4,26 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HistoriFasilitas extends Model
+class HistoriAlatukur extends Model
 {
     // Tentukan nama tabel yang digunakan oleh model ini
-    protected $table = 'historifasilitas';
+    protected $table = 'historialatukur';
 
     // Tentukan kolom-kolom yang bisa diisi secara mass-assignment
     protected $fillable = [
-        'id_fasilitas',
+        'id_alatukur',
         'kode_region',
-        'kode_site',
-        'no_rack',
-        'kode_fasilitas',
-        'fasilitas_ke',
+        'kode_alatukur',
+        'alatukur_ke',
         'kode_brand',
         'type',
         'serialnumber',
-        'jml_fasilitas',
-        'status',
-        'uawal',
-        'uakhir',
+        'keterangan',
+        'kondisi',
         'histori',
         'tanggal_perubahan',
     ];
@@ -33,9 +29,9 @@ class HistoriFasilitas extends Model
 
     // Tentukan format tanggal jika diperlukan
     protected $dates = ['tanggal_perubahan'];
-    public function listfasilitas()
+    public function listalatukur()
     {
-        return $this->belongsTo(ListFasilitas::class, 'id_fasilitas', 'id_fasilitas');
+        return $this->belongsTo(ListAlatukur::class, 'id_alatukur', 'id_alatukur');
     }
 
     public function region()
@@ -48,14 +44,14 @@ class HistoriFasilitas extends Model
         return $this->belongsTo(Site::class, 'kode_site', 'kode_site');
     }
 
-    public function jenisfasilitas()
+    public function jenisalatukur()
     {
-        return $this->belongsTo(JenisFasilitas::class, 'kode_fasilitas', 'kode_fasilitas');
+        return $this->belongsTo(JenisAlatukur::class, 'kode_alatukur', 'kode_alatukur');
     }
 
-    public function brandfasilitas()
+    public function brandalatukur()
     {
-        return $this->belongsTo(BrandFasilitas::class, 'kode_brand', 'kode_brand');
+        return $this->belongsTo(BrandAlatukur::class, 'kode_brand', 'kode_brand');
     }
 
 }

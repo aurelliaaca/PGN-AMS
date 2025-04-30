@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\HistoriPerangkat;
 use App\Models\HistoriFasilitas;
-use App\Models\HistoriAlatUkuran;
+use App\Models\HistoriAlatukur;
 use App\Models\HistoriJaringan;
 
 use Illuminate\Http\Request;
@@ -29,21 +29,21 @@ class HistoriController extends Controller
      public function showHistoriFasilitas()
      {
          $historifasilitas = HistoriFasilitas::all(); // Fetch all facility history
-         return view('menu.histori.fasilitas', compact('historifasilitas'));
+         return view('menu.histori.historifasilitas', compact('historifasilitas'));
      }
  
      // Display data for alat ukur (measurement tools history)
-     public function showHistoriAlatUkuran()
+     public function showHistoriAlatukur()
      {
-         $historialatukur = HistoriAlatUkuran::all(); // Fetch all measurement tools history
-         return view('menu.histori.alatukur', compact('historialatukur'));
+         $historialatukur = HistoriAlatukur::all(); // Fetch all measurement tools history
+         return view('menu.histori.historialatukur', compact('historialatukur'));
      }
  
      // Display data for jaringan (network history)
      public function showHistoriJaringan()
      {
          $historijaringan = HistoriJaringan::all(); // Fetch all network history
-         return view('menu.histori.jaringan', compact('historijaringan'));
+         return view('menu.histori.historijaringan', compact('historijaringan'));
      }
 
 }

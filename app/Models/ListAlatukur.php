@@ -36,7 +36,7 @@ class ListAlatukur extends Model
         return $this->belongsTo(JenisAlatukur::class, 'kode_alatukur', 'kode_alatukur');
     }
 
-    public function brand()
+    public function brandalatukur()
     {
         return $this->belongsTo(BrandAlatukur::class, 'kode_brand', 'kode_brand');
     }

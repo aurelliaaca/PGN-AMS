@@ -11,8 +11,10 @@
     <div class="main">
         <div class="button-wrapper">
             <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
-            <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Fasilitas</button>
-            <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Fasilitas</button>
+            <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
+                Fasilitas</button>
+            <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data
+                Fasilitas</button>
         </div>
 
         <div class="table-responsive">
@@ -48,7 +50,7 @@
                                     <button class="btn btn-eye btn-sm mb-1"
                                         onclick="openModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">
                                         <i class="fas fa-eye"></i> Lihat
-                                    </button>   
+                                    </button>
                                     <button class="btn btn-edit btn-sm mb-1"
                                         onclick="openModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">
                                         <i class="fas fa-edit"></i> Edit
@@ -58,9 +60,9 @@
                                         <i class="fas fa-trash-alt"></i> Hapus
                                     </button>
 
-                                    <form id="delete-form-{{ $fasilitas->id_fasilitas }}" 
-                                        action="{{ route('fasilitas.destroy', $fasilitas->id_fasilitas) }}" 
-                                        method="POST" style="display: none;">
+                                    <form id="delete-form-{{ $fasilitas->id_fasilitas }}"
+                                        action="{{ route('fasilitas.destroy', $fasilitas->id_fasilitas) }}" method="POST"
+                                        style="display: none;">
                                         @csrf
                                         @method('DELETE')
                                     </form>
@@ -70,36 +72,53 @@
                         <!-- Modal View -->
                         <div id="modalViewFasilitas{{ $fasilitas->id_fasilitas }}" class="modal">
                             <div class="modal-content">
-                                <span class="close" onclick="closeModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">&times;</span>
+                                <span class="close"
+                                    onclick="closeModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">&times;</span>
                                 <h5>Detail Fasilitas</h5>
-                                
+
                                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                                     <div style="width: 48%;">
                                         <label>Region</label>
-                                        <input type="text" value="{{ $fasilitas->region->nama_region }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->region->nama_region }}" readonly
+                                            class="form-control">
 
                                         <label>Site</label>
-                                        <input type="text" value="{{ $fasilitas->site->nama_site }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->site->nama_site }}" readonly
+                                            class="form-control">
 
                                         <label>No Rack</label>
                                         <input type="text" value="{{ $fasilitas->no_rack }}" readonly class="form-control">
 
                                         <label>Jenis Fasilitas</label>
-                                        <input type="text" value="{{ $fasilitas->jenisfasilitas->nama_fasilitas }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->jenisfasilitas->nama_fasilitas }}" readonly
+                                            class="form-control">
+
+                                        <label>Brand</label>
+                                        <input type="text" value="{{ optional($fasilitas->brandfasilitas)->nama_brand }}"
+                                            readonly class="form-control">
+
+                                        <label>Tipe</label>
+                                        <input type="text" value="{{ $fasilitas->type }}" readonly class="form-control">
+
                                     </div>
 
                                     <div style="width: 48%;">
                                         <label>Fasilitas ke-</label>
                                         <input type="text" value="{{ $fasilitas->fasilitas_ke }}" readonly class="form-control">
 
-                                        <label>Brand</label>
-                                        <input type="text" value="{{ optional($fasilitas->brandfasilitas)->nama_brand }}" readonly class="form-control">
+                                        <label>Serial Number</label>
+                                        <input type="text" value="{{ $fasilitas->serialnumber }}" readonly class="form-control">
 
-                                        <label>Tipe</label>
-                                        <input type="text" value="{{ $fasilitas->type }}" readonly class="form-control">
+                                        <label>Jumlah Fasilitas</label>
+                                        <input type="text" value="{{ $fasilitas->jml_fasilitas }}" readonly
+                                            class="form-control">
+
+                                        <label>Status</label>
+                                        <input type="text" value="{{ $fasilitas->status }}" readonly class="form-control">
 
                                         <label>U Awal - U Akhir</label>
-                                        <input type="text" value="{{ $fasilitas->uawal }} - {{ $fasilitas->uakhir }}" readonly class="form-control">
+                                        <input type="text" value="{{ $fasilitas->uawal }} - {{ $fasilitas->uakhir }}" readonly
+                                            class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -111,81 +130,89 @@
                                 <span class="close"
                                     onclick="closeModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">&times;</span>
                                 <h5>Edit Fasilitas</h5>
-                                <form action="{{ route('fasilitas.update', $fasilitas->id_fasilitas) }}" method="POST">
+                                <action="{{ route('fasilitas.update', $fasilitas->id_fasilitas) }}" method="POST">
                                     @csrf
                                     @method('PUT')
-                                    <div class="mb-3">
-                                        <label>Kode Region</label>
-                                        <select name="kode_region" class="form-control regionSelectEdit"
-                                            data-id="{{ $fasilitas->id_fasilitas }}" required>
-                                            <option value="">Pilih Region</option>
-                                            @foreach($regions as $region)
-                                                <option value="{{ $region->kode_region }}" {{ $fasilitas->kode_region == $region->kode_region ? 'selected' : '' }}>
-                                                    {{ $region->nama_region }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Kode Site</label>
-                                        <select name="kode_site" class="form-control siteSelectEdit"
-                                            data-id="{{ $fasilitas->id_fasilitas }}" required>
-                                            <option value="">Pilih Site</option>
-                                            @foreach($sites as $site)
-                                                @if($site->kode_region == $fasilitas->kode_region)
-                                                    <option value="{{ $site->kode_site }}" {{ $fasilitas->kode_site == $site->kode_site ? 'selected' : '' }}>
-                                                        {{ $site->nama_site }}
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        <div style="width: 48%;">
+                                            <label>Kode Region</label>
+                                            <select name="kode_region" class="form-control regionSelectEdit"
+                                                data-id="{{ $fasilitas->id_fasilitas }}" required>
+                                                <option value="">Pilih Region</option>
+                                                @foreach($regions as $region)
+                                                    <option value="{{ $region->kode_region }}" {{ $fasilitas->kode_region == $region->kode_region ? 'selected' : '' }}>
+                                                        {{ $region->nama_region }}
                                                     </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
+                                                @endforeach
+                                            </select>
+
+                                            <label>Kode Fasilitas</label>
+                                            <select name="kode_fasilitas" class="form-control" required>
+                                                <option value="">Pilih Kode Fasilitas</option>
+                                                @foreach($types as $jenisfasilitas)
+                                                    <option value="{{ $jenisfasilitas->kode_fasilitas }}" {{ $fasilitas->kode_fasilitas == $jenisfasilitas->kode_fasilitas ? 'selected' : '' }}>
+                                                        {{ $jenisfasilitas->nama_fasilitas }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
+                                            <label>No Rack</label>
+                                            <input type="text" name="no_rack" class="form-control"
+                                                value="{{ $fasilitas->no_rack ?? '' }}">
+
+                                            <label>Type</label>
+                                            <input type="text" name="type" class="form-control"
+                                                value="{{ $fasilitas->type ?? '' }}">
+
+                                                <label>U Awal</label>
+                                            <input type="number" name="uawal" class="form-control"
+                                                value="{{ $fasilitas->uawal ?? '' }}">
+
+                                            <label>U Akhir</label>
+                                            <input type="number" name="uakhir" class="form-control"
+                                                value="{{ $fasilitas->uakhir ?? '' }}">
+                                        </div>
+
+                                        <div style="width: 48%;">
+                                        <label>Kode Site</label>
+                                            <select name="kode_site" class="form-control siteSelectEdit"
+                                                data-id="{{ $fasilitas->id_fasilitas }}" required>
+                                                <option value="">Pilih Site</option>
+                                                @foreach($sites as $site)
+                                                    @if($site->kode_region == $fasilitas->kode_region)
+                                                        <option value="{{ $site->kode_site }}" {{ $fasilitas->kode_site == $site->kode_site ? 'selected' : '' }}>
+                                                            {{ $site->nama_site }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+
+                                            <label>Kode Brand</label>
+                                            <select name="kode_brand" class="form-control">
+                                                <option value="">Pilih Kode Brand</option>
+                                                @foreach($brands as $brandfasilitas)
+                                                    <option value="{{ $brandfasilitas->kode_brand }}" {{ $fasilitas->kode_brand == $brandfasilitas->kode_brand ? 'selected' : '' }}>
+                                                        {{ $brandfasilitas->nama_brand }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
+                                            <label>Serial Number</label>
+                                            <input type="text" name="serialnumber" class="form-control"
+                                                value="{{ $fasilitas->serialnumber ?? '' }}">
+
+                                            <label>Jumlah Fasilitas</label>
+                                            <input type="text" name="jml_fasilitas" class="form-control"
+                                                value="{{ $fasilitas->jml_fasilitas ?? '' }}">
+
+                                            <label>Status</label>
+                                            <input type="text" name="status" class="form-control"
+                                                value="{{ $fasilitas->status ?? '' }}">
+                                        </div>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label>No Rack</label>
-                                        <input type="text" name="no_rack" class="form-control"
-                                            value="{{ $fasilitas->no_rack ?? '' }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Kode Fasilitas</label>
-                                        <select name="kode_fasilitas" class="form-control" required>
-                                            <option value="">Pilih Kode Fasilitas</option>
-                                            @foreach($types as $jenisfasilitas)
-                                                <option value="{{ $jenisfasilitas->kode_fasilitas }}" 
-                                                    {{ $fasilitas->kode_fasilitas == $jenisfasilitas->kode_fasilitas ? 'selected' : '' }}>{{ $jenisfasilitas->nama_fasilitas }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>                   
-                                    <div class="mb-3">
-                                        <label>Kode Brand</label>
-                                        <select name="kode_brand" class="form-control">
-                                            <option value="">Pilih Kode Brand</option>
-                                            @foreach($brands as $brandfasilitas)
-                                                <option value="{{ $brandfasilitas->kode_brand }}" 
-                                                    {{ $fasilitas->kode_brand == $brandfasilitas->kode_brand ? 'selected' : '' }}>
-                                                    {{ $brandfasilitas->nama_brand }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Type</label>
-                                        <input type="text" name="type" class="form-control" value="{{ $fasilitas->type ?? '' }}"
-                                            >
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>U Awal</label>
-                                        <input type="number" name="uawal" class="form-control"
-                                            value="{{ $fasilitas->uawal ?? '' }}" >
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>U Akhir</label>
-                                        <input type="number" name="uakhir" class="form-control"
-                                            value="{{ $fasilitas->uakhir ?? '' }}" >
-                                    </div>
                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                </form>
+                                    </form>
                             </div>
                         </div>
                     @endforeach
@@ -212,14 +239,15 @@
             <div class="modal-content">
                 <span class="close" onclick="closeModal('exportModal')">&times;</span>
                 <h5>Ekspor Data Fasilitas</h5>
-                <form action="{{ url('export/fasilitas') }}" method="POST">
-                    @csrf
+                <form id="exportForm" action="{{ url('export/fasilitas') }}" method="POST">
+                @csrf
                     <div class="mb-3">
                         <label for="regions">Pilih Region:</label>
                         <div id="regions">
                             @foreach ($regions as $region)
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="regions[]" value="{{ $region['kode_region'] }}" id="region-{{ $loop->index }}">
+                                    <input class="form-check-input" type="checkbox" name="regions[]"
+                                        value="{{ $region['kode_region'] }}" id="region-{{ $loop->index }}">
                                     <a class="form-check-label" for="region-{{ $loop->index }}">
                                         {{ $region['nama_region'] }}
                                     </a>
@@ -246,70 +274,69 @@
                 <h5>Tambah Fasilitas</h5>
                 <form action="{{ route('fasilitas.store') }}" method="POST" id="formTambahFasilitas">
                     @csrf
-                    <div class="mb-3">
-                        <label>Kode Region</label>
-                        <select id="regionSelectTambah" name="kode_region" class="form-control" required>
-                            <option value="">Pilih Region</option>
-                            @foreach($regions as $region)
-                                <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="width: 48%;">
+                            <label>Kode Region</label>
+                            <select id="regionSelectTambah" name="kode_region" class="form-control" required>
+                                <option value="">Pilih Region</option>
+                                @foreach($regions as $region)
+                                    <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
+                                @endforeach
+                            </select>
 
-                    <div class="mb-3">
-                        <label>Kode Site</label>
-                        <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
-                            <option value="">Pilih Site</option>
-                        </select>
-                    </div>
+                            <label>Kode Fasilitas</label>
+                            <select name="kode_fasilitas" class="form-control" required>
+                                <option value="">Pilih Kode Fasilitas</option>
+                                @foreach($types as $jenisfasilitas)
+                                    <option value="{{ $jenisfasilitas->kode_fasilitas }}">
+                                        {{ $jenisfasilitas->nama_fasilitas }}
+                                    </option>
+                                @endforeach
+                            </select>
 
-                    <div class="mb-3">
-                        <label>No Rack</label>
-                        <input type="text" name="no_rack" class="form-control" id="no_rack" value="">
-                    </div>
+                            <label>No Rack</label>
+                            <input type="text" name="no_rack" class="form-control" id="no_rack" value="">
 
-                    <div class="mb-3">
-                        <label>Kode Fasilitas</label>
-                        <select name="kode_fasilitas" class="form-control" required>
-                            <option value="">Pilih Kode Fasilitas</option>
-                            @foreach($types as $jenisfasilitas)
-                                <option value="{{ $jenisfasilitas->kode_fasilitas }}">
-                                    {{ $jenisfasilitas->nama_fasilitas }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                            <label>Type</label>
+                            <input type="text" name="type" class="form-control" value="">
 
-                    <div class="mb-3">
-                        <label>Kode Brand</label>
-                        <select name="kode_brand" class="form-control" >
-                            <option value="">Pilih Kode Brand</option>
-                            @foreach($brands as $brandfasilitas)
-                                <option value="{{ $brandfasilitas->kode_brand }}">
-                                    {{ $brandfasilitas->nama_brand }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                            <label>U Awal</label>
+                            <input type="number" name="uawal" class="form-control" value="" id="uawal">
 
-                    <div class="mb-3">
-                        <label>Type</label>
-                        <input type="text" name="type" class="form-control" value="">
-                    </div>
+                            <label>U Akhir</label>
+                            <input type="number" name="uakhir" class="form-control" value="" id="uakhir">
+                        </div>
 
-                    <div class="mb-3">
-                        <label>U Awal</label>
-                        <input type="number" name="uawal" class="form-control" value="" id="uawal">
-                    </div>
+                        <div style="width: 48%;">
+                            <label>Kode Site</label>
+                            <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
+                                <option value="">Pilih Site</option>
+                            </select>
 
-                    <div class="mb-3">
-                        <label>U Akhir</label>
-                        <input type="number" name="uakhir" class="form-control" value="" id="uakhir">
-                    </div>
-                <button type="submit" class="btn btn-primary">Tambah</button>
-            </form>
+                            <label>Kode Brand</label>
+                            <select name="kode_brand" class="form-control">
+                                <option value="">Pilih Kode Brand</option>
+                                @foreach($brands as $brandfasilitas)
+                                    <option value="{{ $brandfasilitas->kode_brand }}">
+                                        {{ $brandfasilitas->nama_brand }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <label>Serial Number</label>
+                            <input type="text" name="serialnumber" class="form-control" value="">
+
+                            <label>Jumlah Fasilitas</label>
+                            <input type="text" name="jml_fasilitas" class="form-control" value="">
+
+                            <label>Status</label>
+                            <input type="text" name="status" class="form-control" value="">
+                        </div>
+                    </div>                       
+                    <button type="submit" class="btn btn-primary">Tambah</button>
+                </form>
+            </div>
         </div>
-    </div>
 
     </div>
 
@@ -318,7 +345,7 @@
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
         <script>
-            $(document).ready(function() {
+            $(document).ready(function () {
                 $('#fasilitasTable').DataTable({
                     "language": {
                         "search": "Cari",
@@ -338,14 +365,14 @@
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     "columnDefs": [
                         {
-                            "targets": [0, 8], 
+                            "targets": [0, 8],
                             "orderable": false
                         }
                     ]
                 });
             });
-
-            document.getElementById('regionSelectTambah').addEventListener('change', function() {
+            
+            document.getElementById('regionSelectTambah').addEventListener('change', function () {
                 const regionId = this.value;
                 const siteSelect = document.getElementById('siteSelectTambah');
 
@@ -386,17 +413,17 @@
 
                 if (uawal >= uakhir) {
                     alert('U Awal harus lebih kecil dari U Akhir.');
-                    event.preventDefault(); 
+                    event.preventDefault();
                 }
 
                 if (uawal < 0 || uakhir < 0) {
                     alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
-                    event.preventDefault(); 
+                    event.preventDefault();
                 }
             });
 
             document.querySelectorAll('.regionSelectEdit').forEach(select => {
-                select.addEventListener('change', function() {
+                select.addEventListener('change', function () {
                     const regionId = this.value;
                     const fasilitasId = this.getAttribute('data-id');
                     const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${fasilitasId}"]`);
@@ -420,7 +447,7 @@
             });
 
             document.querySelectorAll('form[action*="fasilitas/update"]').forEach(form => {
-                form.addEventListener('submit', function(event) {
+                form.addEventListener('submit', function (event) {
                     const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
                     const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);
                     const noRack = this.querySelector('input[name="no_rack"]').value;
@@ -442,6 +469,61 @@
                     }
                 });
             });
+
+
+        document.getElementById('exportForm').addEventListener('submit', function (e) {
+                e.preventDefault(); // Biar gak reload halaman
+
+                const form = e.target;
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Gagal ekspor data!');
+                    }
+                    return response.blob(); // Misalnya kamu kirim file
+                })
+                .then(blob => {
+                    closeModal('exportModal');
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Data berhasil diekspor!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    // Kalau ingin langsung download file:
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const format = formData.get('format');
+                    a.download = `datafasilitas.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+                    a.click();
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops!',
+                        text: error.message
+                    });
+                });
+            });
+
+            function closeModal(id) {
+                const modal = document.getElementById(id);
+                if (modal) {
+                    modal.style.display = "none";
+                }
+            }
         </script>
     @endsection
 @endsection
