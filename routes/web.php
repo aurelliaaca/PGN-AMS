@@ -23,6 +23,9 @@ use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
 use App\Http\Controllers\VerifikasiDokumenController;
 
+
+use App\Http\Controllers\PendaftaranController;
+
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -230,7 +233,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/jaringan/import', [JaringanController::class, 'import'])->name('jaringan.import');
     Route::post('/jaringan/export', [JaringanController::class, 'export'])->name('jaringan.export');
     Route::get('/jaringan/{id}/lihat-detail', [JaringanController::class, 'lihatDetail'])->name('jaringan.lihatDetail');
-    
+
 
     // Superadmin - melihat dan memverifikasi dokumen
     Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');
@@ -270,5 +273,12 @@ Route::middleware('auth')->group(function () {
 
     // Semantik
     Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
+
+
+    // Route untuk menampilkan view pendaftarandcaf
+    Route::get('/pendaftarandcaf', [PendaftaranController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
+    Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+    Route::get('/pendaftaran/download/{id}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
+
 });
 

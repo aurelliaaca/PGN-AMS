@@ -5,6 +5,7 @@
 <div class="main">
 <div class="container">
     <!-- Tombol untuk membuka modal -->
+    <button class="btn btn-primary mb-3" onclick="window.location.href='{{ route('pendaftarandcaf') }}'">Buat DCAF</button>
     <button class="btn btn-primary mb-3" onclick="openModal('modalAjukanDCS')">Ajukan Permohonan Visit Data Center</button>
     <!-- Modal Upload Dokumen -->
         <div class="modal" id="modalAjukanDCS">

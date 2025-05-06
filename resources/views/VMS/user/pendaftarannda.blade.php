@@ -200,8 +200,8 @@
                                                             <td>
                                                                 <span style="display: inline-flex; align-items: center;">
                                                                     <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            background-color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $nda->status == 'pending' ? '#ffc107' :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        background-color: 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $nda->status == 'pending' ? '#ffc107' :
                                     ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
                                                                     </span>
                                                                     {{ ucfirst($nda->status) }}
@@ -243,12 +243,14 @@
                 event.target.style.display = "none";
             }
         }
-
         var canvas = document.getElementById('signature-pad');
         var signatureInput = document.getElementById('signature');
         var clearButton = document.getElementById('clear-signature');
         var ctx = canvas.getContext('2d');
         var drawing = false;
+
+        // Menangkap elemen form terdekat
+        var form = canvas.closest('form');
 
         canvas.addEventListener('mousedown', function (e) {
             drawing = true;
@@ -270,11 +272,20 @@
 
         clearButton.addEventListener('click', function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            updateSignatureInput();
+            signatureInput.value = ''; // Kosongkan juga hidden input
         });
 
         function updateSignatureInput() {
             signatureInput.value = canvas.toDataURL('image/png');
         }
+
+        // Validasi sebelum submit
+        form.addEventListener('submit', function (e) {
+            if (!signatureInput.value) {
+                e.preventDefault();
+                alert('Tanda tangan wajib diisi!');
+            }
+        });
     </script>
+
 @endsection
