@@ -71,6 +71,10 @@ class ListPerangkat extends Model
         return $this->hasMany(Rack::class, 'id_perangkat', 'id_perangkat');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'milik', 'id');
+    }
 
     // Event untuk mencatat perubahan data perangkat
     protected static function booted()
@@ -96,6 +100,7 @@ class ListPerangkat extends Model
                 'type' => $perangkat->type,
                 'uawal' => $perangkat->uawal,
                 'uakhir' => $perangkat->uakhir,
+                'milik' => $perangkat->milik,
                 'histori' => $histori,
                 'tanggal_perubahan' => Carbon::now(),
             ]);
@@ -114,6 +119,7 @@ class ListPerangkat extends Model
                 'type' => $perangkat->type,
                 'uawal' => $perangkat->uawal,
                 'uakhir' => $perangkat->uakhir,
+                'milik' => $perangkat->milik,
                 'histori' => 'Dihapus',
                 'tanggal_perubahan' => Carbon::now(),
             ]);

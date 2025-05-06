@@ -25,6 +25,7 @@ class PerangkatImport implements ToModel, WithHeadingRow
             'type'           => $row['type'],
             'uawal'          => $row['uawal'],
             'uakhir'         => $row['uakhir'],
+            'milik'         => $row['milik'],
         ]);
 
         // Simpan juga ke tabel HistoriPerangkat dengan id dari perangkatBaru
@@ -39,6 +40,7 @@ class PerangkatImport implements ToModel, WithHeadingRow
             'type'           => $row['type'],
             'uawal'          => $row['uawal'],
             'uakhir'         => $row['uakhir'],
+            'milik'         => $row['milik'],
             'histori'        => 'Diimpor',
         ]);
 

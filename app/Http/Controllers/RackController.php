@@ -17,7 +17,7 @@ class RackController extends Controller
         $racks = Rack::with(['region', 'site'])
             ->select('kode_region', 'kode_site', 'no_rack')
             ->when(auth()->user()->role != 1, function($query) {
-                return $query->where('milik', auth()->user()->name);
+                return $query->where('milik', auth()->user()->id);
             })
             ->groupBy('kode_region', 'kode_site', 'no_rack')
             ->get();
@@ -37,7 +37,7 @@ class RackController extends Controller
                             ->whereColumn('r.kode_region', 'rack.kode_region')
                             ->whereColumn('r.kode_site', 'rack.kode_site')
                             ->whereColumn('r.no_rack', 'rack.no_rack')
-                            ->where('r.milik', auth()->user()->name);
+                            ->where('r.milik', auth()->user()->id);
                     });
                 })
                 ->groupBy('kode_region', 'kode_site', 'no_rack');
@@ -70,7 +70,7 @@ class RackController extends Controller
                             if (auth()->user()->role == 1) {
                                 return !is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas);
                             }
-                            return $detail->milik === auth()->user()->name && 
+                            return $detail->milik === auth()->user()->id && 
                                    (!is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas));
                         })->count();
                         
@@ -81,7 +81,7 @@ class RackController extends Controller
                             if (auth()->user()->role == 1) {
                                 return !is_null($detail->id_perangkat);
                             }
-                            return $detail->milik === auth()->user()->name && !is_null($detail->id_perangkat);
+                            return $detail->milik === auth()->user()->id && !is_null($detail->id_perangkat);
                         })->pluck('listperangkat.id_perangkat')->unique()->filter()->count();
                         
                         // Count unique facilities (based on id_fasilitas)
@@ -89,7 +89,7 @@ class RackController extends Controller
                             if (auth()->user()->role == 1) {
                                 return !is_null($detail->id_fasilitas);
                             }
-                            return $detail->milik === auth()->user()->name && !is_null($detail->id_fasilitas);
+                            return $detail->milik === auth()->user()->id && !is_null($detail->id_fasilitas);
                         })->pluck('listfasilitas.id_fasilitas')->unique()->filter()->count();
                         
                         $rack->details = $rackDetails;

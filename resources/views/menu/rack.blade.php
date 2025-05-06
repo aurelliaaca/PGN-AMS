@@ -272,7 +272,7 @@ function loadRacks() {
             // Generate table rows for rack details
             rack.details.forEach(detail => {
             let deviceInfo = 'IDLE';
-            const isUserPosition = {{ auth()->user()->role }} === 1 || detail.milik === '{{ auth()->user()->name }}';
+            const isUserPosition = {{ auth()->user()->role }} === 1 || detail.milik === '{{ auth()->user()->id }}';
 
             if (isUserPosition) {
                 if (detail.id_perangkat && detail.listperangkat) {

@@ -39,6 +39,7 @@ class PerangkatExport implements FromCollection, WithHeadings
             'Type',
             'UAwal',
             'UAkhir',
+            'Milik',
         ];
     }
 }

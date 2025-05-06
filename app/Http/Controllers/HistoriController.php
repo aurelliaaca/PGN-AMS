@@ -12,12 +12,10 @@ class HistoriController extends Controller
 {
     public function indexHistori()
     {
-        $historiperangkat = HistoriPerangkat::with(['listperangkat'])->get();
 
-        return view('menu.histori', compact('historiperangkat'));
+        return view('menu.histori');
     }
 
-    // HistoriController.php
      // Display data for perangkat (device history)
      public function showHistoriPerangkat()
      {

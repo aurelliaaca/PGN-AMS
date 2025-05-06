@@ -88,6 +88,9 @@
 
                                         <label>Jenis Perangkat</label>
                                         <input type="text" value="{{ $perangkat->jenisperangkat->nama_perangkat }}" readonly class="form-control">
+
+                                        <label>Milik</label>
+                                        <input type="text" value="{{ $perangkat->user->name }}" readonly class="form-control">
                                     </div>
 
                                     <div style="width: 48%;">
@@ -116,75 +119,91 @@
                                 <form action="{{ route('perangkat.update', $perangkat->id_perangkat) }}" method="POST">
                                     @csrf
                                     @method('PUT')
-                                    <div class="mb-3">
-                                        <label>Kode Region</label>
-                                        <select name="kode_region" class="form-control regionSelectEdit"
-                                            data-id="{{ $perangkat->id_perangkat }}" required>
-                                            <option value="">Pilih Region</option>
-                                            @foreach($regions as $region)
-                                                <option value="{{ $region->kode_region }}" {{ $perangkat->kode_region == $region->kode_region ? 'selected' : '' }}>
-                                                    {{ $region->nama_region }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Kode Site</label>
-                                        <select name="kode_site" class="form-control siteSelectEdit"
-                                            data-id="{{ $perangkat->id_perangkat }}" required>
-                                            <option value="">Pilih Site</option>
-                                            @foreach($sites as $site)
-                                                @if($site->kode_region == $perangkat->kode_region)
-                                                    <option value="{{ $site->kode_site }}" {{ $perangkat->kode_site == $site->kode_site ? 'selected' : '' }}>
-                                                        {{ $site->nama_site }}
-                                                    </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label>No Rack</label>
-                                        <input type="text" name="no_rack" class="form-control"
-                                            value="{{ $perangkat->no_rack ?? '' }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Kode Perangkat</label>
-                                        <select name="kode_perangkat" class="form-control" required>
-                                            <option value="">Pilih Kode Perangkat</option>
-                                            @foreach($types as $jenisperangkat)
-                                                <option value="{{ $jenisperangkat->kode_perangkat }}" 
-                                                    {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->nama_perangkat }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>                   
-                                    <div class="mb-3">
-                                        <label>Kode Brand</label>
-                                        <select name="kode_brand" class="form-control">
-                                            <option value="">Pilih Kode Brand</option>
-                                            @foreach($brands as $brandperangkat)
-                                                <option value="{{ $brandperangkat->kode_brand }}" 
-                                                    {{ $perangkat->kode_brand == $brandperangkat->kode_brand ? 'selected' : '' }}>
-                                                    {{ $brandperangkat->nama_brand }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Type</label>
-                                        <input type="text" name="type" class="form-control" value="{{ $perangkat->type ?? '' }}"
-                                            >
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>U Awal</label>
-                                        <input type="number" name="uawal" class="form-control"
-                                            value="{{ $perangkat->uawal ?? '' }}" >
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>U Akhir</label>
-                                        <input type="number" name="uakhir" class="form-control"
-                                            value="{{ $perangkat->uakhir ?? '' }}" >
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        <div style="width: 48%;">
+                                            <div class="mb-3">
+                                                <label>Kode Region</label>
+                                                <select name="kode_region" class="form-control regionSelectEdit"
+                                                    data-id="{{ $perangkat->id_perangkat }}" required>
+                                                    <option value="">Pilih Region</option>
+                                                    @foreach($regions as $region)
+                                                        <option value="{{ $region->kode_region }}" {{ $perangkat->kode_region == $region->kode_region ? 'selected' : '' }}>
+                                                            {{ $region->nama_region }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Kode Site</label>
+                                                <select name="kode_site" class="form-control siteSelectEdit"
+                                                    data-id="{{ $perangkat->id_perangkat }}" required>
+                                                    <option value="">Pilih Site</option>
+                                                    @foreach($sites as $site)
+                                                        @if($site->kode_region == $perangkat->kode_region)
+                                                            <option value="{{ $site->kode_site }}" {{ $perangkat->kode_site == $site->kode_site ? 'selected' : '' }}>
+                                                                {{ $site->nama_site }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>No Rack</label>
+                                                <input type="text" name="no_rack" class="form-control"
+                                                    value="{{ $perangkat->no_rack ?? '' }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Kode Perangkat</label>
+                                                <select name="kode_perangkat" class="form-control" required>
+                                                    <option value="">Pilih Kode Perangkat</option>
+                                                    @foreach($types as $jenisperangkat)
+                                                        <option value="{{ $jenisperangkat->kode_perangkat }}" 
+                                                            {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->nama_perangkat }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>  
+                                            <div class="mb-3">
+                                                <label>Milik</label>
+                                                <select name="milik" class="form-control" required>
+                                                    <option value="">Pilih Kepemilikan</option>
+                                                    @foreach($users as $milik)
+                                                        <option value="{{ $milik->id }}" 
+                                                            {{ $perangkat->milik == $milik->id ? 'selected' : '' }}>{{ $milik->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>   
+                                        </div>
+                                        <div style="width: 48%;">
+                                            <div class="mb-3">
+                                                <label>Kode Brand</label>
+                                                <select name="kode_brand" class="form-control">
+                                                    <option value="">Pilih Kode Brand</option>
+                                                    @foreach($brands as $brandperangkat)
+                                                        <option value="{{ $brandperangkat->kode_brand }}" 
+                                                            {{ $perangkat->kode_brand == $brandperangkat->kode_brand ? 'selected' : '' }}>
+                                                            {{ $brandperangkat->nama_brand }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Type</label>
+                                                <input type="text" name="type" class="form-control" value="{{ $perangkat->type ?? '' }}"
+                                                    >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>U Awal</label>
+                                                <input type="number" name="uawal" class="form-control"
+                                                    value="{{ $perangkat->uawal ?? '' }}" >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>U Akhir</label>
+                                                <input type="number" name="uakhir" class="form-control"
+                                                    value="{{ $perangkat->uakhir ?? '' }}" >
+                                            </div>
+                                        </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                 </form>
@@ -243,11 +262,14 @@
         </div>
 
         <div id="modalTambahPerangkat" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
-                <h5>Tambah Perangkat</h5>
-                <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
-                    @csrf
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
+        <h5>Tambah Perangkat</h5>
+
+        <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
+            @csrf
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <div style="width: 48%;">
                     <div class="mb-3">
                         <label>Kode Region</label>
                         <select id="regionSelectTambah" name="kode_region" class="form-control" required>
@@ -267,8 +289,11 @@
 
                     <div class="mb-3">
                         <label>No Rack</label>
-                        <input type="text" name="no_rack" class="form-control" id="no_rack" value="">
+                        <select id="noRackSelectTambah" name="no_rack" class="form-control" disabled>
+                            <option value="">Pilih Rack</option>
+                        </select>
                     </div>
+
 
                     <div class="mb-3">
                         <label>Kode Perangkat</label>
@@ -283,8 +308,20 @@
                     </div>
 
                     <div class="mb-3">
+                        <label>Milik</label>
+                        <select name="milik" class="form-control" required>
+                            <option value="">Pilih Kepemilikan</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div style="width: 48%;">
+                    <div class="mb-3">
                         <label>Kode Brand</label>
-                        <select name="kode_brand" class="form-control" >
+                        <select name="kode_brand" class="form-control">
                             <option value="">Pilih Kode Brand</option>
                             @foreach($brands as $brandperangkat)
                                 <option value="{{ $brandperangkat->kode_brand }}">
@@ -301,16 +338,21 @@
 
                     <div class="mb-3">
                         <label>U Awal</label>
-                        <input type="number" name="uawal" class="form-control" value="" id="uawal">
+                        <input type="number" name="uawal" class="form-control" id="uawal" value="">
                     </div>
 
                     <div class="mb-3">
                         <label>U Akhir</label>
-                        <input type="number" name="uakhir" class="form-control" value="" id="uakhir">
+                        <input type="number" name="uakhir" class="form-control" id="uakhir" value="">
                     </div>
-                <button type="submit" class="btn btn-primary">Tambah</button>
-            </form>
-        </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Tambah</button>
+        </form>
+    </div>
+</div>
+
     </div>
 
     </div>
@@ -367,6 +409,31 @@
                     });
                 }
             });
+            
+            document.getElementById('siteSelectTambah').addEventListener('change', function() {
+                const siteId = this.value;
+                const regionId = document.getElementById('regionSelectTambah').value;
+                const rackSelect = document.getElementById('noRackSelectTambah');
+
+                rackSelect.innerHTML = '<option value="">Pilih Rack</option>';
+                rackSelect.disabled = true;
+
+                if (regionId && siteId) {
+                    rackSelect.disabled = false;
+                    
+                    // Mengambil data racks yang sudah ada di view
+                    const racks = @json($racks); // Data racks yang sudah dipassing ke view
+                    const filteredRacks = racks.filter(rack => rack.kode_region == regionId && rack.kode_site == siteId);
+
+                    filteredRacks.forEach(rack => {
+                        const option = document.createElement('option');
+                        option.value = rack.no_rack;
+                        option.textContent = rack.no_rack;
+                        rackSelect.appendChild(option);
+                    });
+                }
+            });
+
 
             document.getElementById('no_rack').addEventListener('input', function () {
                 const noRack = this.value;

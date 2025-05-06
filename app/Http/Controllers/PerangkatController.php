@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\BrandPerangkat;
 use App\Models\JenisPerangkat;
@@ -20,6 +21,11 @@ class PerangkatController extends Controller
     $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
     $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
     $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
+    $users = User::select('id','name')->orderBy('name')->get();
+    $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
+    ->distinct()
+    ->get();
+
 
     $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
 
@@ -30,7 +36,9 @@ class PerangkatController extends Controller
         'sites',
         'types',
         'brands',
-        'dataperangkat'
+        'dataperangkat',
+        'users',
+        'racks'
     ));
 }
 
@@ -46,6 +54,7 @@ class PerangkatController extends Controller
             'type' => 'nullable',
             'uawal' => 'nullable|numeric|min:1',
             'uakhir' => 'nullable|numeric|min:1',
+            'milik' => 'required',
         ]);
     
         // Custom Validasi tambahan
@@ -104,6 +113,7 @@ class PerangkatController extends Controller
             'type' => $request->type,
             'uawal' => $request->uawal,
             'uakhir' => $request->uakhir,
+            'milik' => $request->milik,
         ]);
     
         HistoriPerangkat::create([
@@ -117,26 +127,29 @@ class PerangkatController extends Controller
             'type' => $request->type,
             'uawal' => $request->uawal,
             'uakhir' => $request->uakhir,
+            'milik' => $request->milik,
             'histori' => 'Ditambahkan',
         ]);
     
         // Masukkan atau update data Rack untuk setiap nilai 'u'
-        for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
-            // Menggunakan updateOrInsert untuk mencocokkan data yang sudah ada
-            Rack::updateOrInsert(
-                [
-                    'kode_region' => $request->kode_region,
-                    'kode_site' => $request->kode_site,
-                    'no_rack' => $request->no_rack,
-                    'u' => $u, // Mencocokkan berdasarkan 'u'
-                ],
-                [
-                    'id_perangkat' => $perangkatBaru->id_perangkat, // Menyimpan perangkat baru
-                    'updated_at' => now(), // Memperbarui kolom 'updated_at'
-                    'created_at' => now(), // Menyimpan waktu penciptaan
-                ]
-            );
-        }
+        if ($request->no_rack) {
+            for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
+                Rack::updateOrInsert(
+                    [
+                        'kode_region' => $request->kode_region,
+                        'kode_site' => $request->kode_site,
+                        'no_rack' => $request->no_rack,
+                        'u' => $u,
+                    ],
+                    [
+                        'id_perangkat' => $perangkatBaru->id_perangkat,
+                        'milik' => $request->milik,
+                        'updated_at' => now(),
+                        'created_at' => now(),
+                    ]
+                );
+            }
+        }        
     
         return redirect()->route('perangkat.index')
             ->with('success', 'Perangkat berhasil ditambahkan.')
@@ -158,6 +171,7 @@ class PerangkatController extends Controller
             'type' => 'nullable',
             'uawal' => 'nullable|numeric|min:1',
             'uakhir' => 'nullable|numeric|min:1',
+            'milik' => 'required',
         ]);
 
         // Custom Validasi tambahan
@@ -194,6 +208,7 @@ class PerangkatController extends Controller
             'type' => $request->type,
             'uawal' => $request->uawal,
             'uakhir' => $request->uakhir,
+            'milik' => $request->milik,
         ]);
         // Redirect kembali dengan pesan sukses
         return redirect()->route('perangkat.index')

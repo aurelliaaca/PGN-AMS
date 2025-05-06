@@ -22,6 +22,7 @@ class HistoriPerangkat extends Model
         'uawal',
         'uakhir',
         'histori',
+        'milik',
         'tanggal_perubahan',
     ];
 
