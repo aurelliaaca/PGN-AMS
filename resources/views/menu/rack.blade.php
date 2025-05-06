@@ -271,18 +271,36 @@ function loadRacks() {
             
             // Generate table rows for rack details
             rack.details.forEach(detail => {
-                let deviceInfo = 'IDLE';
-                
-                // Check if this position belongs to the user or if user is admin
-                const isUserPosition = {{ auth()->user()->role }} === 1 || detail.milik === '{{ auth()->user()->name }}';
-                
-                if (isUserPosition) {
-                    if (detail.id_perangkat) {
-                        deviceInfo = detail.id_perangkat;
-                    } else if (detail.id_fasilitas) {
-                        deviceInfo = detail.id_fasilitas;
-                    }
+            let deviceInfo = 'IDLE';
+            const isUserPosition = {{ auth()->user()->role }} === 1 || detail.milik === '{{ auth()->user()->name }}';
+
+            if (isUserPosition) {
+                if (detail.id_perangkat && detail.listperangkat) {
+                    const deviceCode = [
+                        detail.listperangkat.kode_region,
+                        detail.listperangkat.kode_site,
+                        detail.listperangkat.no_rack,
+                        detail.listperangkat.kode_perangkat,
+                        detail.listperangkat.perangkat_ke,
+                        detail.listperangkat.kode_brand,
+                        detail.listperangkat.type
+                    ].filter(Boolean).join('-');
+
+                    deviceInfo = deviceCode || detail.id_perangkat; // Fallback kalau deviceCode kosong
+                } else if (detail.id_fasilitas && detail.listfasilitas) {
+                    const facilityCode = [
+                        detail.listfasilitas.kode_region,
+                        detail.listfasilitas.kode_site,
+                        detail.listfasilitas.no_rack,
+                        detail.listfasilitas.kode_fasilitas, // Ganti kode_perangkat jadi kode_fasilitas
+                        detail.listfasilitas.perangkat_ke,
+                        detail.listfasilitas.kode_brand,
+                        detail.listfasilitas.type
+                    ].filter(Boolean).join('-');
+
+                    deviceInfo = facilityCode || detail.id_fasilitas; // Fallback kalau facilityCode kosong
                 }
+            }
                 
                 // Only show delete button for user-owned positions or admin
                 const showDeleteButton = isUserPosition;
