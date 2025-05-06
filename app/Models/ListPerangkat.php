@@ -29,6 +29,7 @@ class ListPerangkat extends Model
         'type',
         'uawal',
         'uakhir',
+        'milik',
     ];
 
     public function getRouteKeyName()

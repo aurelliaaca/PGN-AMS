@@ -19,7 +19,8 @@ class Rack extends Model
         'no_rack',
         'u',
         'id_fasilitas',
-        'id_perangkat'
+        'id_perangkat',
+        "milik"
     ];
 
     // Tentukan apakah primary key berupa kombinasi (jika menggunakan composite key)

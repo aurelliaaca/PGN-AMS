@@ -32,18 +32,20 @@
         <ul class="sidebar-links">
             <h4><span>Menu</span><div class="menu-separator"></div></h4>
             <li><a href="{{ route('home') }}"><span class="icon"><i class="fas fa-tachometer-alt"></i></span><span class="text">Dasbor</span></a></li>
+            @if(auth()->user()->role == '1' || auth()->user()->role == '2')
             <li><a href="{{ route('data') }}"><span class="icon"><i class="fas fa-database"></i></span><span class="text">Data</span></a></li>
+            @endif
             <li><a href="{{ route('rack.index') }}"><span class="icon"><i class="fas fa-server"></i></span><span class="text">Rack</span></a></li>
+            @if(auth()->user()->role == '1' || auth()->user()->role == '2')
             <li><a href="{{ route('semantik') }}"><span class="icon"><i class="fas fa-image"></i></span><span class="text">Semantik</span></a></li>
+            @endif
             <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span class="text">Histori</span></a></li>
 
-            @if(auth()->user()->role == '1' || auth()->user()->role == '2')
                 <h4><span>Aset</span><div class="menu-separator"></div></h4>
                 <li><a href="{{ route('perangkat.index') }}"><span class="icon"><i class="fas fa-tools"></i></span><span class="text">Perangkat</span></a></li>
                 <li><a href="{{ route('fasilitas.index') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span class="text">Fasilitas</span></a></li>
                 <li><a href="{{ route('alatukur.index') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span class="text">Alat Ukur</span></a></li>
                 <li><a href="{{ route('jaringan') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span class="text">Jaringan</span></a></li>
-            @endif
 
             <h4><span>Portal VMS</span><div class="menu-separator"></div></h4>
             @if(auth()->user()->role == '1')

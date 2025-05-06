@@ -8,6 +8,7 @@ use App\Models\ListAlatukur;
 // use App\Models\Listjaringan;
 use App\Models\Region;
 use App\Models\Site;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -30,16 +31,30 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
-    {
-        $jumlahPerangkat = ListPerangkat::count();
-        $jumlahFasilitas = ListFasilitas::count();
-        $jumlahAlatUkur = ListAlatukur::count();
-        // $jumlahJaringan = ListJaringan::count();
-        $jumlahRegion = Region::count();
-        $jumlahJenisSite = Site::select('jenis_site', DB::raw('count(*) as total'))
-            ->groupBy('jenis_site')
-            ->pluck('total', 'jenis_site');
-        return view('home', compact('jumlahPerangkat', 'jumlahFasilitas', 'jumlahAlatUkur', 'jumlahRegion', 'jumlahJenisSite'));
-    }
+
+     public function index()
+     {
+         // Mengambil nama user yang sedang login
+         $userName = Auth::user()->name; // Ambil nama user yang sedang login
+     
+         // Mengambil data berdasarkan nama user (milik == name)
+         $jumlahPerangkat = ListPerangkat::where('milik', $userName)->count();
+         $jumlahFasilitas = ListFasilitas::where('milik', $userName)->count();
+         $jumlahAlatUkur = ListAlatukur::where('milik', $userName)->count();
+         $jumlahRegion = Region::count();
+     
+         // Menghitung jumlah jenis site dan totalnya
+         $jumlahJenisSite = Site::select('jenis_site', DB::raw('count(*) as total'))
+             ->groupBy('jenis_site')
+             ->pluck('total', 'jenis_site');
+     
+         // Mengirim data ke view
+         return view('home', compact(
+             'jumlahPerangkat',
+             'jumlahFasilitas',
+             'jumlahAlatUkur',
+             'jumlahRegion',
+             'jumlahJenisSite'
+         ));
+     }     
 }

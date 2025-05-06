@@ -29,6 +29,7 @@ class ListFasilitas extends Model
         'status',
         'uawal',
         'uakhir',
+        'milik',
     ];
 
     public function getRouteKeyName()

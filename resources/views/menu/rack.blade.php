@@ -94,7 +94,6 @@
         transform: rotate(360deg);
     }
 }
-
 </style>
 
 <script>
@@ -172,7 +171,7 @@ function createPieChart(elementId, filledU, emptyU) {
 // Function to load rack data
 function loadRacks() {
     const loadingOverlay = document.getElementById('loading-overlay');
-    loadingOverlay.style.display = 'flex'; // Tampilkan overlay loading
+    loadingOverlay.style.display = 'flex';
 
     const selectedRegions = $('#region-filter').val() || [];
     const selectedSites = $('#site-filter').val() || [];
@@ -193,9 +192,20 @@ function loadRacks() {
     })
     .then(response => response.json())
     .then(data => {
+        loadingOverlay.style.display = 'none';
+        
+        if (data.error) {
+            racksContainer.innerHTML = `
+                <div class="error-message" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 24px;"></i>
+                    <p style="color: #ff6b6b; margin-top: 10px;">${data.message}</p>
+                </div>
+            `;
+            return;
+        }
+
         // Generate HTML for racks
         let racksHtml = '';
-        const racksContainer = document.getElementById('racks-container');
         
         // Filter racks based on selected regions and sites
         const filteredRacks = data.racks.filter(rack => {
@@ -209,6 +219,14 @@ function loadRacks() {
             return regionMatch && siteMatch && searchMatch;
         });
 
+        if (filteredRacks.length === 0) {
+            racksHtml = `
+                <div class="no-data-message" style="text-align: center; padding: 20px;">
+                    <i class="fas fa-info-circle" style="color: #4f52ba; font-size: 24px;"></i>
+                    <p style="color: #4f52ba; margin-top: 10px;">Tidak ada rack yang tersedia</p>
+                </div>
+            `;
+        } else {
         racksHtml += `
             <div class="card-grid" style="margin-top: 20px;">
         `;
@@ -220,7 +238,8 @@ function loadRacks() {
             
             racksHtml += `
                 <div class="toggle">
-                    <div class="card-item primary clickable" onclick="toggleTable('${tableId}')">                        <div class="icon-wrapper-chart">
+                        <div class="card-item primary clickable" onclick="toggleTable('${tableId}')">
+                            <div class="icon-wrapper-chart">
                             <canvas id="${chartId}" style="width: 150px; height: 150px;"></canvas>
                         </div>
                         <div class="card-content">
@@ -242,7 +261,9 @@ function loadRacks() {
                                     <tr>
                                         <th>ID U</th>
                                         <th>ID Perangkat/Fasilitas</th>
+                                        @if(auth()->user()->role == '1' || auth()->user()->role == '2')
                                         <th>Aksi</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -252,31 +273,34 @@ function loadRacks() {
             rack.details.forEach(detail => {
                 let deviceInfo = 'IDLE';
                 
-                if (detail.listperangkat) {
-                    let deviceCode = [
-                        detail.listperangkat.kode_region,
-                        detail.listperangkat.kode_site,
-                        detail.listperangkat.no_rack,
-                        detail.listperangkat.kode_perangkat,
-                        detail.listperangkat.perangkat_ke,
-                        detail.listperangkat.kode_brand,
-                        detail.listperangkat.type
-                    ].filter(Boolean).join('-');
-                    
-                    deviceInfo = deviceCode;
-                } else if (detail.listfasilitas) {
-                    deviceInfo = detail.listfasilitas.nama_fasilitas;
+                // Check if this position belongs to the user or if user is admin
+                const isUserPosition = {{ auth()->user()->role }} === 1 || detail.milik === '{{ auth()->user()->name }}';
+                
+                if (isUserPosition) {
+                    if (detail.id_perangkat) {
+                        deviceInfo = detail.id_perangkat;
+                    } else if (detail.id_fasilitas) {
+                        deviceInfo = detail.id_fasilitas;
+                    }
                 }
+                
+                // Only show delete button for user-owned positions or admin
+                const showDeleteButton = isUserPosition;
                 
                 racksHtml += `
                     <tr>
                         <td>${detail.u}</td>
                         <td>${deviceInfo}</td>
+                        @if(auth()->user()->role == '1' || auth()->user()->role == '2')
+
                         <td>
-                            <button class="btn btn-delete" onclick="confirmDeleteU('${rack.kode_region}', '${rack.kode_site}', '${rack.no_rack}', '${detail.u}')">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            ${showDeleteButton ? `
+                                <button class="btn btn-delete" onclick="confirmDeleteU('${rack.kode_region}', '${rack.kode_site}', '${rack.no_rack}', '${detail.u}')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            ` : ''}
                         </td>
+                        @endif
                     </tr>
                 `;
             });
@@ -293,18 +317,17 @@ function loadRacks() {
         racksHtml += `
             </div>
         `;
+        }
         
         racksContainer.innerHTML = racksHtml;
         
         // Reinitialize charts
-        data.racks.forEach(rack => {
+        filteredRacks.forEach(rack => {
             const chartId = `pieChart-${rack.kode_region}-${rack.kode_site}-${rack.no_rack}`;
             setTimeout(() => {
                 createPieChart(chartId, rack.filled_u, rack.empty_u);
             }, 0);
         });
-        
-        loadingOverlay.style.display = 'none'; // Hentikan loading overlay setelah data selesai dimuat
     })
     .catch(error => {
         console.error('Error loading rack data:', error);
@@ -314,6 +337,7 @@ function loadRacks() {
             <div class="error-message" style="text-align: center; padding: 20px;">
                 <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 24px;"></i>
                 <p style="color: #ff6b6b; margin-top: 10px;">Failed to load rack data. Please try again later.</p>
+                <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Error details: ${error.message}</p>
             </div>
         `;
     });
@@ -503,6 +527,13 @@ $(document).ready(function() {
     });
 
     loadRacks();
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            event.target.style.display = 'none';
+        }
+    }
 });
 </script>
 @endsection
