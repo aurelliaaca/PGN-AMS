@@ -18,10 +18,28 @@ class HistoriController extends Controller
 
      // Display data for perangkat (device history)
      public function showHistoriPerangkat()
-     {
-        $historiperangkat = HistoriPerangkat::with('region', 'site', 'jenisperangkat', 'brandperangkat')->get();
-        return view('menu.histori.historiperangkat', compact('historiperangkat'));
-     }
+{
+    // Mendapatkan data pengguna yang sedang login
+    $user = auth()->user();  
+    $role = $user->role;  // Mengambil role pengguna
+
+    // Query untuk HistoriPerangkat
+    $query = HistoriPerangkat::with('region', 'site', 'jenisperangkat', 'brandperangkat')
+        ->orderBy('tanggal_perubahan', 'desc');
+
+    // Jika role 3 atau 4, filter berdasarkan milik (id pengguna)
+    if ($role == 3 || $role == 4) {
+        $query->where('milik', $user->id);
+    }
+
+    // Menjalankan query
+    $historiperangkat = $query->get();
+
+    // Mengirim data ke view
+    return view('menu.histori.historiperangkat', compact('historiperangkat'));
+}
+
+
  
      // Display data for fasilitas (facility history)
      public function showHistoriFasilitas()

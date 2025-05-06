@@ -21,13 +21,22 @@ class PerangkatController extends Controller
     $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
     $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
     $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
-    $users = User::select('id','name')->orderBy('name')->get();
+    $users = User::select('id', 'name')->orderBy('name')->get();
     $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
-    ->distinct()
-    ->get();
+        ->distinct()
+        ->get();
 
+    // Cek role pengguna saat ini
+    $user = auth()->user();  // Mendapatkan user yang sedang login
+    $role = $user->role;     // Mengambil role pengguna
 
+    // Query ListPerangkat
     $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
+
+    // Jika role 3 atau 4, filter berdasarkan milik (id pengguna)
+    if ($role == 3 || $role == 4) {
+        $query->where('milik', $user->id);
+    }
 
     $dataperangkat = $query->get();
 
@@ -129,6 +138,7 @@ class PerangkatController extends Controller
             'uakhir' => $request->uakhir,
             'milik' => $request->milik,
             'histori' => 'Ditambahkan',
+            'tanggal_perubahan' => Carbon::now('Asia/Jakarta'), // Menambahkan waktu dengan timezone yang diinginkan
         ]);
     
         // Masukkan atau update data Rack untuk setiap nilai 'u'
@@ -210,6 +220,26 @@ class PerangkatController extends Controller
             'uakhir' => $request->uakhir,
             'milik' => $request->milik,
         ]);
+
+        if ($request->no_rack) {
+            for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
+                Rack::updateOrInsert(
+                    [
+                        'kode_region' => $request->kode_region,
+                        'kode_site' => $request->kode_site,
+                        'no_rack' => $request->no_rack,
+                        'u' => $u,
+                    ],
+                    [
+                        'id_perangkat' => $request->id_perangkat,
+                        'milik' => $request->milik,
+                        'updated_at' => now(),
+                        'created_at' => now(),
+                    ]
+                );
+            }
+        }        
+        
         // Redirect kembali dengan pesan sukses
         return redirect()->route('perangkat.index')
             ->with('success', 'Perangkat berhasil diupdate.')

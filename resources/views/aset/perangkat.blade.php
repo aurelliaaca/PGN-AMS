@@ -9,11 +9,13 @@
 
 @section('content')
     <div class="main">
+        @if(auth()->user()->role == '1')
         <div class="button-wrapper">
             <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Perangkat</button>
         </div>
+        @endif
 
         <div class="table-responsive">
             <table id="perangkatTable" class="table table-bordered table-striped">
@@ -51,6 +53,7 @@
                                         onclick="openModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">
                                         <i class="fas fa-eye"></i> Lihat
                                     </button>   
+                                    @if(auth()->user()->role == '1')
                                     <button class="btn btn-edit btn-sm mb-1"
                                         onclick="openModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">
                                         <i class="fas fa-edit"></i> Edit
@@ -66,6 +69,7 @@
                                         @csrf
                                         @method('DELETE')
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

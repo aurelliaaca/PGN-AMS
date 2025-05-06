@@ -9,29 +9,31 @@ use App\Models\ListPerangkat;
 
 class RackController extends Controller
 {
-    public function indexRack() {
+    public function indexRack()
+    {
         $regions = Region::all();
         $sites = Site::all();
-        
+
         // Get racks based on user role
         $racks = Rack::with(['region', 'site'])
             ->select('kode_region', 'kode_site', 'no_rack')
-            ->when(auth()->user()->role != 1, function($query) {
+            ->when(auth()->user()->role != 1, function ($query) {
                 return $query->where('milik', auth()->user()->id);
             })
             ->groupBy('kode_region', 'kode_site', 'no_rack')
             ->get();
-        
+
         return view('menu.rack', compact('regions', 'sites', 'racks'));
     }
-    
-    public function loadRacks(Request $request) {
+
+    public function loadRacks(Request $request)
+    {
         try {
             $query = Rack::with(['region', 'site', 'listperangkat', 'listfasilitas'])
                 ->select('kode_region', 'kode_site', 'no_rack')
-                ->when(auth()->user()->role != 1, function($query) {
+                ->when(auth()->user()->role != 1, function ($query) {
                     // Get racks where user has at least one position
-                    return $query->whereExists(function($subquery) {
+                    return $query->whereExists(function ($subquery) {
                         $subquery->select(\DB::raw(1))
                             ->from('rack as r')
                             ->whereColumn('r.kode_region', 'rack.kode_region')
@@ -41,16 +43,16 @@ class RackController extends Controller
                     });
                 })
                 ->groupBy('kode_region', 'kode_site', 'no_rack');
-                
+
             // Apply filters if provided
             if ($request->has('region') && $request->region !== 'all') {
                 $query->where('kode_region', $request->region);
             }
-            
+
             if ($request->has('site') && $request->site !== 'all') {
                 $query->where('kode_site', $request->site);
             }
-            
+
             $racks = $query->get()
                 ->map(function ($rack) {
                     try {
@@ -61,21 +63,21 @@ class RackController extends Controller
                             ->where('no_rack', $rack->no_rack)
                             ->orderBy('u', 'desc')
                             ->get();
-                        
+
                         // Calculate total U based on the number of unique rows
                         $totalU = $rackDetails->count();
-                        
+
                         // Calculate filled and empty U's (only count user's positions for non-admin)
                         $filledU = $rackDetails->filter(function ($detail) {
                             if (auth()->user()->role == 1) {
                                 return !is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas);
                             }
-                            return $detail->milik === auth()->user()->id && 
-                                   (!is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas));
+                            return $detail->milik === auth()->user()->id &&
+                                (!is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas));
                         })->count();
-                        
+
                         $emptyU = $totalU - $filledU;
-                        
+
                         // Count unique devices (based on id_perangkat)
                         $uniqueDevices = $rackDetails->filter(function ($detail) {
                             if (auth()->user()->role == 1) {
@@ -83,7 +85,7 @@ class RackController extends Controller
                             }
                             return $detail->milik === auth()->user()->id && !is_null($detail->id_perangkat);
                         })->pluck('listperangkat.id_perangkat')->unique()->filter()->count();
-                        
+
                         // Count unique facilities (based on id_fasilitas)
                         $uniqueFacilities = $rackDetails->filter(function ($detail) {
                             if (auth()->user()->role == 1) {
@@ -91,13 +93,13 @@ class RackController extends Controller
                             }
                             return $detail->milik === auth()->user()->id && !is_null($detail->id_fasilitas);
                         })->pluck('listfasilitas.id_fasilitas')->unique()->filter()->count();
-                        
+
                         $rack->details = $rackDetails;
                         $rack->filled_u = $filledU;
                         $rack->empty_u = $emptyU;
                         $rack->device_count = $uniqueDevices;
                         $rack->facility_count = $uniqueFacilities;
-                        
+
                         return $rack;
                     } catch (\Exception $e) {
                         \Log::error('Error processing rack details: ' . $e->getMessage());
@@ -106,9 +108,9 @@ class RackController extends Controller
                 })
                 ->filter()
                 ->values();
-            
+
             $regions = Region::all();
-            
+
             return response()->json([
                 'racks' => $racks,
                 'regions' => $regions,
@@ -124,12 +126,12 @@ class RackController extends Controller
     }
 
     public function getSites(Request $request)
-{
-    $regions = $request->get('regions', []);
-    $sites = Site::whereIn('kode_region', $regions)
-                 ->pluck('nama_site', 'kode_site');
-    return response()->json($sites);
-}
+    {
+        $regions = $request->get('regions', []);
+        $sites = Site::whereIn('kode_region', $regions)
+            ->pluck('nama_site', 'kode_site');
+        return response()->json($sites);
+    }
 
     public function storeRack(Request $request)
     {
@@ -166,7 +168,7 @@ class RackController extends Controller
         $hasOccupiedU = Rack::where('kode_region', $validated['kode_region'])
             ->where('kode_site', $validated['kode_site'])
             ->where('no_rack', $validated['no_rack'])
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->whereNotNull('id_perangkat')
                     ->orWhereNotNull('id_fasilitas');
             })
@@ -217,6 +219,14 @@ class RackController extends Controller
             // Kosongkan id_perangkat di semua baris yang pakai id ini
             Rack::where('id_perangkat', $dataRack->id_perangkat)
                 ->update(['id_perangkat' => null]);
+
+            // Kosongkan uawal dan uakhir di listperangkat
+            ListPerangkat::where('id_perangkat', $dataRack->id_perangkat)
+                ->update([
+                    'no_rack' => null,
+                    'uawal' => null,
+                    'uakhir' => null,
+                ]);
         }
 
         // Kosongkan id_fasilitas jika ada

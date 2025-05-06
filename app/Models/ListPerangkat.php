@@ -102,7 +102,7 @@ class ListPerangkat extends Model
                 'uakhir' => $perangkat->uakhir,
                 'milik' => $perangkat->milik,
                 'histori' => $histori,
-                'tanggal_perubahan' => Carbon::now(),
+                'tanggal_perubahan' => Carbon::now('Asia/Jakarta'), // Menambahkan waktu dengan timezone yang diinginkan
             ]);
         });
 
@@ -121,7 +121,7 @@ class ListPerangkat extends Model
                 'uakhir' => $perangkat->uakhir,
                 'milik' => $perangkat->milik,
                 'histori' => 'Dihapus',
-                'tanggal_perubahan' => Carbon::now(),
+                'tanggal_perubahan' => Carbon::now('Asia/Jakarta'), // Menambahkan waktu dengan timezone yang diinginkan
             ]);
         });
     }

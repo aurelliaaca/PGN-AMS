@@ -35,7 +35,7 @@ class HomeController extends Controller
      public function index()
      {
          // Mengambil nama user yang sedang login
-         $userName = Auth::user()->name; // Ambil nama user yang sedang login
+         $userName = Auth::user()->id; // Ambil nama user yang sedang login
      
          // Mengambil data berdasarkan nama user (milik == name)
          $jumlahPerangkat = ListPerangkat::where('milik', $userName)->count();
