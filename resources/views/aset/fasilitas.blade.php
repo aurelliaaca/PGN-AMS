@@ -9,13 +9,15 @@
 
 @section('content')
     <div class="main">
-        <div class="button-wrapper">
-            <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
-            <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
-                Fasilitas</button>
-            <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data
-                Fasilitas</button>
-        </div>
+        @if(auth()->user()->role == '1')
+            <div class="button-wrapper">
+                <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
+                    Fasilitas</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data
+                    Fasilitas</button>
+            </div>
+        @endif
 
         <div class="table-responsive">
             <table id="fasilitasTable" class="table table-bordered table-striped">
@@ -51,25 +53,26 @@
                                         onclick="openModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">
                                         <i class="fas fa-eye"></i> Lihat
                                     </button>
-                                    <button class="btn btn-edit btn-sm mb-1"
-                                        onclick="openModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button class="btn btn-delete btn-sm"
-                                        onclick="confirmDelete({{ $fasilitas->id_fasilitas }})">
-                                        <i class="fas fa-trash-alt"></i> Hapus
-                                    </button>
+                                    @if(auth()->user()->role == '1')
+                                        <button class="btn btn-edit btn-sm mb-1"
+                                            onclick="openModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-delete btn-sm"
+                                            onclick="confirmDelete({{ $fasilitas->id_fasilitas }})">
+                                            <i class="fas fa-trash-alt"></i> Hapus
+                                        </button>
 
-                                    <form id="delete-form-{{ $fasilitas->id_fasilitas }}"
-                                        action="{{ route('fasilitas.destroy', $fasilitas->id_fasilitas) }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                                        <form id="delete-form-{{ $fasilitas->id_fasilitas }}"
+                                            action="{{ route('fasilitas.destroy', $fasilitas->id_fasilitas) }}" method="POST"
+                                            style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
-                        <!-- Modal View -->
                         <div id="modalViewFasilitas{{ $fasilitas->id_fasilitas }}" class="modal">
                             <div class="modal-content">
                                 <span class="close"
@@ -82,10 +85,6 @@
                                         <input type="text" value="{{ $fasilitas->region->nama_region }}" readonly
                                             class="form-control">
 
-                                        <label>Site</label>
-                                        <input type="text" value="{{ $fasilitas->site->nama_site }}" readonly
-                                            class="form-control">
-
                                         <label>No Rack</label>
                                         <input type="text" value="{{ $fasilitas->no_rack }}" readonly class="form-control">
 
@@ -93,18 +92,28 @@
                                         <input type="text" value="{{ $fasilitas->jenisfasilitas->nama_fasilitas }}" readonly
                                             class="form-control">
 
-                                        <label>Brand</label>
-                                        <input type="text" value="{{ optional($fasilitas->brandfasilitas)->nama_brand }}"
-                                            readonly class="form-control">
+                                        <label>Fasilitas ke-</label>
+                                        <input type="text" value="{{ $fasilitas->fasilitas_ke }}" readonly class="form-control">
 
                                         <label>Tipe</label>
                                         <input type="text" value="{{ $fasilitas->type }}" readonly class="form-control">
 
+                                        <label>U Awal - U Akhir</label>
+                                        <input type="text" value="{{ $fasilitas->uawal }} - {{ $fasilitas->uakhir }}" readonly
+                                            class="form-control">
                                     </div>
 
                                     <div style="width: 48%;">
-                                        <label>Fasilitas ke-</label>
-                                        <input type="text" value="{{ $fasilitas->fasilitas_ke }}" readonly class="form-control">
+                                        <label>Site</label>
+                                        <input type="text" value="{{ $fasilitas->site->nama_site }}" readonly class="form-control">
+
+                                        <label>Brand</label>
+                                        <input type="text" value="{{ optional($fasilitas->brandfasilitas)->nama_brand }}"
+                                            readonly class="form-control">
+
+                                        <label>Milik</label>
+                                        <input type="text" value="{{ $fasilitas->user?->name }}" readonly class="form-control">
+
 
                                         <label>Serial Number</label>
                                         <input type="text" value="{{ $fasilitas->serialnumber }}" readonly class="form-control">
@@ -116,9 +125,6 @@
                                         <label>Status</label>
                                         <input type="text" value="{{ $fasilitas->status }}" readonly class="form-control">
 
-                                        <label>U Awal - U Akhir</label>
-                                        <input type="text" value="{{ $fasilitas->uawal }} - {{ $fasilitas->uakhir }}" readonly
-                                            class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -128,9 +134,9 @@
                         <div id="modalEditFasilitas{{ $fasilitas->id_fasilitas }}" class="modal">
                             <div class="modal-content">
                                 <span class="close"
-                                    onclick="closeModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">&times;</span>
+                                    onclick="closeModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">×</span>
                                 <h5>Edit Fasilitas</h5>
-                                <action="{{ route('fasilitas.update', $fasilitas->id_fasilitas) }}" method="POST">
+                                <form action="{{ route('fasilitas.update', $fasilitas->id_fasilitas) }}" method="POST">
                                     @csrf
                                     @method('PUT')
                                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
@@ -157,14 +163,23 @@
                                             </select>
 
                                             <label>No Rack</label>
-                                            <input type="text" name="no_rack" class="form-control"
-                                                value="{{ $fasilitas->no_rack ?? '' }}">
+                                            <select name="no_rack" class="form-control noRackSelectEdit"
+                                                data-id="{{ $fasilitas->id_fasilitas }}">
+                                                <option value="">Pilih No Rack</option>
+                                                @foreach($racks as $rack)
+                                                    @if($rack->kode_region == $fasilitas->kode_region && $rack->kode_site == $fasilitas->kode_site)
+                                                        <option value="{{ $rack->no_rack }}" {{ $fasilitas->no_rack == $rack->no_rack ? 'selected' : '' }}>
+                                                            {{ $rack->no_rack }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
 
                                             <label>Type</label>
                                             <input type="text" name="type" class="form-control"
                                                 value="{{ $fasilitas->type ?? '' }}">
 
-                                                <label>U Awal</label>
+                                            <label>U Awal</label>
                                             <input type="number" name="uawal" class="form-control"
                                                 value="{{ $fasilitas->uawal ?? '' }}">
 
@@ -174,7 +189,7 @@
                                         </div>
 
                                         <div style="width: 48%;">
-                                        <label>Kode Site</label>
+                                            <label>Kode Site</label>
                                             <select name="kode_site" class="form-control siteSelectEdit"
                                                 data-id="{{ $fasilitas->id_fasilitas }}" required>
                                                 <option value="">Pilih Site</option>
@@ -197,6 +212,16 @@
                                                 @endforeach
                                             </select>
 
+                                            <label>Milik</label>
+                                            <select name="milik" class="form-control" required>
+                                                <option value="">Pilih Kepemilikan</option>
+                                                @foreach($users as $milik)
+                                                    <option value="{{ $milik->id }}" {{ $fasilitas->milik == $milik->id ? 'selected' : '' }}>
+                                                        {{ $milik->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
                                             <label>Serial Number</label>
                                             <input type="text" name="serialnumber" class="form-control"
                                                 value="{{ $fasilitas->serialnumber ?? '' }}">
@@ -210,9 +235,8 @@
                                                 value="{{ $fasilitas->status ?? '' }}">
                                         </div>
                                     </div>
-
                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                    </form>
+                                </form>
                             </div>
                         </div>
                     @endforeach
@@ -240,7 +264,7 @@
                 <span class="close" onclick="closeModal('exportModal')">&times;</span>
                 <h5>Ekspor Data Fasilitas</h5>
                 <form id="exportForm" action="{{ url('export/fasilitas') }}" method="POST">
-                @csrf
+                    @csrf
                     <div class="mb-3">
                         <label for="regions">Pilih Region:</label>
                         <div id="regions">
@@ -294,8 +318,12 @@
                                 @endforeach
                             </select>
 
-                            <label>No Rack</label>
-                            <input type="text" name="no_rack" class="form-control" id="no_rack" value="">
+                            <div class="mb-3">
+                                <label>No Rack</label>
+                                <select id="noRackSelectTambah" name="no_rack" class="form-control" disabled>
+                                    <option value="">Pilih Rack</option>
+                                </select>
+                            </div>
 
                             <label>Type</label>
                             <input type="text" name="type" class="form-control" value="">
@@ -308,10 +336,12 @@
                         </div>
 
                         <div style="width: 48%;">
-                            <label>Kode Site</label>
-                            <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
-                                <option value="">Pilih Site</option>
-                            </select>
+                            <div class="mb-3">
+                                <label>Kode Site</label>
+                                <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
+                                    <option value="">Pilih Site</option>
+                                </select>
+                            </div>
 
                             <label>Kode Brand</label>
                             <select name="kode_brand" class="form-control">
@@ -323,6 +353,16 @@
                                 @endforeach
                             </select>
 
+                            <div class="mb-3">
+                                <label>Milik</label>
+                                <select name="milik" class="form-control" required>
+                                    <option value="">Pilih Kepemilikan</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <label>Serial Number</label>
                             <input type="text" name="serialnumber" class="form-control" value="">
 
@@ -332,7 +372,7 @@
                             <label>Status</label>
                             <input type="text" name="status" class="form-control" value="">
                         </div>
-                    </div>                       
+                    </div>
                     <button type="submit" class="btn btn-primary">Tambah</button>
                 </form>
             </div>
@@ -371,7 +411,7 @@
                     ]
                 });
             });
-            
+
             document.getElementById('regionSelectTambah').addEventListener('change', function () {
                 const regionId = this.value;
                 const siteSelect = document.getElementById('siteSelectTambah');
@@ -391,6 +431,85 @@
                         siteSelect.appendChild(option);
                     });
                 }
+            });
+
+            document.getElementById('siteSelectTambah').addEventListener('change', function () {
+                const siteId = this.value;
+                const regionId = document.getElementById('regionSelectTambah').value;
+                const rackSelect = document.getElementById('noRackSelectTambah');
+
+                rackSelect.innerHTML = '<option value="">Pilih Rack</option>';
+                rackSelect.disabled = true;
+
+                if (regionId && siteId) {
+                    rackSelect.disabled = false;
+
+                    // Mengambil data racks yang sudah ada di view
+                    const racks = @json($racks); // Data racks yang sudah dipassing ke view
+                    const filteredRacks = racks.filter(rack => rack.kode_region == regionId && rack.kode_site == siteId);
+
+                    filteredRacks.forEach(rack => {
+                        const option = document.createElement('option');
+                        option.value = rack.no_rack;
+                        option.textContent = rack.no_rack;
+                        rackSelect.appendChild(option);
+                    });
+                }
+            });
+
+
+            // Edit form region change handler
+            document.querySelectorAll('.regionSelectEdit').forEach(select => {
+                select.addEventListener('change', function () {
+                    const regionId = this.value;
+                    const fasilitasId = this.getAttribute('data-id');
+                    const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${fasilitasId}"]`);
+                    const rackSelect = document.querySelector(`.noRackSelectEdit[data-id="${fasilitasId}"]`);
+
+                    siteSelect.innerHTML = '<option value="">Pilih Site</option>';
+                    rackSelect.innerHTML = '<option value="">Pilih No Rack</option>';
+                    siteSelect.disabled = true;
+                    rackSelect.disabled = true;
+
+                    if (regionId) {
+                        siteSelect.disabled = false;
+                        const sites = @json($sites);
+                        const filteredSites = sites.filter(site => site.kode_region == regionId);
+
+                        filteredSites.forEach(site => {
+                            const option = document.createElement('option');
+                            option.value = site.kode_site;
+                            option.textContent = site.nama_site;
+                            siteSelect.appendChild(option);
+                        });
+                    }
+                });
+            });
+
+            // Edit form site change handler
+            document.querySelectorAll('.siteSelectEdit').forEach(select => {
+                select.addEventListener('change', function () {
+                    const siteId = this.value;
+                    const fasilitasId = this.getAttribute('data-id');
+                    const regionId = document.querySelector(`.regionSelectEdit[data-id="${fasilitasId}"]`).value;
+                    const rackSelect = document.querySelector(`.noRackSelectEdit[data-id="${fasilitasId}"]`);
+
+                    rackSelect.innerHTML = '<option value="">Pilih No Rack</option>';
+                    rackSelect.disabled = true;
+
+                    if (regionId && siteId) {
+                        rackSelect.disabled = false;
+                        const racks = @json($racks);
+                        const filteredRacks = racks.filter(rack => rack.kode_region == regionId && rack.kode_site == siteId);
+
+                        filteredRacks.forEach(rack => {
+                            const option = document.createElement('option');
+                            option.value = rack.no_rack;
+                            option.textContent = rack.no_rack;
+                            rackSelect.appendChild(option);
+                        });
+                    }
+                });
             });
 
             document.getElementById('no_rack').addEventListener('input', function () {
@@ -422,35 +541,12 @@
                 }
             });
 
-            document.querySelectorAll('.regionSelectEdit').forEach(select => {
-                select.addEventListener('change', function () {
-                    const regionId = this.value;
-                    const fasilitasId = this.getAttribute('data-id');
-                    const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${fasilitasId}"]`);
-
-                    siteSelect.innerHTML = '<option value="">Pilih Site</option>';
-                    siteSelect.disabled = true;
-
-                    if (regionId) {
-                        siteSelect.disabled = false;
-                        const sites = @json($sites);
-                        const filteredSites = sites.filter(site => site.kode_region == regionId);
-
-                        filteredSites.forEach(site => {
-                            const option = document.createElement('option');
-                            option.value = site.kode_site;
-                            option.textContent = site.nama_site;
-                            siteSelect.appendChild(option);
-                        });
-                    }
-                });
-            });
-
+            // Add form validation
             document.querySelectorAll('form[action*="fasilitas/update"]').forEach(form => {
                 form.addEventListener('submit', function (event) {
                     const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
                     const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);
-                    const noRack = this.querySelector('input[name="no_rack"]').value;
+                    const noRack = this.querySelector('select[name="no_rack"]').value;
 
                     if (noRack && (!uawal || !uakhir)) {
                         alert('U Awal dan U Akhir wajib diisi jika No Rack diisi.');
@@ -470,8 +566,7 @@
                 });
             });
 
-
-        document.getElementById('exportForm').addEventListener('submit', function (e) {
+            document.getElementById('exportForm').addEventListener('submit', function (e) {
                 e.preventDefault(); // Biar gak reload halaman
 
                 const form = e.target;
@@ -484,38 +579,38 @@
                     },
                     body: formData
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Gagal ekspor data!');
-                    }
-                    return response.blob(); // Misalnya kamu kirim file
-                })
-                .then(blob => {
-                    closeModal('exportModal');
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Gagal ekspor data!');
+                        }
+                        return response.blob(); // Misalnya kamu kirim file
+                    })
+                    .then(blob => {
+                        closeModal('exportModal');
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Data berhasil diekspor!',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Data berhasil diekspor!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
 
-                    // Kalau ingin langsung download file:
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    const format = formData.get('format');
-                    a.download = `datafasilitas.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
-                    a.click();
-                })
-                .catch(error => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops!',
-                        text: error.message
+                        // Kalau ingin langsung download file:
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const format = formData.get('format');
+                        a.download = `datafasilitas.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+                        a.click();
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: error.message
+                        });
                     });
-                });
             });
 
             function closeModal(id) {

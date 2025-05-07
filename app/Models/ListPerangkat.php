@@ -12,11 +12,11 @@ class ListPerangkat extends Model
 {
     use HasFactory;
 
-    protected $table = 'listperangkat'; // Nama tabel di database
+    protected $table = 'listperangkat';
 
-    public $timestamps = false; // Nggak pakai created_at dan updated_at
+    public $timestamps = false;
 
-    protected $primaryKey = 'id_perangkat'; // Primary key custom
+    protected $primaryKey = 'id_perangkat';
 
     protected $fillable = [
         'id_perangkat',
@@ -37,25 +37,21 @@ class ListPerangkat extends Model
         return 'id_perangkat';
     }
 
-    // Relasi ke tabel region
     public function region()
     {
         return $this->belongsTo(Region::class, 'kode_region', 'kode_region');
     }
 
-    // Relasi ke tabel site
     public function site()
     {
         return $this->belongsTo(Site::class, 'kode_site', 'kode_site');
     }
 
-    // Relasi ke tabel jenis perangkat
     public function jenisperangkat()
     {
         return $this->belongsTo(JenisPerangkat::class, 'kode_perangkat', 'kode_perangkat');
     }
 
-    // Relasi ke tabel brand perangkat
     public function brandperangkat()
     {
         return $this->belongsTo(BrandPerangkat::class, 'kode_brand', 'kode_brand');
@@ -76,17 +72,28 @@ class ListPerangkat extends Model
         return $this->belongsTo(User::class, 'milik', 'id');
     }
 
-    // Event untuk mencatat perubahan data perangkat
     protected static function booted()
     {
-        // Saat data diedit (update)
         static::updating(function ($perangkat) {
-            $changes = $perangkat->getDirty(); // Ambil data yang diubah
-            $histori = 'Diedit: ';
-            
-            foreach ($changes as $field => $newValue) {
-                $oldValue = $perangkat->getOriginal($field); // Ambil nilai lama
-                $histori .= "$field dari '$oldValue' menjadi '$newValue'. ";
+            $changes = $perangkat->getDirty();
+            if (count($changes) == 0) return;
+        
+            $isDikeluarkanDariRack = 
+                array_key_exists('no_rack', $changes) && $changes['no_rack'] === null &&
+                array_key_exists('uawal', $changes) && $changes['uawal'] === null &&
+                array_key_exists('uakhir', $changes) && $changes['uakhir'] === null;
+        
+            if ($isDikeluarkanDariRack && count($changes) == 3) {
+                $noRackLama = $perangkat->getOriginal('no_rack');
+                $uAwalLama = $perangkat->getOriginal('uawal');
+                $uAkhirLama = $perangkat->getOriginal('uakhir');
+                $histori = "Dikeluarkan dari rack $noRackLama u$uAwalLama – $uAkhirLama.";
+            } else {
+                $histori = 'Diedit: ';
+                foreach ($changes as $field => $newValue) {
+                    $oldValue = $perangkat->getOriginal($field);
+                    $histori .= "$field dari '$oldValue' menjadi '$newValue'. ";
+                }
             }
 
             DB::table('historiperangkat')->insert([
@@ -121,7 +128,7 @@ class ListPerangkat extends Model
                 'uakhir' => $perangkat->uakhir,
                 'milik' => $perangkat->milik,
                 'histori' => 'Dihapus',
-                'tanggal_perubahan' => Carbon::now('Asia/Jakarta'), // Menambahkan waktu dengan timezone yang diinginkan
+                'tanggal_perubahan' => Carbon::now('Asia/Jakarta'),
             ]);
         });
     }

@@ -16,50 +16,61 @@ class HistoriController extends Controller
         return view('menu.histori');
     }
 
-     // Display data for perangkat (device history)
-     public function showHistoriPerangkat()
-{
-    // Mendapatkan data pengguna yang sedang login
-    $user = auth()->user();  
-    $role = $user->role;  // Mengambil role pengguna
+    public function showHistoriPerangkat()
+    {
+        $user = auth()->user();
+        $role = $user->role;  
 
-    // Query untuk HistoriPerangkat
-    $query = HistoriPerangkat::with('region', 'site', 'jenisperangkat', 'brandperangkat')
-        ->orderBy('tanggal_perubahan', 'desc');
+        $query = HistoriPerangkat::with('region', 'site', 'jenisperangkat', 'brandperangkat')
+            ->orderBy('tanggal_perubahan', 'desc');
 
-    // Jika role 3 atau 4, filter berdasarkan milik (id pengguna)
-    if ($role == 3 || $role == 4) {
-        $query->where('milik', $user->id);
+        if ($role == 3 || $role == 4) {
+            $query->where('milik', $user->id);
+        }
+
+        $historiperangkat = $query->get();
+
+        return view('menu.histori.historiperangkat', compact('historiperangkat'));
+    }
+    public function showHistoriFasilitas()
+    {
+        $user = auth()->user();
+        $role = $user->role;  
+
+        $query = HistoriFasilitas::with('region', 'site', 'jenisfasilitas', 'brandfasilitas')
+            ->orderBy('tanggal_perubahan', 'desc');
+
+        if ($role == 3 || $role == 4) {
+            $query->where('milik', $user->id);
+        }
+
+        $historifasilitas = $query->get();
+
+        return view('menu.histori.historifasilitas', compact('historifasilitas'));
     }
 
-    // Menjalankan query
-    $historiperangkat = $query->get();
+    public function showHistoriAlatukur()
+    {
+        $user = auth()->user();
+        $role = $user->role;  
 
-    // Mengirim data ke view
-    return view('menu.histori.historiperangkat', compact('historiperangkat'));
-}
+        $query = HistoriAlatukur::with('region', 'jenisalatukur', 'brandalatukur')
+            ->orderBy('tanggal_perubahan', 'desc');
 
+        if ($role == 3 || $role == 4) {
+            $query->where('milik', $user->id);
+        }
 
- 
-     // Display data for fasilitas (facility history)
-     public function showHistoriFasilitas()
-     {
-         $historifasilitas = HistoriFasilitas::all(); // Fetch all facility history
-         return view('menu.histori.historifasilitas', compact('historifasilitas'));
-     }
- 
-     // Display data for alat ukur (measurement tools history)
-     public function showHistoriAlatukur()
-     {
-         $historialatukur = HistoriAlatukur::all(); // Fetch all measurement tools history
-         return view('menu.histori.historialatukur', compact('historialatukur'));
-     }
- 
-     // Display data for jaringan (network history)
-     public function showHistoriJaringan()
-     {
-         $historijaringan = HistoriJaringan::all(); // Fetch all network history
-         return view('menu.histori.historijaringan', compact('historijaringan'));
-     }
+        $historialatukur = $query->get();
+
+        return view('menu.histori.historialatukur', compact('historialatukur'));
+    }
+
+    // Display data for jaringan (network history)
+    public function showHistoriJaringan()
+    {
+        $historijaringan = HistoriJaringan::all(); // Fetch all network history
+        return view('menu.histori.historijaringan', compact('historijaringan'));
+    }
 
 }

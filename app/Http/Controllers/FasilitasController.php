@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\BrandFasilitas;
 use App\Models\JenisFasilitas;
@@ -20,8 +21,19 @@ class FasilitasController extends Controller
         $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
         $types = JenisFasilitas::select('kode_fasilitas', 'nama_fasilitas')->orderBy('nama_fasilitas')->get();
         $brands = BrandFasilitas::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
+        $users = User::select('id', 'name')->orderBy('name')->get();
+        $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
+            ->distinct()
+            ->get();
+
+        $user = auth()->user();
+        $role = $user->role;
 
         $query = ListFasilitas::with(['region', 'site', 'jenisfasilitas', 'brandfasilitas']);
+
+        if ($role == 3 || $role == 4) {
+            $query->where('milik', $user->id);
+        }
 
         $datafasilitas = $query->get();
 
@@ -30,13 +42,14 @@ class FasilitasController extends Controller
             'sites',
             'types',
             'brands',
-            'datafasilitas'
+            'datafasilitas',
+            'users',
+            'racks'
         ));
     }
 
     public function store(Request $request)
     {
-        // Validasi dasar
         $request->validate([
             'kode_region' => 'required',
             'kode_site' => 'required',
@@ -49,9 +62,9 @@ class FasilitasController extends Controller
             'status' => 'nullable',
             'uawal' => 'nullable|numeric|min:1',
             'uakhir' => 'nullable|numeric|min:1',
+            'milik' => 'required',
         ]);
 
-        // Custom Validasi tambahan
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -73,14 +86,12 @@ class FasilitasController extends Controller
                 ])->withInput();
             }
 
-            // Periksa apakah ada rentang 'u' yang tumpang tindih
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 $existingRack = Rack::where('kode_region', $request->kode_region)
                     ->where('kode_site', $request->kode_site)
                     ->where('no_rack', $request->no_rack)
                     ->where('u', $u)
                     ->where(function ($query) {
-                        // Cek apakah sudah ada fasilitas atau fasilitas pada rentang 'u' yang sama
                         $query->whereNotNull('id_fasilitas')
                             ->orWhereNotNull('id_fasilitas');
                     })
@@ -93,7 +104,6 @@ class FasilitasController extends Controller
             }
         }
 
-        // Logic untuk menambahkan fasilitas baru ke ListFasilitas
         $jumlahFasilitas = ListFasilitas::where('kode_site', $request->kode_site)->max('fasilitas_ke');
         $fasilitasKe = $jumlahFasilitas + 1;
 
@@ -110,6 +120,7 @@ class FasilitasController extends Controller
             'status' => $request->status,
             'uawal' => $request->uawal,
             'uakhir' => $request->uakhir,
+            'milik' => $request->milik,
         ]);
 
         HistoriFasilitas::create([
@@ -126,11 +137,12 @@ class FasilitasController extends Controller
             'status' => $request->status,
             'uawal' => $request->uawal,
             'uakhir' => $request->uakhir,
+            'milik' => $request->milik,
             'histori' => 'Ditambahkan',
+            'tanggal_perubahan' => Carbon::now('Asia/Jakarta'),
         ]);
 
-        // Masukkan atau update data Rack untuk setiap nilai 'u'
-        if ($request->filled('no_rack')) {
+        if ($request->no_rack) {
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 Rack::updateOrInsert(
                     [
@@ -141,12 +153,13 @@ class FasilitasController extends Controller
                     ],
                     [
                         'id_fasilitas' => $fasilitasBaru->id_fasilitas,
+                        'milik' => $request->milik,
                         'updated_at' => now(),
                         'created_at' => now(),
                     ]
                 );
             }
-        }
+        }   
 
         return redirect()->route('fasilitas.index')
             ->with('success', 'Fasilitas berhasil ditambahkan.')
@@ -158,7 +171,6 @@ class FasilitasController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validasi dasar
         $request->validate([
             'kode_region' => 'required',
             'kode_site' => 'required',
@@ -171,9 +183,9 @@ class FasilitasController extends Controller
             'status' => 'nullable',
             'uawal' => 'nullable|numeric|min:1',
             'uakhir' => 'nullable|numeric|min:1',
+            'milik' => 'required',
         ]);
 
-        // Custom Validasi tambahan
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -196,7 +208,6 @@ class FasilitasController extends Controller
             }
         }
 
-        // Temukan fasilitas berdasarkan ID dan lakukan update
         $fasilitas = ListFasilitas::findOrFail($id);
         $fasilitas->update([
             'kode_region' => $request->kode_region,
@@ -210,8 +221,27 @@ class FasilitasController extends Controller
             'status' => $request->status,
             'uawal' => $request->uawal,
             'uakhir' => $request->uakhir,
+            'milik' => $request->milik,
         ]);
-        // Redirect kembali dengan pesan sukses
+
+        if ($request->no_rack) {
+            for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
+                Rack::updateOrInsert(
+                    [
+                        'kode_region' => $request->kode_region,
+                        'kode_site' => $request->kode_site,
+                        'no_rack' => $request->no_rack,
+                        'u' => $u,
+                    ],
+                    [
+                        'id_fasilitas' => $request->id_fasilitas,
+                        'milik' => $request->milik,
+                        'updated_at' => now(),
+                        'created_at' => now(),
+                    ]
+                );
+            }
+        }       
         return redirect()->route('fasilitas.index')
             ->with('success', 'Fasilitas berhasil diupdate.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')

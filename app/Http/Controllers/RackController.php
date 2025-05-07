@@ -207,33 +207,42 @@ class RackController extends Controller
         $rack = $request->no_rack;
         $u = $request->u;
 
-        // Ambil 1 baris data Rack berdasarkan region, site, no rack, dan U
         $dataRack = Rack::where('kode_region', $region)
             ->where('kode_site', $site)
             ->where('no_rack', $rack)
             ->where('u', $u)
             ->firstOrFail();
 
-        // Kosongkan id_perangkat jika ada
+        // Kalau ada perangkat
         if ($dataRack->id_perangkat) {
-            // Kosongkan id_perangkat di semua baris yang pakai id ini
+            // Kosongkan di Rack
             Rack::where('id_perangkat', $dataRack->id_perangkat)
                 ->update(['id_perangkat' => null]);
 
-            // Kosongkan uawal dan uakhir di listperangkat
-            ListPerangkat::where('id_perangkat', $dataRack->id_perangkat)
-                ->update([
-                    'no_rack' => null,
-                    'uawal' => null,
-                    'uakhir' => null,
-                ]);
+            // Update individual supaya trigger updating jalan
+            $perangkat = ListPerangkat::where('id_perangkat', $dataRack->id_perangkat)->first();
+            if ($perangkat) {
+                $perangkat->no_rack = null;
+                $perangkat->uawal = null;
+                $perangkat->uakhir = null;
+                $perangkat->save(); // trigger updating kalau ada event
+            }
         }
 
-        // Kosongkan id_fasilitas jika ada
+        // Kalau ada fasilitas
         if ($dataRack->id_fasilitas) {
-            // Kosongkan id_fasilitas di semua baris yang pakai id ini
+            // Kosongkan di Rack
             Rack::where('id_fasilitas', $dataRack->id_fasilitas)
                 ->update(['id_fasilitas' => null]);
+
+            // Update individual supaya trigger updating jalan
+            $fasilitas = ListFasilitas::where('id_fasilitas', $dataRack->id_fasilitas)->first();
+            if ($fasilitas) {
+                $fasilitas->no_rack = null;
+                $fasilitas->uawal = null;
+                $fasilitas->uakhir = null;
+                $fasilitas->save(); // trigger updating yang akan simpan histori
+            }
         }
 
         return response()->json([
@@ -241,4 +250,5 @@ class RackController extends Controller
             'message' => 'Perangkat/Fasilitas berhasil dihapus dari rack'
         ]);
     }
+
 }

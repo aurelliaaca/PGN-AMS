@@ -73,7 +73,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <!-- Modal View -->
                         <div id="modalViewPerangkat{{ $perangkat->id_perangkat }}" class="modal">
                             <div class="modal-content">
                                 <span class="close" onclick="closeModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">&times;</span>

@@ -26,14 +26,11 @@ class PerangkatController extends Controller
         ->distinct()
         ->get();
 
-    // Cek role pengguna saat ini
-    $user = auth()->user();  // Mendapatkan user yang sedang login
-    $role = $user->role;     // Mengambil role pengguna
+    $user = auth()->user(); 
+    $role = $user->role;
 
-    // Query ListPerangkat
     $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
 
-    // Jika role 3 atau 4, filter berdasarkan milik (id pengguna)
     if ($role == 3 || $role == 4) {
         $query->where('milik', $user->id);
     }
@@ -53,7 +50,6 @@ class PerangkatController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi dasar
         $request->validate([
             'kode_region' => 'required',
             'kode_site' => 'required',
@@ -66,7 +62,6 @@ class PerangkatController extends Controller
             'milik' => 'required',
         ]);
     
-        // Custom Validasi tambahan
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -88,14 +83,12 @@ class PerangkatController extends Controller
                 ])->withInput();
             }
     
-            // Periksa apakah ada rentang 'u' yang tumpang tindih
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 $existingRack = Rack::where('kode_region', $request->kode_region)
                     ->where('kode_site', $request->kode_site)
                     ->where('no_rack', $request->no_rack)
                     ->where('u', $u)
                     ->where(function ($query) {
-                        // Cek apakah sudah ada perangkat atau fasilitas pada rentang 'u' yang sama
                         $query->whereNotNull('id_perangkat')
                               ->orWhereNotNull('id_fasilitas');
                     })
@@ -108,7 +101,6 @@ class PerangkatController extends Controller
             }
         }
     
-        // Logic untuk menambahkan perangkat baru ke ListPerangkat
         $jumlahPerangkat = ListPerangkat::where('kode_site', $request->kode_site)->max('perangkat_ke');
         $perangkatKe = $jumlahPerangkat + 1;
     
@@ -138,10 +130,9 @@ class PerangkatController extends Controller
             'uakhir' => $request->uakhir,
             'milik' => $request->milik,
             'histori' => 'Ditambahkan',
-            'tanggal_perubahan' => Carbon::now('Asia/Jakarta'), // Menambahkan waktu dengan timezone yang diinginkan
+            'tanggal_perubahan' => Carbon::now('Asia/Jakarta'),
         ]);
     
-        // Masukkan atau update data Rack untuk setiap nilai 'u'
         if ($request->no_rack) {
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 Rack::updateOrInsert(
@@ -171,7 +162,6 @@ class PerangkatController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validasi dasar
         $request->validate([
             'kode_region' => 'required',
             'kode_site' => 'required',
@@ -184,7 +174,6 @@ class PerangkatController extends Controller
             'milik' => 'required',
         ]);
 
-        // Custom Validasi tambahan
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -207,7 +196,6 @@ class PerangkatController extends Controller
             }
         }
 
-        // Temukan perangkat berdasarkan ID dan lakukan update
         $perangkat = ListPerangkat::findOrFail($id);
         $perangkat->update([
             'kode_region' => $request->kode_region,
@@ -240,7 +228,6 @@ class PerangkatController extends Controller
             }
         }        
         
-        // Redirect kembali dengan pesan sukses
         return redirect()->route('perangkat.index')
             ->with('success', 'Perangkat berhasil diupdate.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')
