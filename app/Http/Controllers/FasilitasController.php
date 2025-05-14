@@ -65,11 +65,12 @@ class FasilitasController extends Controller
             'milik' => 'required',
         ]);
 
+        
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
-                    'uawal' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.',
-                    'uakhir' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.'
+                    'uawal' => 'UAwal wajib diisi jika No Rack diisi.',
+                    'uakhir' => 'UAkhir wajib diisi jika No Rack diisi.'
                 ])->withInput();
             }
 
@@ -81,27 +82,28 @@ class FasilitasController extends Controller
 
             if ($request->uawal < 1 || $request->uakhir < 1) {
                 return redirect()->back()->withErrors([
-                    'uawal' => 'UAwal dan UAkhir tidak boleh kurang dari 1.',
-                    'uakhir' => 'UAwal dan UAkhir tidak boleh kurang dari 1.'
+                    'uawal' => 'UAwal idak boleh kurang dari 1.',
+                    'uakhir' => 'UAkhir tidak boleh kurang dari 1.'
                 ])->withInput();
             }
-
+    
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 $existingRack = Rack::where('kode_region', $request->kode_region)
                     ->where('kode_site', $request->kode_site)
                     ->where('no_rack', $request->no_rack)
                     ->where('u', $u)
                     ->where(function ($query) {
-                        $query->whereNotNull('id_fasilitas')
-                            ->orWhereNotNull('id_fasilitas');
+                        $query->whereNotNull('id_perangkat')
+                              ->orWhereNotNull('id_fasilitas');
                     })
                     ->exists();
-
+            
                 if ($existingRack) {
                     return redirect()->route('fasilitas.index')
                         ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
                 }
             }
+            
         }
 
         $jumlahFasilitas = ListFasilitas::where('kode_site', $request->kode_site)->max('fasilitas_ke');
@@ -186,11 +188,12 @@ class FasilitasController extends Controller
             'milik' => 'required',
         ]);
 
+       
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
-                    'uawal' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.',
-                    'uakhir' => 'UAwal dan UAkhir wajib diisi jika No Rack diisi.'
+                    'uawal' => 'UAwal wajib diisi jika No Rack diisi.',
+                    'uakhir' => 'UAkhir wajib diisi jika No Rack diisi.'
                 ])->withInput();
             }
 
@@ -202,9 +205,26 @@ class FasilitasController extends Controller
 
             if ($request->uawal < 1 || $request->uakhir < 1) {
                 return redirect()->back()->withErrors([
-                    'uawal' => 'UAwal dan UAkhir tidak boleh kurang dari 1.',
-                    'uakhir' => 'UAwal dan UAkhir tidak boleh kurang dari 1.'
+                    'uawal' => 'UAwal idak boleh kurang dari 1.',
+                    'uakhir' => 'UAkhir tidak boleh kurang dari 1.'
                 ])->withInput();
+            }
+        }
+
+        for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
+            $existingRack = Rack::where('kode_region', $request->kode_region)
+                ->where('kode_site', $request->kode_site)
+                ->where('no_rack', $request->no_rack)
+                ->where('u', $u)
+                ->where(function ($query) {
+                    $query->whereNotNull('id_perangkat')
+                          ->orWhereNotNull('id_fasilitas');
+                })
+                ->exists();
+        
+            if ($existingRack) {
+                return redirect()->route('fasilitas.index')
+                    ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
             }
         }
 

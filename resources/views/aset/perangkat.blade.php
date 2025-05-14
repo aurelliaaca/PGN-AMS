@@ -10,14 +10,45 @@
 @section('content')
     <div class="main">
         @if(auth()->user()->role == '1')
-        <div class="button-wrapper">
+        <div class="button-wrapper" style="margin-top: 20px;">
             <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Perangkat</button>
         </div>
+
+        <form method="GET" action="{{ route('perangkat.index') }}" id="filterForm">
+        <div class="filter-container" style="margin-top: 20px;">
+                <select name="kode_region[]" class="select2" multiple data-placeholder="Pilih Region" onchange="document.getElementById('filterForm').submit()">
+                    @foreach($regions as $region)
+                        <option value="{{ $region->kode_region }}" {{ in_array($region->kode_region, request('kode_region', [])) ? 'selected' : '' }}>
+                             {{ $region->nama_region }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="kode_site[]" class="select2" multiple 
+                        data-placeholder="Pilih Site"
+                        {{ request()->filled('kode_region') ? '' : 'disabled' }}>
+                    @foreach($filteredSites as $site)
+                        <option value="{{ $site->kode_site }}" 
+                                {{ in_array($site->kode_site, request('kode_site', [])) ? 'selected' : '' }}>
+                            {{ $site->nama_site }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="kode_perangkat[]" class="select2" multiple data-placeholder="Pilih Perangkat" onchange="document.getElementById('filterForm').submit()">
+                @foreach($types as $type)
+                        <option value="{{ $type->kode_perangkat }}" {{ in_array($type->kode_perangkat, request('kode_perangkat', [])) ? 'selected' : '' }}>
+                            {{ $type->nama_perangkat }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </form>
         @endif
 
-        <div class="table-responsive">
+        <div class="table-responsive" style="margin-top: 20px;">
             <table id="perangkatTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -364,8 +395,74 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function() {
+                // Initialize Select2 for filter dropdowns
+                $('.select2').select2({
+                    width: '100%',
+                    placeholder: function() {
+                        return $(this).data('placeholder');
+                    },
+                    allowClear: true
+                });
+
+                // Handle region change for site filter
+                $('select[name="kode_region[]"]').on('change', function() {
+                    const selectedRegions = $(this).val();
+                    const siteSelect = $('select[name="kode_site[]"]');
+                    const currentlySelectedSites = siteSelect.val(); // Store current selections
+                    
+                    // Clear and disable site select
+                    siteSelect.empty().prop('disabled', true);
+                    
+                    if (selectedRegions && selectedRegions.length > 0) {
+                        // Enable site select
+                        siteSelect.prop('disabled', false);
+                        
+                        // Filter sites based on selected regions
+                        const sites = @json($sites);
+                        const filteredSites = sites.filter(site => 
+                            selectedRegions.includes(site.kode_region)
+                        );
+                        
+                        // Add filtered sites to dropdown
+                        filteredSites.forEach(site => {
+                            const option = new Option(site.nama_site, site.kode_site);
+                            siteSelect.append(option);
+                        });
+
+                        // Restore previously selected sites that are still valid
+                        if (currentlySelectedSites) {
+                            const validSites = currentlySelectedSites.filter(site => 
+                                filteredSites.some(fs => fs.kode_site === site)
+                            );
+                            siteSelect.val(validSites);
+                        }
+                    }
+                    
+                    // Reinitialize Select2 for site dropdown
+                    siteSelect.select2({
+                        width: '100%',
+                        placeholder: 'Pilih Site',
+                        allowClear: true
+                    });
+
+                    // Submit form to apply filters
+                    $('#filterForm').submit();
+                });
+
+                // Handle site change
+                $('select[name="kode_site[]"]').on('change', function() {
+                    $('#filterForm').submit();
+                });
+
+                // Handle perangkat type change
+                $('select[name="kode_perangkat[]"]').on('change', function() {
+                    $('#filterForm').submit();
+                });
+
+                // Initialize DataTable
                 $('#perangkatTable').DataTable({
                     "language": {
                         "search": "Cari",
