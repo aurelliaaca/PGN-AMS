@@ -33,22 +33,18 @@ class PerangkatController extends Controller
         $query->where('milik', $user->id);
     }
 
-    // Apply region filter
     if ($request->filled('kode_region')) {
         $query->whereIn('kode_region', $request->kode_region);
     }
 
-    // Apply site filter
     if ($request->filled('kode_site')) {
         $query->whereIn('kode_site', $request->kode_site);
     }
 
-    // Apply perangkat type filter
     if ($request->filled('kode_perangkat')) {
         $query->whereIn('kode_perangkat', $request->kode_perangkat);
     }
 
-    // Get filtered sites based on selected regions
     $filteredSites = collect();
     if ($request->filled('kode_region')) {
         $filteredSites = Site::whereIn('kode_region', $request->kode_region)

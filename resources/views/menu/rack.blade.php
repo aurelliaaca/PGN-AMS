@@ -250,7 +250,7 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        fetch('{{ route("rack.destroydata") }}', {
+                        fetch('{{ route("rack.destroy") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

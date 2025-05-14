@@ -10,16 +10,45 @@
 @section('content')
     <div class="main">
         @if(auth()->user()->role == '1')
-            <div class="button-wrapper">
+            <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
-                    Fasilitas</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data
-                    Fasilitas</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Fasilitas</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Fasilitas</button>
             </div>
+
+        <form method="GET" action="{{ route('fasilitas.index') }}" id="filterForm">
+            <div class="filter-container" style="margin-top: 20px;">
+                <select name="kode_region[]" class="select2" multiple data-placeholder="Pilih Region" onchange="document.getElementById('filterForm').submit()">
+                    @foreach($regions as $region)
+                        <option value="{{ $region->kode_region }}" {{ in_array($region->kode_region, request('kode_region', [])) ? 'selected' : '' }}>
+                             {{ $region->nama_region }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="kode_site[]" class="select2" multiple 
+                        data-placeholder="Pilih Site"
+                        {{ request()->filled('kode_region') ? '' : 'disabled' }}>
+                    @foreach($filteredSites as $site)
+                        <option value="{{ $site->kode_site }}" 
+                                {{ in_array($site->kode_site, request('kode_site', [])) ? 'selected' : '' }}>
+                            {{ $site->nama_site }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="kode_fasilitas[]" class="select2" multiple data-placeholder="Pilih Fasilitas" onchange="document.getElementById('filterForm').submit()">
+                @foreach($types as $type)
+                        <option value="{{ $type->kode_fasilitas }}" {{ in_array($type->kode_fasilitas, request('kode_fasilitas', [])) ? 'selected' : '' }}>
+                            {{ $type->nama_fasilitas }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </form>
         @endif
 
-        <div class="table-responsive">
+        <div class="table-responsive" style="margin-top: 20px;">
             <table id="fasilitasTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -377,15 +406,65 @@
                 </form>
             </div>
         </div>
-
     </div>
+    
 
     @section('scripts')
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
+                $('.select2').select2({
+                    width: '100%',
+                    placeholder: function() {
+                        return $(this).data('placeholder');
+                    },
+                    allowClear: true
+                });
+
+                $('select[name="kode_region[]"]').on('change', function() {
+                    const selectedRegions = $(this).val();
+                    const siteSelect = $('select[name="kode_site[]"]');
+                    const currentlySelectedSites = siteSelect.val(); // Store current selections
+                    
+                    siteSelect.empty().prop('disabled', true);
+                    
+                    if (selectedRegions && selectedRegions.length > 0) {
+                        siteSelect.prop('disabled', false);
+                        
+                        const sites = @json($sites);
+                        const filteredSites = sites.filter(site => 
+                            selectedRegions.includes(site.kode_region)
+                        );
+                        
+                        filteredSites.forEach(site => {
+                            const option = new Option(site.nama_site, site.kode_site);
+                            siteSelect.append(option);
+                        });
+
+                        if (currentlySelectedSites) {
+                            const validSites = currentlySelectedSites.filter(site => 
+                                filteredSites.some(fs => fs.kode_site === site)
+                            );
+                            siteSelect.val(validSites);
+                        }
+                    }
+                    
+                    siteSelect.select2({
+                        width: '100%',
+                        placeholder: 'Pilih Site',
+                        allowClear: true
+                    });
+
+                    $('#filterForm').submit();
+                });
+
+                $('select[name="kode_site[]"]').on('change', function() {
+                    $('#filterForm').submit();
+                });
+
+                $('select[name="kode_fasilitas[]"]').on('change', function() {
+                    $('#filterForm').submit();
+                });
+
                 $('#fasilitasTable').DataTable({
                     "language": {
                         "search": "Cari",
@@ -405,7 +484,7 @@
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     "columnDefs": [
                         {
-                            "targets": [0, 8],
+                            "targets": [0, 8], 
                             "orderable": false
                         }
                     ]
@@ -444,8 +523,7 @@
                 if (regionId && siteId) {
                     rackSelect.disabled = false;
 
-                    // Mengambil data racks yang sudah ada di view
-                    const racks = @json($racks); // Data racks yang sudah dipassing ke view
+                    const racks = @json($racks); 
                     const filteredRacks = racks.filter(rack => rack.kode_region == regionId && rack.kode_site == siteId);
 
                     filteredRacks.forEach(rack => {
@@ -457,8 +535,6 @@
                 }
             });
 
-
-            // Edit form region change handler
             document.querySelectorAll('.regionSelectEdit').forEach(select => {
                 select.addEventListener('change', function () {
                     const regionId = this.value;
@@ -486,7 +562,6 @@
                 });
             });
 
-            // Edit form site change handler
             document.querySelectorAll('.siteSelectEdit').forEach(select => {
                 select.addEventListener('change', function () {
                     const siteId = this.value;
@@ -541,7 +616,6 @@
                 }
             });
 
-            // Add form validation
             document.querySelectorAll('form[action*="fasilitas/update"]').forEach(form => {
                 form.addEventListener('submit', function (event) {
                     const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);

@@ -26,20 +26,45 @@ class FasilitasController extends Controller
             ->distinct()
             ->get();
 
-        $user = auth()->user();
-        $role = $user->role;
+        
+    $user = auth()->user(); 
+    $role = $user->role;
 
-        $query = ListFasilitas::with(['region', 'site', 'jenisfasilitas', 'brandfasilitas']);
+    $query = ListFasilitas::with(['region', 'site', 'jenisfasilitas', 'brandfasilitas']);
 
-        if ($role == 3 || $role == 4) {
-            $query->where('milik', $user->id);
-        }
+    if ($role == 3 || $role == 4) {
+        $query->where('milik', $user->id);
+    }
+
+    if ($request->filled('kode_region')) {
+        $query->whereIn('kode_region', $request->kode_region);
+    }
+
+    if ($request->filled('kode_site')) {
+        $query->whereIn('kode_site', $request->kode_site);
+    }
+
+    if ($request->filled('kode_fasilitas')) {
+        $query->whereIn('kode_fasilitas', $request->kode_fasilitas);
+    }
+
+    $filteredSites = collect();
+    if ($request->filled('kode_region')) {
+        $filteredSites = Site::whereIn('kode_region', $request->kode_region)
+                            ->select('kode_region', 'nama_site', 'kode_site')
+                            ->orderBy('nama_site')
+                            ->get();
+    } else {
+        $filteredSites = $sites;
+    }
+
 
         $datafasilitas = $query->get();
 
         return view('aset.fasilitas', compact(
             'regions',
             'sites',
+            'filteredSites',
             'types',
             'brands',
             'datafasilitas',
