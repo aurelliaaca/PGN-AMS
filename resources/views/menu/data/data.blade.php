@@ -8,7 +8,6 @@
             height: 60px;
             border-radius: 10px;
             background: rgb(209, 210, 241);
-            /* Warna latar belakang */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -16,9 +15,7 @@
 
         .icon-wrapper i {
             font-size: 36px;
-            /* Ukuran icon */
             color: #4f52ba;
-            /* Warna icon */
         }
 
         .dashboard-header {
@@ -28,21 +25,22 @@
         }
 
         .kotak-container {
+            padding-top: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 25px;
         }
 
         .kotak-containerhistori {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 25px;
         }
 
         .kotak {
             background: rgba(209, 210, 241, 0.316);
             border-radius: 15px;
-            border: 1px solid rgba(0, 0, 0, 0.1); /* Added border instead of box-shadow */
+            border: 1px solid rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             overflow: hidden;
         }
@@ -131,7 +129,6 @@
     <div class="main">
         <div class="container">
             <div class="kotak-container">
-                <!-- Region -->
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
@@ -200,6 +197,24 @@
                     </div>
                     <div class="kotak-body">
                         <p>Jenis dan Brand Alat Ukur</p>
+                        <div class="view-btn">
+                            <span>Lihat Detail</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kotak" onclick="window.location.href='/menu/data/datauser'" style="cursor: pointer;">
+                    <div class="kotak-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="header-text">
+                            <h3>User</h3>
+                        </div>
+                    </div>
+                    <div class="kotak-body">
+                        <p>User</p>
                         <div class="view-btn">
                             <span>Lihat Detail</span>
                             <i class="fas fa-arrow-right"></i>

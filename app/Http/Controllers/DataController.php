@@ -11,12 +11,12 @@ use App\Models\BrandAlatukur;
 use App\Models\JenisAlatukur;
 use App\Models\Region;
 use App\Models\Site;
+use App\Models\User;
+
+use Illuminate\Support\Facades\Hash;
 
 class DataController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('menu.data.data');
@@ -382,7 +382,6 @@ class DataController extends Controller
 
     public function storeSite(Request $request)
     {
-        // Validasi input dari user
         $request->validate([
             'nama_site' => 'required',
             'kode_site' => 'required|unique:site,kode_site',
@@ -391,10 +390,8 @@ class DataController extends Controller
             'jml_rack' => 'nullable',
         ]);
 
-        // Membuat data baru tanpa perlu menambahkan id_region secara manual
         Site::create($request->all());
 
-        // Redirect dengan pesan sukses
         return redirect()->route('dataregion.index')->with('success', 'Site berhasil ditambahkan.');
     }
 
@@ -428,6 +425,75 @@ class DataController extends Controller
 
         return redirect()->route('dataregion.index')->with('success', 'Site berhasil dihapus.');
     }
+public function indexUser()
+{
+    $users = User::all();
+    $regions = Region::all(); // untuk dropdown atau referensi region
+    return view('menu.data.datauser', compact('users', 'regions'));
+}
+
+public function storeUser(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:6',
+        'role' => 'required|string',
+        'region' => 'required|string',
+        'mobile_number' => 'required|string|max:15',
+    ]);
+
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $request->role,
+        'region' => $request->region,
+        'mobile_number' => $request->mobile_number,
+    ]);
+
+    return redirect()->route('datauser.index')->with('success', 'User berhasil ditambahkan.');
+}
+
+public function editUser($id_user)
+{
+    $user = User::findOrFail($id_user);
+    $regions = Region::all(); // jika dropdown region diperlukan saat edit
+    return view('user.edit', compact('user', 'regions'));
+}
+
+public function updateUser(Request $request, $id_user)
+{
+    $user = User::findOrFail($id_user);
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id . ',id',
+        'password' => 'nullable|string|min:6',
+        'role' => 'required|string',
+        'region' => 'required|string',
+        'mobile_number' => 'required|string|max:15',
+    ]);
+
+    $data = $request->only('name', 'email', 'role', 'region', 'mobile_number');
+
+    // Update password jika diisi
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password);
+    }
+
+    $user->update($data);
+
+    return redirect()->route('datauser.index')->with('success', 'User berhasil diupdate.');
+}
+
+public function destroyUser($id_user)
+{
+    $user = User::findOrFail($id_user);
+    $user->delete();
+
+    return redirect()->route('datauser.index')->with('success', 'User berhasil dihapus.');
+}
     /**
      * Show the form for creating a new resource.
      */

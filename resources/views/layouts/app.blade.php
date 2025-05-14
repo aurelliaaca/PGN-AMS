@@ -43,12 +43,12 @@
             @endif
             <li><a href="{{ route('rack.index') }}"><span class="icon"><i class="fas fa-server"></i></span><span
                         class="text">Rack</span></a></li>
+            <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span
+                        class="text">Histori</span></a></li>
             @if(auth()->user()->role == '1' || auth()->user()->role == '2')
                 <li><a href="{{ route('semantik') }}"><span class="icon"><i class="fas fa-image"></i></span><span
                             class="text">Semantik</span></a></li>
             @endif
-            <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span
-                        class="text">Histori</span></a></li>
 
             <h4><span>Aset</span>
                 <div class="menu-separator"></div>
@@ -127,11 +127,11 @@
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-        
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
     <script>
         function openModal(id) {
             document.getElementById(id).style.display = "block";

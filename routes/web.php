@@ -92,6 +92,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/region/{id_region}', [DataController::class, 'updateRegion'])->name('region.update');
     Route::delete('/region/{id_region}', [DataController::class, 'destroyRegion'])->name('region.destroy');
 
+    Route::get('/menu/data/datauser', [DataController::class, 'indexUser'])->name('datauser.index');
+    Route::get('/user/create', [DataController::class, 'createUser'])->name('user.create');
+    Route::post('/user/store', [DataController::class, 'storeUser'])->name('user.store');
+    Route::get('/user/{id_user}/edit', [DataController::class, 'editUser'])->name('user.edit');
+    Route::put('/user/{id_user}', [DataController::class, 'updateUser'])->name('user.update');
+    Route::delete('/user/{id_user}', [DataController::class, 'destroyUser'])->name('user.destroy');
+
     Route::get('/site/create', [DataController::class, 'createSite'])->name('site.create');
     Route::post('/site/store', [DataController::class, 'storeSite'])->name('site.store');
     Route::get('/site/{id_site}/edit', [DataController::class, 'editSite'])->name('site.edit');
