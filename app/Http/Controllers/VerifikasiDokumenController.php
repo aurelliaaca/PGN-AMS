@@ -26,29 +26,39 @@ class VerifikasiDokumenController extends Controller
 
     public function indexNda()
     {
-        $ndas = VerifikasiNda::with('user')
-            ->where('status', 'pending')
+        // Debug untuk melihat query yang dijalankan
+        \DB::enableQueryLog();
+        
+        $ndas = VerifikasiNda::with(['user', 'nda'])
+            ->where('status', 'menunggu persetujuan')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pendingNdas = VerifikasiNda::where('status', 'pending')
+        $pendingNdas = VerifikasiNda::with(['user', 'nda'])
+            ->where('status', 'menunggu persetujuan')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $historyNdas = VerifikasiNda::whereIn('status', ['diterima', 'ditolak'])
+        // Debug untuk melihat hasil query
+        \Log::info('Query Log:', \DB::getQueryLog());
+        \Log::info('Pending NDAs:', $pendingNdas->toArray());
+
+        $historyNdas = VerifikasiNda::with(['user', 'nda'])
+            ->whereIn('status', ['diterima', 'ditolak'])
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        $activeNdas = VerifikasiNda::where('status', 'diterima')
+        $activeNdas = VerifikasiNda::with(['user', 'nda'])
+            ->where('status', 'diterima')
             ->where('masa_berlaku', '>', Carbon::now())
             ->orderBy('masa_berlaku', 'desc')
             ->get();
 
-        $expiredNdas = VerifikasiNda::where('status', 'diterima')
+        $expiredNdas = VerifikasiNda::with(['user', 'nda'])
+            ->where('status', 'diterima')
             ->where('masa_berlaku', '<=', Carbon::now())
             ->orderBy('masa_berlaku', 'desc')
             ->get();
-
 
         return view('VMS.admin.verifikasi_nda', compact('ndas', 'pendingNdas', 'historyNdas', 'activeNdas', 'expiredNdas'));
     }
@@ -159,10 +169,18 @@ class VerifikasiDokumenController extends Controller
     public function approveNda($id)
     {
         try {
-            $nda = VerifikasiNda::findOrFail($id);
-            $nda->status = 'diterima';
-            $nda->masa_berlaku = Carbon::now()->addMonths(3);
-            $nda->save();
+            $verifikasiNda = VerifikasiNda::findOrFail($id);
+            $verifikasiNda->status = 'diterima';
+            $verifikasiNda->masa_berlaku = Carbon::now()->addMonths(3);
+            $verifikasiNda->save();
+
+            // Update status di tabel nda
+            $nda = Nda::where('id', $verifikasiNda->nda_id)->first();
+            if ($nda) {
+                $nda->status = 'diterima';
+                $nda->tanggal_disetujui = now();
+                $nda->save();
+            }
 
             return redirect()->route('verifikasi.superadmin.nda')->with('success', 'NDA berhasil diverifikasi dan diterima.');
         } catch (\Exception $e) {
@@ -173,10 +191,17 @@ class VerifikasiDokumenController extends Controller
     public function rejectNda($id)
     {
         try {
-            $nda = VerifikasiNda::findOrFail($id);
-            $nda->status = 'ditolak';
-            $nda->masa_berlaku = null;
-            $nda->save();
+            $verifikasiNda = VerifikasiNda::findOrFail($id);
+            $verifikasiNda->status = 'ditolak';
+            $verifikasiNda->masa_berlaku = null;
+            $verifikasiNda->save();
+
+            // Update status di tabel nda
+            $nda = Nda::where('id', $verifikasiNda->nda_id)->first();
+            if ($nda) {
+                $nda->status = 'ditolak';
+                $nda->save();
+            }
 
             return redirect()->route('verifikasi.superadmin.nda')->with('success', 'NDA berhasil diverifikasi dan ditolak.');
         } catch (\Exception $e) {
@@ -276,7 +301,7 @@ class VerifikasiDokumenController extends Controller
     public function userNdaIndex()
     {
         $VerNdas = VerifikasiNda::where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
         $NDA = Nda::all();
         $regions = Region::all();
@@ -293,7 +318,7 @@ class VerifikasiDokumenController extends Controller
 
             $file = $request->file('file_path');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('dokumen_verifikasi', $fileName, 'public');
+            $path = $file->store('public');
 
             VerifikasiNda::create([
                 'user_id' => auth()->id(),
@@ -310,39 +335,64 @@ class VerifikasiDokumenController extends Controller
 
     public function storeNda(Request $request)
     {
-        $request->validate([
-            'nda_name' => 'required|string|max:255',
-            'no_ktp' => 'required|string|max:20',
-            'alamat' => 'required|string|max:255',
-            'perusahaan' => 'nullable|string|max:255',
-            'region' => 'nullable|string|max:255',
-            'bagian' => 'nullable|string|max:255',
-        ]);
+        try {
+            $request->validate([
+                'nda_name' => 'required|string|max:255',
+                'no_ktp' => 'required|string|max:20',
+                'alamat' => 'required|string|max:255',
+                'perusahaan' => 'nullable|string|max:255',
+                'region' => 'nullable|string|max:255',
+                'bagian' => 'nullable|string|max:255',
+            ]);
 
-        $tanggal = now(); // Tanggal sekarang
-        $tanggal_berlaku = now()->addMonths(3); // Tanggal berlaku 3 bulan dari sekarang
+            $tanggal = now(); // Tanggal sekarang
+            $tanggal_berlaku = now()->addMonths(3); // Tanggal berlaku 3 bulan dari sekarang
 
-        $nda = new Nda();
-        $nda->name = $request->nda_name;
-        $nda->no_ktp = $request->no_ktp;
-        $nda->alamat = $request->alamat;
-        $nda->perusahaan = $request->perusahaan;
-        $region = \App\Models\Region::where('kode_region', $request->kode_region)->first();
-        $nda->region = $region ? $region->nama_region : null;
-                $nda->bagian = $request->bagian;
-        $nda->tanggal = $tanggal;
-        $nda->tanggal_berlaku = $tanggal_berlaku;
-        $nda->signature = $request->signature;
-        $nda->save();
+            // Simpan ke tabel nda
+            $nda = new Nda();
+            $nda->name = $request->nda_name;
+            $nda->no_ktp = $request->no_ktp;
+            $nda->alamat = $request->alamat;
+            $nda->perusahaan = $request->perusahaan;
+            $region = \App\Models\Region::where('kode_region', $request->kode_region)->first();
+            $nda->region = $region ? $region->nama_region : null;
+            $nda->bagian = $request->bagian;
+            $nda->tanggal = $tanggal;
+            $nda->tanggal_berlaku = $tanggal_berlaku;
+            $nda->signature = $request->signature;
+            $nda->status = 'menunggu persetujuan';
+            $nda->save();
 
-        // Tentukan tipe NDA berdasarkan ada tidaknya data perusahaan
-        $type = $nda->perusahaan ? 'eksternal' : 'internal';
-        
-        // Generate PDF sesuai tipe
-        $pdf = PDF::loadView('exports.nda' . $type . 'pdf', compact(var_name: 'nda'));
-        $pdf->save(public_path('pdf/nda_' . $type . '_' . $nda->id . '.pdf'));
+            // Tentukan tipe NDA berdasarkan ada tidaknya data perusahaan
+            $type = $nda->perusahaan ? 'eksternal' : 'internal';
+            
+            // Generate PDF sesuai tipe
+            $pdf = PDF::loadView('exports.nda' . $type . 'pdf', compact(var_name: 'nda'));
+            $pdfPath = 'nda_' . $type . '_' . $nda->id . '.pdf';
+            
+            // Simpan file ke folder public/pdf
+            $pdf->save(public_path('pdf/' . $pdfPath));
 
-        return redirect()->route('verifikasi.user.nda')->with('success', 'NDA berhasil ditambahkan.');
+            // Simpan ke tabel verifikasi_nda dengan nama file yang benar
+            $verifikasiNda = VerifikasiNda::create([
+                'user_id' => auth()->id(),
+                'nda_id' => $nda->id,
+                'file_path' => 'nda_' . $type . '_' . $nda->id . '.pdf', // Pastikan format nama file sesuai
+                'status' => 'menunggu persetujuan',
+                'masa_berlaku' => $tanggal_berlaku,
+                'catatan' => 'NDA ' . $type . ' baru diajukan'
+            ]);
+
+            // Debug untuk memastikan data tersimpan
+            \Log::info('NDA Created:', $nda->toArray());
+            \Log::info('Verifikasi NDA Created:', $verifikasiNda->toArray());
+            \Log::info('PDF Path:', ['path' => $pdfPath]);
+
+            return redirect()->route('verifikasi.user.nda')->with('success', 'NDA berhasil ditambahkan dan menunggu persetujuan admin.');
+        } catch (\Exception $e) {
+            \Log::error('Error in storeNda: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function downloadNda($id)

@@ -154,7 +154,8 @@
                     ({{ $nda->name }})
                 </td>
                 <td style="width: 50%; text-align: center;">
-                    Mengetahui,<br><br><br><br><br><br><br><br>
+                    Mengetahui,<br><br>
+                    <img src="{{ public_path('img/ttd.png') }}" alt="TTD Head" style="width: 120px; height: auto;"><br><br><br>
                     <em>(Department Head of Network Reliability)</em>
                 </td>
             </tr>

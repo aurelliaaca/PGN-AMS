@@ -29,7 +29,7 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $nda->status == 'pending' ? '#ffc107' : 
+                                    {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' : 
                                     ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
                             </span>
                             {{ ucfirst($nda->status) }}
@@ -38,10 +38,10 @@
                     <td>{{ $nda->masa_berlaku ? $nda->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
                     <td>{{ $nda->catatan ?? '-' }}</td>
                     <td>
-                        <a href="{{ asset('storage/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
+                        <a href="{{ asset('pdf/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
                     </td>
                     <td>
-                        @if($nda->status == 'pending')
+                        @if($nda->status == 'menunggu persetujuan')
                             <form action="{{ route('verifikasi.approve.nda', $nda->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Apakah Anda yakin ingin menerima dokumen NDA ini?')">
@@ -50,7 +50,7 @@
                             </form>
                             <form action="{{ route('verifikasi.reject.nda', $nda->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen NDA ini?')">
+                                <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Apakah Anda yakin ingin menolak dokumen NDA ini?')">
                                     <i class="fas fa-times"></i> Tolak
                                 </button>
                             </form>
@@ -93,7 +93,7 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $nda->status == 'pending' ? '#ffc107' : 
+                                    {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' : 
                                     ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
                             </span>
                             {{ ucfirst($nda->status) }}
@@ -102,7 +102,7 @@
                     <td>{{ $nda->masa_berlaku ? $nda->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
                     <td>{{ $nda->catatan ?? '-' }}</td>
                     <td>
-                        <a href="{{ asset('storage/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
+                        <a href="{{ asset('pdf/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
                     </td>
                     <td>{{ $nda->updated_at->format('d/m/Y H:i') }}</td>
                 </tr>
@@ -140,7 +140,7 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $nda->status == 'pending' ? '#ffc107' : 
+                                    {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' : 
                                     ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
                             </span>
                             {{ ucfirst($nda->status) }}
@@ -149,7 +149,7 @@
                     <td>{{ $nda->masa_berlaku ? $nda->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
                     <td>{{ $nda->catatan ?? '-' }}</td>
                     <td>
-                        <a href="{{ asset('storage/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
+                        <a href="{{ asset('pdf/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
                     </td>
                     <td>{{ $nda->updated_at->format('d/m/Y H:i') }}</td>
                 </tr>

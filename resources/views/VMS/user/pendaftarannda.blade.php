@@ -4,34 +4,10 @@
 @section('content')
     <div class="main">
         <div class="container">
-            <!-- Modal Upload NDA -->
-            <div class="modal" id="modalAjukanNDA">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal('modalAjukanNDA')">&times;</span>
-                    <h5>Ajukan Verifikasi NDA</h5>
-                    <form action="{{ route('verifikasi.nda.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-3">
-                            <label>File NDA (PDF atau DOCX)</label>
-                            <input type="file" name="file_path" id="file_path" class="form-control" accept=".pdf,.doc,.docx"
-                                required>
-                            <small class="text-muted">Maksimum ukuran file: 10MB</small>
-                        </div>
-                        <div class="mb-3">
-                            <label>Catatan (Opsional)</label>
-                            <textarea name="catatan" class="form-control" rows="3"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Kirim</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <div id="modalTambahNdaEksternal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal('modalTambahNdaEksternal')">&times;</span>
-                    <h5 id="judulModal">Tambah NDA</h5>
+                    <h5 id="judulModal">Pengajuan NDA</h5>
 
                     <form action="{{ route('nda.store') }}" method="POST">
                         @csrf
@@ -69,17 +45,17 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="signature">Tanda Tangan</label>
-                                    <canvas id="signature-pad"
+                                    <label for="signature-eksternal">Tanda Tangan</label>
+                                    <canvas id="signature-pad-eksternal"
                                         style="border: 1px solid #000; width: 100%; height: 150px; cursor: crosshair;"></canvas>
-                                    <button type="button" id="clear-signature" class="btn btn-delete mb-3">Reset</button>
-                                    <input type="hidden" name="signature" id="signature">
+                                    <button type="button" id="clear-signature-eksternal" class="btn btn-delete mb-3">Reset</button>
+                                    <input type="hidden" name="signature" id="signature-eksternal">
                                 </div>
                             </div>
                         </div>
 
                         <div style="margin-top: 20px; text-align: right;">
-                            <button type="submit" class="btn btn-primary">Tambah</button>
+                            <button type="submit" class="btn btn-primary">Ajukan</button>
                         </div>
                     </form>
                 </div>
@@ -88,7 +64,7 @@
             <div id="modalTambahNdaInternal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal('modalTambahNdaInternal')">&times;</span>
-                    <h5 id="judulModal">Tambah NDA</h5>
+                    <h5 id="judulModal">Pengajuan NDA</h5>
 
                     <form action="{{ route('nda.store') }}" method="POST">
                         @csrf
@@ -106,17 +82,17 @@
 
                             <div style="width: 48%;">
                                 <div class="form-group">
-                                    <label for="signature">Tanda Tangan</label>
-                                    <canvas id="signature-pad"
+                                    <label for="signature-internal">Tanda Tangan</label>
+                                    <canvas id="signature-pad-internal"
                                         style="border: 1px solid #000; width: 100%; height: 150px; cursor: crosshair;"></canvas>
-                                    <button type="button" id="clear-signature" class="btn btn-delete mb-3">Reset</button>
-                                    <input type="hidden" name="signature" id="signature">
+                                    <button type="button" id="clear-signature-internal" class="btn btn-delete mb-3">Reset</button>
+                                    <input type="hidden" name="signature" id="signature-internal">
                                 </div>
                             </div>
                         </div>
 
                         <div style="margin-top: 20px; text-align: right;">
-                            <button type="submit" class="btn btn-primary">Tambah</button>
+                            <button type="submit" class="btn btn-primary">Ajukan</button>
                         </div>
                     </form>
                 </div>
@@ -127,12 +103,13 @@
                 <div class="table-column">
                     <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="button-wrapper">
-                            <button class="btn btn-primary mb-3" onclick="openModal('modalTambahNdaInternal')">Tambah
-                                NDA Internal</button>
-                            <button class="btn btn-primary mb-3" onclick="openModal('modalTambahNdaEksternal')">Tambah
-                                NDA Eksternal</button>
+                            @if(auth()->user()->role == 3)
+                                <button class="btn btn-primary mb-3" onclick="openModal('modalTambahNdaInternal')">Pengajuan NDA</button>
+                            @elseif(auth()->user()->role == 4)
+                                <button class="btn btn-primary mb-3" onclick="openModal('modalTambahNdaEksternal')">Pengajuan NDA</button>
+                            @endif
                         </div>
-                        <h3>Buat NDA</h3>
+                        <h3>Buat Pengajuan NDA</h3>
                     </div>
                     <div class="table-responsive">
                         <table id="buatTable" class="table table-bordered table-striped">
@@ -142,9 +119,8 @@
                                     <th>Nama</th>
                                     <th>No. KTP</th>
                                     <th>Alamat</th>
-                                    <th>Tanggal Sekarang</th>
-                                    <th>Berlaku Sampai Dengan</th>
-                                    <th>Aksi</th>
+                                    <th>Tanggal Pengajuan</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -160,11 +136,14 @@
                                             <td>{{ $nda->no_ktp }}</td>
                                             <td>{{ $nda->alamat }}</td>
                                             <td>{{ \Carbon\Carbon::parse($nda->tanggal)->format('d-m-Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($nda->tanggal_berlaku)->format('d-m-Y') }}</td>
                                             <td>
-                                                <div class="action-buttons">
-                                                    <a href="{{ route('nda.download', $nda->id) }}" class="view-btn">Lihat</a>
-                                                </div>
+                                                <span style="display: inline-flex; align-items: center;">
+                                                    <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
+                                                        background-color: {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' :
+                                                        ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                                                    </span>
+                                                    {{ ucfirst($nda->status) }}
+                                                </span>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -175,48 +154,39 @@
                 </div>
 
                 <div class="table-column">
-                    <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
-                        <button class="btn btn-primary mb-3" onclick="openModal('modalAjukanNDA')">Ajukan Verifikasi
-                            NDA</button>
+                    <div class="title" style="display: flex; justify-content: space-between; align-items: center;"></br>
                         <h3>Riwayat Pengajuan NDA</h3>
-                    </div>
+                    </div></br>
                     <div class="table-responsive">
                         <table id="ajukanTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Tanggal Upload</th>
-                                    <th>Status</th>
+                                    <th>Tanggal Disetujui</th>
                                     <th>Masa Berlaku</th>
                                     <th>Catatan</th>
                                     <th>File</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($VerNdas as $index => $nda)
-                                                        <tr>
-                                                            <td>{{ $index + 1 }}</td>
-                                                            <td>{{ $nda->created_at->format('d/m/Y H:i') }}</td>
-                                                            <td>
-                                                                <span style="display: inline-flex; align-items: center;">
-                                                                    <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        background-color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $nda->status == 'pending' ? '#ffc107' :
-                                    ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
-                                                                    </span>
-                                                                    {{ ucfirst($nda->status) }}
-                                                                </span>
-                                                            </td>
-                                                            <td>{{ $nda->masa_berlaku ? $nda->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
-                                                            <td>{{ $nda->catatan ?? '-' }}</td>
-                                                            <td>
-                                                                <a href="{{ asset('storage/' . $nda->file_path) }}" target="_blank"
-                                                                    class="btn btn-sm btn-info">Lihat File</a>
-                                                            </td>
-                                                        </tr>
+                                @forelse($VerNdas->where('status', 'diterima') as $index => $nda)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $nda->updated_at->format('d/m/Y H:i') }}</td>
+                                        <td>{{ $nda->masa_berlaku ? $nda->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
+                                        <td>{{ $nda->catatan ?? '-' }}</td>
+                                        <td>
+                                            @if($nda->file_path)
+                                                <a href="{{ asset('pdf/' . $nda->file_path) }}" target="_blank"
+                                                    class="btn btn-sm btn-info">Lihat File</a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">Tidak ada riwayat NDA</td>
+                                        <td colspan="6" class="text-center">Tidak ada riwayat NDA yang disetujui</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -226,7 +196,6 @@
             </div>
         </div>
     </div>
-
 
     <script>
         function openModal(modalId) {
@@ -243,48 +212,118 @@
                 event.target.style.display = "none";
             }
         }
-        var canvas = document.getElementById('signature-pad');
-        var signatureInput = document.getElementById('signature');
-        var clearButton = document.getElementById('clear-signature');
-        var ctx = canvas.getContext('2d');
-        var drawing = false;
 
-        // Menangkap elemen form terdekat
-        var form = canvas.closest('form');
+        // Setup untuk tanda tangan eksternal
+        var canvasEksternal = document.getElementById('signature-pad-eksternal');
+        var signatureInputEksternal = document.getElementById('signature-eksternal');
+        var clearButtonEksternal = document.getElementById('clear-signature-eksternal');
+        var ctxEksternal = canvasEksternal.getContext('2d');
+        var drawingEksternal = false;
 
-        canvas.addEventListener('mousedown', function (e) {
-            drawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        });
+        // Setup untuk tanda tangan internal
+        var canvasInternal = document.getElementById('signature-pad-internal');
+        var signatureInputInternal = document.getElementById('signature-internal');
+        var clearButtonInternal = document.getElementById('clear-signature-internal');
+        var ctxInternal = canvasInternal.getContext('2d');
+        var drawingInternal = false;
 
-        canvas.addEventListener('mousemove', function (e) {
-            if (drawing) {
-                ctx.lineTo(e.offsetX, e.offsetY);
-                ctx.stroke();
-            }
-        });
+        // Fungsi untuk setup canvas
+        function setupCanvas(canvas, ctx, drawing, signatureInput, clearButton) {
+            canvas.addEventListener('mousedown', function (e) {
+                drawing = true;
+                ctx.beginPath();
+                ctx.moveTo(e.offsetX, e.offsetY);
+            });
 
-        canvas.addEventListener('mouseup', function () {
-            drawing = false;
-            updateSignatureInput();
-        });
+            canvas.addEventListener('mousemove', function (e) {
+                if (drawing) {
+                    ctx.lineTo(e.offsetX, e.offsetY);
+                    ctx.stroke();
+                }
+            });
 
-        clearButton.addEventListener('click', function () {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            signatureInput.value = ''; // Kosongkan juga hidden input
-        });
+            canvas.addEventListener('mouseup', function () {
+                drawing = false;
+                signatureInput.value = canvas.toDataURL('image/png');
+            });
 
-        function updateSignatureInput() {
-            signatureInput.value = canvas.toDataURL('image/png');
+            canvas.addEventListener('mouseleave', function () {
+                drawing = false;
+            });
+
+            clearButton.addEventListener('click', function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                signatureInput.value = '';
+                drawing = false;
+            });
         }
 
-        // Validasi sebelum submit
-        form.addEventListener('submit', function (e) {
-            if (!signatureInput.value) {
+        // Setup kedua canvas
+        setupCanvas(canvasEksternal, ctxEksternal, drawingEksternal, signatureInputEksternal, clearButtonEksternal);
+        setupCanvas(canvasInternal, ctxInternal, drawingInternal, signatureInputInternal, clearButtonInternal);
+
+        // Validasi sebelum submit untuk kedua form
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                var signatureInput = this.querySelector('input[name="signature"]');
+                if (!signatureInput.value) {
+                    e.preventDefault();
+                    alert('Tanda tangan wajib diisi!');
+                }
+            });
+        });
+
+        // Tambahkan event listener untuk memastikan tanda tangan tersimpan
+        canvasEksternal.addEventListener('mouseup', function() {
+            signatureInputEksternal.value = canvasEksternal.toDataURL('image/png');
+        });
+
+        canvasInternal.addEventListener('mouseup', function() {
+            signatureInputInternal.value = canvasInternal.toDataURL('image/png');
+        });
+
+        // Tambahkan event listener untuk touch events
+        function setupTouchEvents(canvas, ctx, drawing, signatureInput) {
+            canvas.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                alert('Tanda tangan wajib diisi!');
-            }
+                drawing = true;
+                var touch = e.touches[0];
+                var rect = canvas.getBoundingClientRect();
+                var x = touch.clientX - rect.left;
+                var y = touch.clientY - rect.top;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            });
+
+            canvas.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                if (drawing) {
+                    var touch = e.touches[0];
+                    var rect = canvas.getBoundingClientRect();
+                    var x = touch.clientX - rect.left;
+                    var y = touch.clientY - rect.top;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+            });
+
+            canvas.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                drawing = false;
+                signatureInput.value = canvas.toDataURL('image/png');
+            });
+        }
+
+        // Setup touch events untuk kedua canvas
+        setupTouchEvents(canvasEksternal, ctxEksternal, drawingEksternal, signatureInputEksternal);
+        setupTouchEvents(canvasInternal, ctxInternal, drawingInternal, signatureInputInternal);
+
+        // Debug untuk memeriksa nilai signature
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                var signatureInput = this.querySelector('input[name="signature"]');
+                console.log('Signature value:', signatureInput.value);
+            });
         });
     </script>
 
