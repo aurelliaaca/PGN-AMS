@@ -11,8 +11,11 @@ return new class extends Migration
         Schema::create('verifikasi_nda', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('nda_id')->constrained('nda')->onDelete('cascade');
+            $table->string('nama_region')->nullable();
+            $table->string('perusahaan')->nullable();
             $table->string('file_path')->nullable();
-            $table->string('status')->default('pending'); // pending, diterima, ditolak
+            $table->string('status')->default('menunggu persetujuan'); // menunggu persetujuan, diterima, ditolak
             $table->text('catatan')->nullable();
             $table->timestamp('masa_berlaku')->nullable();
             $table->timestamps();

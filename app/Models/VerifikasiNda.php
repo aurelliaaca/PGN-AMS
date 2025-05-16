@@ -17,6 +17,7 @@ class VerifikasiNda extends Model
     
     protected $fillable = [
         'user_id',
+        'nda_id',
         'file_path',
         'status',
         'catatan',
@@ -26,5 +27,10 @@ class VerifikasiNda extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function nda()
+    {
+        return $this->belongsTo(Nda::class);
     }
 } 

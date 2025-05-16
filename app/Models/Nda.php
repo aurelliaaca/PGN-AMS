@@ -19,12 +19,14 @@ class Nda extends Model
         'bagian',
         'tanggal',
         'tanggal_berlaku',
+        'tanggal_disetujui',
         'signature',
+        'status',
     ];
 
     public $timestamps = false;
 
-    protected $dates = ['tanggal', 'tanggal_berlaku'];
+    protected $dates = ['tanggal', 'tanggal_berlaku', 'tanggal_disetujui'];
 
     public function region()
     {
