@@ -245,7 +245,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.dcaf.index');
     Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
 
-    // Routes untuk verifikasi NDA
+    // Routes untuk verifikasi NDA 
     Route::get('/verifikasi/nda', [VerifikasiDokumenController::class, 'indexNda'])->name('verifikasi.superadmin.nda');
     Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeVerifNda'])->name('verifikasi.nda.store');
     Route::get('/pendaftaran/nda', [VerifikasiDokumenController::class, 'userNdaIndex'])->name('verifikasi.user.nda');
@@ -278,7 +278,7 @@ Route::middleware('auth')->group(function () {
     // Route untuk menampilkan view pendaftarandcaf
     Route::get('/pendaftarandcaf', [PendaftaranController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
     Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
-    Route::get('/pendaftaran/download/{id}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
+   Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
 
 });
 
