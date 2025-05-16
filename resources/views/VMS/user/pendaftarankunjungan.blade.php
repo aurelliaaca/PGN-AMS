@@ -19,11 +19,6 @@
                         <input type="text" name="catatan" class="form-control" id="catatan" value="">
                     </div>
                     <div class="mb-3">
-                        <label>Tanggal Mulai</label>
-                        <input type="date" name="start_date" class="form-control" id="start_date" required>
-                        <small class="text-muted">Tanggal akhir akan otomatis 7 hari setelah tanggal mulai</small>
-                    </div>
-                    <div class="mb-3">
                         <label>Pilih NDA Aktif</label>
                         <select name="verifikasi_nda_id" id="verifikasi_nda_id" class="form-control" required>
                             <option value="">-- Pilih NDA --</option>
@@ -35,10 +30,6 @@
                             <small class="text-danger">Anda tidak memiliki NDA yang aktif. Silahkan ajukan verifikasi NDA terlebih dahulu.</small>
                         @endif
                     </div>
-                    <div class="mb-3">
-                        <label>File DCAF (PDF atau DOCX)</label>
-                        <input type="file" name="dcaf_file" id="dcaf_file" class="form-control" accept=".pdf,.doc,.docx" required>
-                        <small class="text-muted">Maksimum ukuran file: 10MB</small>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Kirim</button>

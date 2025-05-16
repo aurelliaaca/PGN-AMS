@@ -578,4 +578,40 @@
     });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dapatkan elemen yang diperlukan
+            const jenisPekerjaanSelect = document.getElementById('jenis_pekerjaan');
+            const deskripsiTextarea = document.querySelector('textarea[name="deskripsi"]');
+            
+            // Function untuk mengatur deskripsi berdasarkan jenis pekerjaan
+            function setDeskripsiBasedOnJenisPekerjaan() {
+                const selectedValue = jenisPekerjaanSelect.value;
+                const selectedText = jenisPekerjaanSelect.options[jenisPekerjaanSelect.selectedIndex]?.text || '';
+                
+                if (selectedValue === 'others') {
+                    // Jika Others dipilih, biarkan pengguna mengisi deskripsi
+                    deskripsiTextarea.value = '';
+                    deskripsiTextarea.placeholder = 'Deskripsikan pekerjaan lain secara detail';
+                    deskripsiTextarea.removeAttribute('readonly');
+                    deskripsiTextarea.setAttribute('required', 'required');
+                } else if (selectedValue) {
+                    // Jika pilihan lain, isi otomatis dengan teks pilihan
+                    deskripsiTextarea.value = selectedText;
+                    deskripsiTextarea.setAttribute('readonly', 'readonly');
+                } else {
+                    // Jika belum ada pilihan
+                    deskripsiTextarea.value = '';
+                    deskripsiTextarea.removeAttribute('readonly');
+                }
+            }
+            
+            // Jalankan fungsi saat halaman dimuat
+            setDeskripsiBasedOnJenisPekerjaan();
+            
+            // Tambahkan event listener untuk perubahan jenis pekerjaan
+            jenisPekerjaanSelect.addEventListener('change', setDeskripsiBasedOnJenisPekerjaan);
+        });
+    </script>
+
 @endsection
