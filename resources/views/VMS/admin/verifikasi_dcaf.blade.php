@@ -28,8 +28,9 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $dcaf->status == 'pending' ? '#ffc107' : 
-                                    ($dcaf->status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                                    {{ $dcaf->status == 'menunggu persetujuan' ? '#ffc107' : 
+                                    ($dcaf->status == 'diterima' ? '#28a745' : 
+                                    ($dcaf->status == 'ditolak' ? '#dc3545' : '#ffc107')) }};">
                             </span>
                             {{ ucfirst($dcaf->status) }}
                         </span>
@@ -39,7 +40,7 @@
                         <a href="{{ asset('storage/' . $dcaf->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
                     </td>
                     <td>
-                        @if($dcaf->status == 'pending')
+                        @if($dcaf->status == 'menunggu persetujuan')
                             <form action="{{ route('verifikasi.approve.dcaf', $dcaf->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Apakah Anda yakin ingin menerima dokumen DCAF ini?')">
@@ -90,8 +91,9 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $dcaf->status == 'pending' ? '#ffc107' : 
-                                    ($dcaf->status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                                    {{ $dcaf->status == 'menunggu persetujuan' ? '#ffc107' : 
+                                    ($dcaf->status == 'diterima' ? '#28a745' : 
+                                    ($dcaf->status == 'ditolak' ? '#dc3545' : '#ffc107')) }};">
                             </span>
                             {{ ucfirst($dcaf->status) }}
                         </span>
@@ -135,8 +137,9 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $dcaf->status == 'pending' ? '#ffc107' : 
-                                    ($dcaf->status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                                    {{ $dcaf->status == 'menunggu persetujuan' ? '#ffc107' : 
+                                    ($dcaf->status == 'diterima' ? '#28a745' : 
+                                    ($dcaf->status == 'ditolak' ? '#dc3545' : '#ffc107')) }};">
                             </span>
                             {{ ucfirst($dcaf->status) }}
                         </span>

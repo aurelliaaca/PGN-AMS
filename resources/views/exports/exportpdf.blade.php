@@ -73,14 +73,19 @@
     </div>
 
     <div class="footer">
-        <div class="tanggal">
-            Semarang, {{ \Carbon\Carbon::now()->format('d F Y') }}
-        </div>
-        <div class="ttd">
+    <table style="width: 100%; margin-bottom: 60px; font-size: 12px; border: none;">
+    <tr>
+        <td style="text-align: left; border: none;">Dibuat: {{ now()->format('d/m/Y H:i:s') }}</td>
+        <td style="text-align: right; border: none;">Jakarta, {{ \Carbon\Carbon::now()->format('d F Y') }}</td>
+    </tr>
+</table>
+
+    <div class="ttd" style="text-align: right;">
             <br><br><br>
             (....................................)
         </div>
     </div>
+
 </body>
 
 </html>

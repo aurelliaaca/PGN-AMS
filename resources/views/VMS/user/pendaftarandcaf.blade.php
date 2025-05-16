@@ -9,6 +9,70 @@
         <link rel="stylesheet" href="{{ asset('css/filter.css') }}">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <style>
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 500px;
+                border-radius: 8px;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover {
+                color: black;
+            }
+
+            .modal-footer {
+                margin-top: 20px;
+                text-align: right;
+            }
+
+            .btn-primary {
+                background-color: #5a54ea;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+            .btn-primary:hover {
+                background-color: #4a44da;
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 8px;
+                margin: 8px 0;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+            }
+
+            .mb-3 {
+                margin-bottom: 1rem;
+            }
+        </style>
     </head>
 
     <div class="form-page-content">
@@ -307,14 +371,46 @@
 
                 <!-- Submit -->
                 <div style="margin-top: 20px;">
-                    <button type="submit"
+                    <button type="button" onclick="window.location.href='{{ route('pendaftaran.ajukan-dcs') }}'"
                         style="background-color: #5a54ea; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer;">
-                        Kirim
+                        Next
                     </button>
                 </div>
 
             </div>
         </form>
+    </div>
+
+    <!-- Modal Ajukan DCS -->
+    <div class="modal" id="modalAjukanDCS">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('modalAjukanDCS')">&times;</span>
+            <h5>Ajukan Visit DCS</h5>
+            <form action="{{ route('dokumen.store') }}" method="POST" id="formAjukanDCS" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-3">
+                    <label>Catatan</label>
+                    <input type="text" name="catatan" class="form-control" id="catatan" value="">
+                </div>
+                <div class="mb-3">
+                    <label>Pilih NDA Aktif</label>
+                    <select name="verifikasi_nda_id" id="verifikasi_nda_id" class="form-control" required>
+                        <option value="">-- Pilih NDA --</option>
+                        @forelse($activeNdas as $nda)
+                            <option value="{{ $nda->id }}">NDA berlaku sampai {{ $nda->masa_berlaku->format('d F Y') }}</option>
+                        @empty
+                            <option value="" disabled>-- Tidak ada NDA aktif --</option>
+                        @endforelse
+                    </select>
+                    @if($activeNdas->isEmpty())
+                        <small class="text-danger">Anda tidak memiliki NDA yang aktif. Silahkan ajukan verifikasi NDA terlebih dahulu.</small>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="submitDCAF()" class="btn btn-primary" {{ $activeNdas->isEmpty() ? 'disabled' : '' }}>Kirim</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -487,20 +583,26 @@
 </script>
 
     <script>
-        document.getElementById('addPendaftaranForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const form = this;
+        function showModalAjukanDCS() {
+            document.getElementById('modalAjukanDCS').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function submitDCAF() {
+            const form = document.getElementById('addPendaftaranForm');
+            const formData = new FormData(form);
 
             Swal.fire({
                 title: 'Sedang Memproses...',
-                text: 'Mohon tunggu, dokumen sedang digenerate...',
+                text: 'Mohon tunggu, data sedang disimpan...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
                 }
             });
-
-            const formData = new FormData(form);
 
             fetch(form.action, {
                 method: 'POST',
@@ -509,45 +611,31 @@
                 },
                 body: formData
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Gagal menyimpan data');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.fire({
-                        title: 'Berhasil!',
-                        text: 'Dokumen berhasil dibuat. Ingin mendownload sekarang?',
-                        icon: 'success',
-                        showCancelButton: true,
-                        confirmButtonText: 'Download',
-                        cancelButtonText: 'Nanti saja'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = data.file_url;
-                        }
-                        form.reset(); // reset form
-                        document.getElementById('rekanan-container').innerHTML = ''; // hapus semua rekanan
-                        addRekanan(); // tambahkan satu form awal
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: 'Terjadi kesalahan saat menyimpan data atau mengenerate dokumen.'
-                    });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gagal menyimpan data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Data berhasil disimpan.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '/dashboard'; // atau halaman yang diinginkan
                 });
-        });
-
-        // Tambahkan satu blok rekanan awal saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', () => {
-            if (document.querySelectorAll('.rekanan-block').length === 0) {
-                addRekanan();
-            }
-        });
+            })
+            .catch(error => {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Terjadi kesalahan saat menyimpan data.'
+                });
+            });
+        }
     </script>
 
     <script>
