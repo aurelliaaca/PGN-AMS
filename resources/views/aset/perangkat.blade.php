@@ -466,13 +466,11 @@
                             "previous": "<i class='fas fa-arrow-left'></i>"
                         }
                     },
-                    "pageLength": 10,
-                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-                    "columnDefs": [
-                        {
-                            "targets": [0, 8], 
-                            "orderable": false
-                        }
+                    pageLength: 10,
+                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    order: [], 
+                    columnDefs: [
+                        { targets: [0, 9], orderable: false }
                     ]
                 });
             });

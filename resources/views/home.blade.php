@@ -5,21 +5,21 @@
     <div class="main">
         @if(auth()->user()->role == '1' || auth()->user()->role == '2')
             <div class="card-section">
-                <div class="card-item">
+                <div class="card-item" style="margin-top: 20px;">
                     <div class="card-icon"><i class="fa-solid fa-earth-americas"></i></div>
                     <div class="card-content">
                         <h4>Region</h4>
                         <p>{{ $jumlahRegion }} data</p>
                     </div>
                 </div>
-                <div class="card-item">
+                <div class="card-item" style="margin-top: 20px;">
                     <div class="card-icon"><i class="fa-solid fa-building"></i></div>
                     <div class="card-content">
                         <h4>POP</h4>
                         <p>{{ $jumlahJenisSite['POP'] ?? 0 }} data</p>
                     </div>
                 </div>
-                <div class="card-item">
+                <div class="card-item" style="margin-top: 20px;">
                     <div class="card-icon"><i class="fa-solid fa-building-user"></i></div>
                     <div class="card-content">
                         <h4>POC</h4>

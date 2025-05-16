@@ -36,7 +36,7 @@
         </style>
     </head>
     <div class="main">
-        <div class="button-wrapper">
+        <div class="button-wrapper" style="margin-top: 20px; margin-bottom: 10px;">
             <button class="btn btn-primary mb-3" onclick="showModal('uploadModal')">Tambah Foto</button>
         </div>
 

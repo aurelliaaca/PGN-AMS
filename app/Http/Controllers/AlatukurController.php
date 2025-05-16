@@ -6,9 +6,8 @@ use App\Models\BrandAlatukur;
 use App\Models\JenisAlatukur;
 use App\Models\ListAlatukur;
 use App\Models\Region;
-use App\Models\Site;
 use App\Models\HistoriAlatukur;
-use App\Models\Rack;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -19,8 +18,24 @@ class AlatukurController extends Controller
         $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
         $types = JenisAlatukur::select('kode_alatukur', 'nama_alatukur')->orderBy('nama_alatukur')->get();
         $brands = BrandAlatukur::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
+        $users = User::select('id', 'name')->orderBy('name')->get();
 
-        $query = ListAlatukur::with(['region', 'jenisalatukur', 'brandalatukur']);
+        $user = auth()->user();
+        $role = $user->role;
+
+        $query = ListAlatukur::with(['region', 'jenisalatukur', 'brandalatukur']); // Hapus 'site'
+
+        if ($role == 3 || $role == 4) {
+            $query->where('milik', $user->id);
+        }
+
+        if ($request->filled('kode_region')) {
+            $query->whereIn('kode_region', $request->kode_region);
+        }
+
+        if ($request->filled('kode_alatukur')) {
+            $query->whereIn('kode_alatukur', $request->kode_alatukur);
+        }
 
         $dataalatukur = $query->get();
 
@@ -28,13 +43,13 @@ class AlatukurController extends Controller
             'regions',
             'types',
             'brands',
-            'dataalatukur'
+            'dataalatukur',
+            'users'
         ));
     }
 
     public function store(Request $request)
     {
-        // Validasi dasar
         $request->validate([
             'kode_region' => 'required',
             'kode_alatukur' => 'required',
@@ -44,10 +59,9 @@ class AlatukurController extends Controller
             'alatukur_ke' => 'nullable',
             'kondisi' => 'nullable',
             'keterangan' => 'nullable',
+            'milik' => 'required',
         ]);
 
-
-        // Logic untuk menambahkan alatukur baru ke ListAlatukur
         $jumlahAlatukur = ListAlatukur::where('kode_region', $request->kode_region)->max('alatukur_ke');
         $alatukurKe = $jumlahAlatukur + 1;
 
@@ -60,6 +74,7 @@ class AlatukurController extends Controller
             'serialnumber' => $request->serialnumber,
             'kondisi' => $request->kondisi,
             'keterangan' => $request->keterangan,
+            'milik' => $request->milik,
         ]);
 
         HistoriAlatukur::create([
@@ -71,6 +86,7 @@ class AlatukurController extends Controller
             'serialnumber' => $request->serialnumber,
             'kondisi' => $request->kondisi,
             'keterangan' => $request->keterangan,
+            'milik' => $request->milik,
             'histori' => 'Ditambahkan',
         ]);
 
@@ -80,11 +96,8 @@ class AlatukurController extends Controller
             ->with('error', 'Terjadi kesalahan saat menambahkan alatukur. Silakan coba lagi.');
     }
 
-
-
     public function update(Request $request, $id)
     {
-        // Validasi dasar
         $request->validate([
             'kode_region' => 'required',
             'kode_alatukur' => 'required',
@@ -93,9 +106,9 @@ class AlatukurController extends Controller
             'serialnumber' => 'nullable',
             'kondisi' => 'nullable',
             'keterangan' => 'nullable',
+            'milik' => 'required',
         ]);
 
-        // Temukan alatukur berdasarkan ID dan lakukan update
         $alatukur = ListAlatukur::findOrFail($id);
         $alatukur->update([
             'kode_region' => $request->kode_region,
@@ -105,8 +118,8 @@ class AlatukurController extends Controller
             'serialnumber' => $request->serialnumber,
             'kondisi' => $request->kondisi,
             'keterangan' => $request->keterangan,
+            'milik' => $request->milik,
         ]);
-        // Redirect kembali dengan pesan sukses
         return redirect()->route('alatukur.index')
             ->with('success', 'Alatukur berhasil diupdate.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')

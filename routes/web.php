@@ -192,8 +192,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/alatukur/{id_alatukur}', [AlatukurController::class, 'destroy'])->name('alatukur.destroy');
     Route::post('/import-alatukur', [AlatukurImportController::class, 'import'])->name('import.alatukur');
     Route::post('export/alatukur', function (Request $request) {
-        $regions = $request->input('regions'); // array atau null
-        $format = $request->input('format');   // excel atau pdf
+        $regions = $request->input('regions');
+        $format = $request->input('format');  
         if ($format === 'excel') {
             return Excel::download(new AlatukurExport($regions), 'dataalatukur.xlsx');
         } elseif ($format === 'pdf') {
@@ -206,40 +206,40 @@ Route::middleware('auth')->group(function () {
         }
     });
 
-    // Route::get('/aset/jaringan', [JaringanController::class, 'indexJaringan'])->name('jaringan.index');
-    // Route::get('/jaringan/create', [JaringanController::class, 'create'])->name('jaringan.create');
-    // Route::post('/jaringan/store', [JaringanController::class, 'store'])->name('jaringan.store');
-    // Route::get('/jaringan/{id_jaringan}/edit', [JaringanController::class, 'edit'])->name('jaringan.edit');
-    // Route::put('/jaringan/{id_jaringan}', [JaringanController::class, 'update'])->name('jaringan.update');
-    // Route::delete('/jaringan/{id_jaringan}', [JaringanController::class, 'destroy'])->name('jaringan.destroy');
-    // Route::post('/import-jaringan', [JaringanImportController::class, 'import'])->name('import.jaringan');
-    // Route::post('export/jaringan', function (Request $request) {
-    //     $regions = $request->input('regions'); // array atau null
-    //     $format = $request->input('format');   // excel atau pdf
-    //     if ($format === 'excel') {
-    //         return Excel::download(new JaringanExport($regions), 'datajaringan.xlsx');
-    //     } elseif ($format === 'pdf') {
-    //         $data = (new JaringanExport($regions))->collection();
+    Route::get('/aset/jaringan', [JaringanController::class, 'indexJaringan'])->name('jaringan.index');
+    Route::get('/jaringan/create', [JaringanController::class, 'create'])->name('jaringan.create');
+    Route::post('/jaringan/store', [JaringanController::class, 'store'])->name('jaringan.store');
+    Route::get('/jaringan/{id_jaringan}/edit', [JaringanController::class, 'edit'])->name('jaringan.edit');
+    Route::put('/jaringan/{id_jaringan}', [JaringanController::class, 'update'])->name('jaringan.update');
+    Route::delete('/jaringan/{id_jaringan}', [JaringanController::class, 'destroy'])->name('jaringan.destroy');
+    Route::post('/import-jaringan', [JaringanImportController::class, 'import'])->name('import.jaringan');
+    Route::post('export/jaringan', function (Request $request) {
+        $regions = $request->input('regions'); // array atau null
+        $format = $request->input('format');   // excel atau pdf
+        if ($format === 'excel') {
+            return Excel::download(new JaringanExport($regions), 'datajaringan.xlsx');
+        } elseif ($format === 'pdf') {
+            $data = (new JaringanExport($regions))->collection();
 
-    //         $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
-    //         return $pdf->download('datajaringan.pdf');
-    //     } else {
-    //         return back()->with('error', 'Format file tidak dikenali.');
-    //     }
-    // });
+            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            return $pdf->download('datajaringan.pdf');
+        } else {
+            return back()->with('error', 'Format file tidak dikenali.');
+        }
+    });
 
-    Route::get('/jaringan', [JaringanController::class, 'jaringan'])->name('jaringan');
-    Route::post('/store-jaringan', [JaringanController::class, 'store'])->name('jaringan.store');
-    Route::get('/jaringan/tipes/{tipe}', [JaringanController::class, 'getTipeJaringan']);
-    Route::get('/jaringan/filter', [JaringanController::class, 'getJaringanByRegionAndTipe']);
-    Route::delete('/delete-jaringan/{id_jaringan}', [JaringanController::class, 'deleteJaringan'])->name('jaringan.delete');
-    Route::get('/edit-jaringan/{id_jaringan}', [JaringanController::class, 'editJaringan'])->name('jaringan.edit');
-    Route::post('/update-jaringan/{id_jaringan}', [JaringanController::class, 'updateJaringan'])->name('jaringan.update');
-    Route::get('/jaringan/{id_jaringan}/detail', [JaringanController::class, 'getDetail'])->name('jaringan.detail');
-    Route::get('/get-last-kode-site-insan', [JaringanController::class, 'getLastKodeSiteInsan']);
-    Route::post('/jaringan/import', [JaringanController::class, 'import'])->name('jaringan.import');
-    Route::post('/jaringan/export', [JaringanController::class, 'export'])->name('jaringan.export');
-    Route::get('/jaringan/{id}/lihat-detail', [JaringanController::class, 'lihatDetail'])->name('jaringan.lihatDetail');
+    // Route::get('/jaringan', [JaringanController::class, 'jaringan'])->name('jaringan');
+    // Route::post('/store-jaringan', [JaringanController::class, 'store'])->name('jaringan.store');
+    // Route::get('/jaringan/tipes/{tipe}', [JaringanController::class, 'getTipeJaringan']);
+    // Route::get('/jaringan/filter', [JaringanController::class, 'getJaringanByRegionAndTipe']);
+    // Route::delete('/delete-jaringan/{id_jaringan}', [JaringanController::class, 'deleteJaringan'])->name('jaringan.delete');
+    // Route::get('/edit-jaringan/{id_jaringan}', [JaringanController::class, 'editJaringan'])->name('jaringan.edit');
+    // Route::post('/update-jaringan/{id_jaringan}', [JaringanController::class, 'updateJaringan'])->name('jaringan.update');
+    // Route::get('/jaringan/{id_jaringan}/detail', [JaringanController::class, 'getDetail'])->name('jaringan.detail');
+    // Route::get('/get-last-kode-site-insan', [JaringanController::class, 'getLastKodeSiteInsan']);
+    // Route::post('/jaringan/import', [JaringanController::class, 'import'])->name('jaringan.import');
+    // Route::post('/jaringan/export', [JaringanController::class, 'export'])->name('jaringan.export');
+    // Route::get('/jaringan/{id}/lihat-detail', [JaringanController::class, 'lihatDetail'])->name('jaringan.lihatDetail');
 
 
     // Superadmin - melihat dan memverifikasi dokumen

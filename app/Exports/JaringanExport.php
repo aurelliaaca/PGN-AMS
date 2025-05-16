@@ -20,7 +20,7 @@ class JaringanExport implements FromCollection, WithHeadings
         $query = ListJaringan::query();
 
         if (!empty($this->regions)) {
-            $query->whereIn('RO', $this->regions);
+            $query->whereIn('kode_region', $this->regions);
         }
 
         return $query->get();
@@ -30,23 +30,25 @@ class JaringanExport implements FromCollection, WithHeadings
     {
         return [
             'No',
-            'RO',
-            'tipe_jaringan',
-            'segmen',
-            'jartatup_jartaplok',
-            'mainlink_backuplink',
-            'panjang',
-            'panjang_drawing',
-            'jumlah_core',
-            'jenis_kabel',
-            'tipe_kabel',
-            'status',
-            'ket',
-            'ket2',
-            'kode_site_insan',
-            'update',
-            'route',
-            'dci_eqx',
+            'Region',
+            'Tipe Jaringan',
+            'Segmen',
+            'Jartatup Jartaplok',
+            'Mainlink Backuplink',
+            'Panjang',
+            'Panjang Drawing',
+            'Jumlah Core',
+            'Jenis Kabel',
+            'Tipe Kabel',
+            'Status',
+            'Keterangan',
+            'Kode Site Insan',
+            'DCI-EQX',
+            'Travelling Time',
+            'Verification Time',
+            'Restoration Time',
+            'Total Corrective Time',
+            'Milik',
         ];
     }
 }

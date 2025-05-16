@@ -59,7 +59,7 @@
                         class="text">Fasilitas</span></a></li>
             <li><a href="{{ route('alatukur.index') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span
                         class="text">Alat Ukur</span></a></li>
-            <li><a href="{{ route('jaringan') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span
+            <li><a href="{{ route('jaringan.index') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span
                         class="text">Jaringan</span></a></li>
 
             <h4><span>Portal VMS</span>
