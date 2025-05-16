@@ -18,11 +18,13 @@ class VerifikasiDcaf extends Model
     protected $fillable = [
         'user_id',
         'verifikasi_nda_id',
-        'file_path',
         'status',
         'catatan',
         'masa_berlaku'
     ];
+
+    public $incrementing = true;
+    protected $keyType = 'integer';
 
     public function user()
     {

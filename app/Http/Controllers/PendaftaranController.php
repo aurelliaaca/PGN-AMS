@@ -8,15 +8,38 @@ use PhpOffice\PhpWord\TemplateProcessor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PendaftaranVms;
 use App\Models\RekananVms;
+use App\Models\VerifikasiNda;
 
 class PendaftaranController extends Controller
 {
 
     public function pendaftaranDCAF()
     {
-        // Mengembalikan view pendaftarandcaf
-        return view('VMS.user.pendaftarandcaf');
+        // Ambil NDA aktif
+        $activeNdas = VerifikasiNda::where('status', 'approved')
+            ->where('masa_berlaku', '>', now())
+            ->get();
+
+        // Mengembalikan view pendaftarandcaf dengan data NDA aktif
+        return view('VMS.user.pendaftarandcaf', compact('activeNdas'));
     }
+
+    public function ajukanDCS()
+    {
+        // Ambil NDA aktif
+        $activeNdas = VerifikasiNda::with(['nda'])
+            ->where('status', 'diterima')
+            ->where('masa_berlaku', '>', now())
+            ->orderBy('masa_berlaku', 'desc')
+            ->get();
+
+        // Debug untuk memastikan data terambil
+        \Log::info('Active NDAs:', $activeNdas->toArray());
+
+        // Mengembalikan view ajukan-dcs dengan data NDA aktif
+        return view('VMS.user.ajukan-dcs', compact('activeNdas'));
+    }
+
     public function store(Request $request)
     {
         // Validasi input

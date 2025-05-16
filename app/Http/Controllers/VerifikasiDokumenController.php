@@ -66,11 +66,11 @@ class VerifikasiDokumenController extends Controller
     public function indexDcaf()
     {
         $dcafs = VerifikasiDcaf::with(['user', 'nda'])
-            ->where('status', 'pending')
+            ->where('status', 'menunggu persetujuan')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pendingDcafs = VerifikasiDcaf::where('status', 'pending')
+        $pendingDcafs = VerifikasiDcaf::where('status', 'menunggu persetujuan')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -122,6 +122,10 @@ class VerifikasiDokumenController extends Controller
             ->orderBy('masa_berlaku', 'desc')
             ->get();
 
+        // Debug log
+        \Log::info('User ID: ' . $user->id);
+        \Log::info('Active NDAs:', $activeNdas->toArray());
+
         // Ambil data DCAF yang diajukan
         $dcafs = VerifikasiDcaf::with(['user', 'nda'])
             ->where('user_id', $user->id)
@@ -138,31 +142,20 @@ class VerifikasiDokumenController extends Controller
             // Validasi inputan user
             $request->validate([
                 'verifikasi_nda_id' => 'required|exists:verifikasi_nda,id',
-                'dcaf_file' => 'required|mimes:pdf,doc,docx|max:10240',
                 'catatan' => 'nullable|string',
             ]);
-
-            // Ambil dokumen yang diunggah
-            $dcafFile = $request->file('dcaf_file');
-
-            // Generate nama file yang unik
-            $dcafFileName = time() . '_dcaf_' . $dcafFile->getClientOriginalName();
-
-            // Simpan dokumen ke storage
-            $dcafPath = $dcafFile->storeAs('dokumen_verifikasi', $dcafFileName, 'public');
 
             // Simpan data verifikasi ke tabel
             $verifikasi = new VerifikasiDcaf();
             $verifikasi->user_id = auth()->user()->id;
             $verifikasi->verifikasi_nda_id = $request->verifikasi_nda_id;
-            $verifikasi->file_path = $dcafPath;
-            $verifikasi->status = 'pending';
+            $verifikasi->status = 'menunggu persetujuan';
             $verifikasi->catatan = $request->catatan;
             $verifikasi->save();
 
-            return redirect()->route('verifikasi.user.dcaf')->with('success', 'Dokumen berhasil diupload, menunggu verifikasi');
+            return redirect()->route('verifikasi.user.dcaf')->with('success', 'Pengajuan DCS berhasil dibuat, menunggu verifikasi');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengupload dokumen: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengajukan DCS: ' . $e->getMessage());
         }
     }
 
@@ -215,6 +208,13 @@ class VerifikasiDokumenController extends Controller
             $dcaf = VerifikasiDcaf::findOrFail($id);
             $dcaf->status = 'diterima';
             $dcaf->masa_berlaku = Carbon::now()->addDays(7);
+            
+            // Generate file DCAF setelah disetujui
+            $pdf = PDF::loadView('exports.dcaf', compact('dcaf'));
+            $fileName = 'dcaf_' . $dcaf->id . '.pdf';
+            $pdf->save(public_path('pdf/' . $fileName));
+            
+            $dcaf->file_path = $fileName;
             $dcaf->save();
 
             return redirect()->route('verifikasi.superadmin.dcaf')->with('success', 'DCAF berhasil diverifikasi dan diterima.');
@@ -369,7 +369,7 @@ class VerifikasiDokumenController extends Controller
             // Generate PDF sesuai tipe
             $pdf = PDF::loadView('exports.nda' . $type . 'pdf', compact(var_name: 'nda'));
             $pdfPath = 'nda_' . $type . '_' . $nda->id . '.pdf';
-            
+
             // Simpan file ke folder public/pdf
             $pdf->save(public_path('pdf/' . $pdfPath));
 
