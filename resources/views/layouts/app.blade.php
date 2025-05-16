@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,9 +18,10 @@
 
     <!-- CSS Lokal -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    @yield('styles')  <!-- Menyertakan style khusus halaman -->
+    @yield('styles') <!-- Menyertakan style khusus halaman -->
 
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -30,36 +32,58 @@
         </div>
 
         <ul class="sidebar-links">
-            <h4><span>Menu</span><div class="menu-separator"></div></h4>
-            <li><a href="{{ route('home') }}"><span class="icon"><i class="fas fa-tachometer-alt"></i></span><span class="text">Dasbor</span></a></li>
+            <h4><span>Menu</span>
+                <div class="menu-separator"></div>
+            </h4>
+            <li><a href="{{ route('home') }}"><span class="icon"><i class="fas fa-tachometer-alt"></i></span><span
+                        class="text">Dasbor</span></a></li>
             @if(auth()->user()->role == '1' || auth()->user()->role == '2')
-            <li><a href="{{ route('data') }}"><span class="icon"><i class="fas fa-database"></i></span><span class="text">Data</span></a></li>
+                <li><a href="{{ route('data') }}"><span class="icon"><i class="fas fa-database"></i></span><span
+                            class="text">Data</span></a></li>
             @endif
-            <li><a href="{{ route('rack.index') }}"><span class="icon"><i class="fas fa-server"></i></span><span class="text">Rack</span></a></li>
+            <li><a href="{{ route('rack.index') }}"><span class="icon"><i class="fas fa-server"></i></span><span
+                        class="text">Rack</span></a></li>
+            <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span
+                        class="text">Histori</span></a></li>
             @if(auth()->user()->role == '1' || auth()->user()->role == '2')
-            <li><a href="{{ route('semantik') }}"><span class="icon"><i class="fas fa-image"></i></span><span class="text">Semantik</span></a></li>
+                <li><a href="{{ route('semantik') }}"><span class="icon"><i class="fas fa-image"></i></span><span
+                            class="text">Semantik</span></a></li>
             @endif
-            <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span class="text">Histori</span></a></li>
 
-                <h4><span>Aset</span><div class="menu-separator"></div></h4>
-                <li><a href="{{ route('perangkat.index') }}"><span class="icon"><i class="fas fa-tools"></i></span><span class="text">Perangkat</span></a></li>
-                <li><a href="{{ route('fasilitas.index') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span class="text">Fasilitas</span></a></li>
-                <li><a href="{{ route('alatukur.index') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span class="text">Alat Ukur</span></a></li>
-                <li><a href="{{ route('jaringan') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span class="text">Jaringan</span></a></li>
+            <h4><span>Aset</span>
+                <div class="menu-separator"></div>
+            </h4>
+            <li><a href="{{ route('perangkat.index') }}"><span class="icon"><i class="fas fa-tools"></i></span><span
+                        class="text">Perangkat</span></a></li>
+            <li><a href="{{ route('fasilitas.index') }}"><span class="icon"><i class="fas fa-warehouse"></i></span><span
+                        class="text">Fasilitas</span></a></li>
+            <li><a href="{{ route('alatukur.index') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span
+                        class="text">Alat Ukur</span></a></li>
+            <li><a href="{{ route('jaringan.index') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span
+                        class="text">Jaringan</span></a></li>
 
-            <h4><span>Portal VMS</span><div class="menu-separator"></div></h4>
+            <h4><span>Portal VMS</span>
+                <div class="menu-separator"></div>
+            </h4>
             @if(auth()->user()->role == '1')
-                <li><a href="{{ route('verifikasi.superadmin.nda') }}"><span class="icon"><i class="fas fa-paperclip"></i></span><span class="text">Verifikasi NDA</span></a></li>
-                <li><a href="{{ route('verifikasi.superadmin.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span class="text">Verifikasi DCAF</span></a></li>
+                <li><a href="{{ route('verifikasi.superadmin.nda') }}"><span class="icon"><i
+                                class="fas fa-paperclip"></i></span><span class="text">Verifikasi NDA</span></a></li>
+                <li><a href="{{ route('verifikasi.superadmin.dcaf') }}"><span class="icon"><i
+                                class="fas fa-file"></i></span><span class="text">Verifikasi DCAF</span></a></li>
             @endif
 
             @if(auth()->user()->role == '3')
-                <li><a href="{{ route('verifikasi.user.nda') }}"><span class="icon"><i class="fas fa-paperclip"></i></span><span class="text">NDA</span></a></li>
-                <li><a href="{{ route('verifikasi.user.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span class="text">DCAF</span></a></li>
+                <li><a href="{{ route('verifikasi.user.nda') }}"><span class="icon"><i
+                                class="fas fa-paperclip"></i></span><span class="text">NDA</span></a></li>
+                <li><a href="{{ route('verifikasi.user.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span
+                            class="text">DCAF</span></a></li>
             @endif
 
-            <h4><span>Akun</span><div class="menu-separator"></div></h4>
-            <li><a href="#"><span class="icon"><i class="fas fa-user-circle"></i></span><span class="text">Profil</span></a></li>
+            <h4><span>Akun</span>
+                <div class="menu-separator"></div>
+            </h4>
+            <li><a href="#"><span class="icon"><i class="fas fa-user-circle"></i></span><span
+                        class="text">Profil</span></a></li>
             <li>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
@@ -103,6 +127,10 @@
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
     <script>
         function openModal(id) {
@@ -145,20 +173,20 @@
             });
         @endif
 
-        function confirmDelete(id) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: 'Data tidak bisa dikembalikan!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + id).submit();
-                }
-            });
-        }
+            function confirmDelete(id) {
+                Swal.fire({
+                    title: 'Yakin mau hapus?',
+                    text: 'Data tidak bisa dikembalikan!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('delete-form-' + id).submit();
+                    }
+                });
+            }
 
         function clearAllFilters() {
             $('.select2').val(null).trigger('change');
@@ -166,7 +194,7 @@
             document.getElementById('filterForm').submit();
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('select[name="region[]"]').select2({
                 placeholder: "Pilih Region",
                 allowClear: true
@@ -184,7 +212,19 @@
                 allowClear: true
             });
         });
+
     </script>
-@yield('scripts')
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Validasi Gagal!',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                showConfirmButton: true
+            });
+        </script>
+    @endif
+    @yield('scripts')
 </body>
+
 </html>

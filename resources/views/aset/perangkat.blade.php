@@ -10,14 +10,45 @@
 @section('content')
     <div class="main">
         @if(auth()->user()->role == '1')
-        <div class="button-wrapper">
+        <div class="button-wrapper" style="margin-top: 20px;">
             <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Perangkat</button>
         </div>
+
+        <form method="GET" action="{{ route('perangkat.index') }}" id="filterForm">
+        <div class="filter-container" style="margin-top: 20px;">
+                <select name="kode_region[]" class="select2" multiple data-placeholder="Pilih Region" onchange="document.getElementById('filterForm').submit()">
+                    @foreach($regions as $region)
+                        <option value="{{ $region->kode_region }}" {{ in_array($region->kode_region, request('kode_region', [])) ? 'selected' : '' }}>
+                             {{ $region->nama_region }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="kode_site[]" class="select2" multiple 
+                        data-placeholder="Pilih Site"
+                        {{ request()->filled('kode_region') ? '' : 'disabled' }}>
+                    @foreach($filteredSites as $site)
+                        <option value="{{ $site->kode_site }}" 
+                                {{ in_array($site->kode_site, request('kode_site', [])) ? 'selected' : '' }}>
+                            {{ $site->nama_site }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="kode_perangkat[]" class="select2" multiple data-placeholder="Pilih Perangkat" onchange="document.getElementById('filterForm').submit()">
+                @foreach($types as $type)
+                        <option value="{{ $type->kode_perangkat }}" {{ in_array($type->kode_perangkat, request('kode_perangkat', [])) ? 'selected' : '' }}>
+                            {{ $type->nama_perangkat }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </form>
         @endif
 
-        <div class="table-responsive">
+        <div class="table-responsive" style="margin-top: 20px;">
             <table id="perangkatTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -150,11 +181,18 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="mb-3">
-                                                <label>No Rack</label>
-                                                <input type="text" name="no_rack" class="form-control"
-                                                    value="{{ $perangkat->no_rack ?? '' }}">
-                                            </div>
+                                            <label>No Rack</label>
+                                            <select name="no_rack" class="form-control noRackSelectEdit"
+                                                data-id="{{ $perangkat->id_perangkat }}">
+                                                <option value="">Pilih No Rack</option>
+                                                @foreach($racks as $rack)
+                                                    @if($rack->kode_region == $perangkat->kode_region && $rack->kode_site == $perangkat->kode_site)
+                                                        <option value="{{ $rack->no_rack }}" {{ $perangkat->no_rack == $rack->no_rack ? 'selected' : '' }}>
+                                                            {{ $rack->no_rack }}
+                                                        </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
                                             <div class="mb-3">
                                                 <label>Kode Perangkat</label>
                                                 <select name="kode_perangkat" class="form-control" required>
@@ -265,107 +303,154 @@
         </div>
 
         <div id="modalTambahPerangkat" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
-        <h5>Tambah Perangkat</h5>
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modalTambahPerangkat')">&times;</span>
+                <h5>Tambah Perangkat</h5>
 
-        <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
-            @csrf
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                <div style="width: 48%;">
-                    <div class="mb-3">
-                        <label>Kode Region</label>
-                        <select id="regionSelectTambah" name="kode_region" class="form-control" required>
-                            <option value="">Pilih Region</option>
-                            @foreach($regions as $region)
-                                <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
-                            @endforeach
-                        </select>
+                <form action="{{ route('perangkat.store') }}" method="POST" id="formTambahPerangkat">
+                    @csrf
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="width: 48%;">
+                            <div class="mb-3">
+                                <label>Kode Region</label>
+                                <select id="regionSelectTambah" name="kode_region" class="form-control" required>
+                                    <option value="">Pilih Region</option>
+                                    @foreach($regions as $region)
+                                        <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Kode Site</label>
+                                <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
+                                    <option value="">Pilih Site</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>No Rack</label>
+                                <select id="noRackSelectTambah" name="no_rack" class="form-control" disabled>
+                                    <option value="">Pilih Rack</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Kode Perangkat</label>
+                                <select name="kode_perangkat" class="form-control" required>
+                                    <option value="">Pilih Kode Perangkat</option>
+                                    @foreach($types as $jenisperangkat)
+                                        <option value="{{ $jenisperangkat->kode_perangkat }}">
+                                            {{ $jenisperangkat->nama_perangkat }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Milik</label>
+                                <select name="milik" class="form-control" required>
+                                    <option value="">Pilih Kepemilikan</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="width: 48%;">
+                            <div class="mb-3">
+                                <label>Kode Brand</label>
+                                <select name="kode_brand" class="form-control">
+                                    <option value="">Pilih Kode Brand</option>
+                                    @foreach($brands as $brandperangkat)
+                                        <option value="{{ $brandperangkat->kode_brand }}">
+                                            {{ $brandperangkat->nama_brand }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label>Type</label>
+                                <input type="text" name="type" class="form-control" value="">
+                            </div>
+
+                            <div class="mb-3">
+                                <label>U Awal</label>
+                                <input type="number" name="uawal" class="form-control" id="uawal" value="">
+                            </div>
+
+                            <div class="mb-3">
+                                <label>U Akhir</label>
+                                <input type="number" name="uakhir" class="form-control" id="uakhir" value="">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label>Kode Site</label>
-                        <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
-                            <option value="">Pilih Site</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label>No Rack</label>
-                        <select id="noRackSelectTambah" name="no_rack" class="form-control" disabled>
-                            <option value="">Pilih Rack</option>
-                        </select>
-                    </div>
-
-
-                    <div class="mb-3">
-                        <label>Kode Perangkat</label>
-                        <select name="kode_perangkat" class="form-control" required>
-                            <option value="">Pilih Kode Perangkat</option>
-                            @foreach($types as $jenisperangkat)
-                                <option value="{{ $jenisperangkat->kode_perangkat }}">
-                                    {{ $jenisperangkat->nama_perangkat }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label>Milik</label>
-                        <select name="milik" class="form-control" required>
-                            <option value="">Pilih Kepemilikan</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div style="width: 48%;">
-                    <div class="mb-3">
-                        <label>Kode Brand</label>
-                        <select name="kode_brand" class="form-control">
-                            <option value="">Pilih Kode Brand</option>
-                            @foreach($brands as $brandperangkat)
-                                <option value="{{ $brandperangkat->kode_brand }}">
-                                    {{ $brandperangkat->nama_brand }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label>Type</label>
-                        <input type="text" name="type" class="form-control" value="">
-                    </div>
-
-                    <div class="mb-3">
-                        <label>U Awal</label>
-                        <input type="number" name="uawal" class="form-control" id="uawal" value="">
-                    </div>
-
-                    <div class="mb-3">
-                        <label>U Akhir</label>
-                        <input type="number" name="uakhir" class="form-control" id="uakhir" value="">
-                    </div>
-                </div>
+                    <button type="submit" class="btn btn-primary">Tambah</button>
+                </form>
             </div>
-
-            <button type="submit" class="btn btn-primary">Tambah</button>
-        </form>
+        </div>
     </div>
 </div>
 
-    </div>
-
-    </div>
-
     @section('scripts')
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
         <script>
             $(document).ready(function() {
+                $('.select2').select2({
+                    width: '100%',
+                    placeholder: function() {
+                        return $(this).data('placeholder');
+                    },
+                    allowClear: true
+                });
+
+                $('select[name="kode_region[]"]').on('change', function() {
+                    const selectedRegions = $(this).val();
+                    const siteSelect = $('select[name="kode_site[]"]');
+                    const currentlySelectedSites = siteSelect.val(); 
+                    
+                    siteSelect.empty().prop('disabled', true);
+                    
+                    if (selectedRegions && selectedRegions.length > 0) {
+                        siteSelect.prop('disabled', false);
+                        
+                        const sites = @json($sites);
+                        const filteredSites = sites.filter(site => 
+                            selectedRegions.includes(site.kode_region)
+                        );
+                        
+                        filteredSites.forEach(site => {
+                            const option = new Option(site.nama_site, site.kode_site);
+                            siteSelect.append(option);
+                        });
+
+                        if (currentlySelectedSites) {
+                            const validSites = currentlySelectedSites.filter(site => 
+                                filteredSites.some(fs => fs.kode_site === site)
+                            );
+                            siteSelect.val(validSites);
+                        }
+                    }
+                    
+                    siteSelect.select2({
+                        width: '100%',
+                        placeholder: 'Pilih Site',
+                        allowClear: true
+                    });
+
+                    $('#filterForm').submit();
+                });
+
+                $('select[name="kode_site[]"]').on('change', function() {
+                    $('#filterForm').submit();
+                });
+
+                $('select[name="kode_perangkat[]"]').on('change', function() {
+                    $('#filterForm').submit();
+                });
+
                 $('#perangkatTable').DataTable({
                     "language": {
                         "search": "Cari",
@@ -381,13 +466,11 @@
                             "previous": "<i class='fas fa-arrow-left'></i>"
                         }
                     },
-                    "pageLength": 10,
-                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-                    "columnDefs": [
-                        {
-                            "targets": [0, 8], 
-                            "orderable": false
-                        }
+                    pageLength: 10,
+                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    order: [], 
+                    columnDefs: [
+                        { targets: [0, 9], orderable: false }
                     ]
                 });
             });
@@ -424,8 +507,7 @@
                 if (regionId && siteId) {
                     rackSelect.disabled = false;
                     
-                    // Mengambil data racks yang sudah ada di view
-                    const racks = @json($racks); // Data racks yang sudah dipassing ke view
+                    const racks = @json($racks); 
                     const filteredRacks = racks.filter(rack => rack.kode_region == regionId && rack.kode_site == siteId);
 
                     filteredRacks.forEach(rack => {
@@ -435,6 +517,58 @@
                         rackSelect.appendChild(option);
                     });
                 }
+            });
+
+            document.querySelectorAll('.regionSelectEdit').forEach(select => {
+                select.addEventListener('change', function () {
+                    const regionId = this.value;
+                    const fasilitasId = this.getAttribute('data-id');
+                    const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${fasilitasId}"]`);
+                    const rackSelect = document.querySelector(`.noRackSelectEdit[data-id="${fasilitasId}"]`);
+
+                    siteSelect.innerHTML = '<option value="">Pilih Site</option>';
+                    rackSelect.innerHTML = '<option value="">Pilih No Rack</option>';
+                    siteSelect.disabled = true;
+                    rackSelect.disabled = true;
+
+                    if (regionId) {
+                        siteSelect.disabled = false;
+                        const sites = @json($sites);
+                        const filteredSites = sites.filter(site => site.kode_region == regionId);
+
+                        filteredSites.forEach(site => {
+                            const option = document.createElement('option');
+                            option.value = site.kode_site;
+                            option.textContent = site.nama_site;
+                            siteSelect.appendChild(option);
+                        });
+                    }
+                });
+            });
+
+            document.querySelectorAll('.siteSelectEdit').forEach(select => {
+                select.addEventListener('change', function () {
+                    const siteId = this.value;
+                    const fasilitasId = this.getAttribute('data-id');
+                    const regionId = document.querySelector(`.regionSelectEdit[data-id="${fasilitasId}"]`).value;
+                    const rackSelect = document.querySelector(`.noRackSelectEdit[data-id="${fasilitasId}"]`);
+
+                    rackSelect.innerHTML = '<option value="">Pilih No Rack</option>';
+                    rackSelect.disabled = true;
+
+                    if (regionId && siteId) {
+                        rackSelect.disabled = false;
+                        const racks = @json($racks);
+                        const filteredRacks = racks.filter(rack => rack.kode_region == regionId && rack.kode_site == siteId);
+
+                        filteredRacks.forEach(rack => {
+                            const option = document.createElement('option');
+                            option.value = rack.no_rack;
+                            option.textContent = rack.no_rack;
+                            rackSelect.appendChild(option);
+                        });
+                    }
+                });
             });
 
 
@@ -465,30 +599,6 @@
                     alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
                     event.preventDefault(); 
                 }
-            });
-
-            document.querySelectorAll('.regionSelectEdit').forEach(select => {
-                select.addEventListener('change', function() {
-                    const regionId = this.value;
-                    const perangkatId = this.getAttribute('data-id');
-                    const siteSelect = document.querySelector(`.siteSelectEdit[data-id="${perangkatId}"]`);
-
-                    siteSelect.innerHTML = '<option value="">Pilih Site</option>';
-                    siteSelect.disabled = true;
-
-                    if (regionId) {
-                        siteSelect.disabled = false;
-                        const sites = @json($sites);
-                        const filteredSites = sites.filter(site => site.kode_region == regionId);
-
-                        filteredSites.forEach(site => {
-                            const option = document.createElement('option');
-                            option.value = site.kode_site;
-                            option.textContent = site.nama_site;
-                            siteSelect.appendChild(option);
-                        });
-                    }
-                });
             });
 
             document.querySelectorAll('form[action*="perangkat/update"]').forEach(form => {

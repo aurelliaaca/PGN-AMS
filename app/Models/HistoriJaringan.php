@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class HistoriJaringan extends Model
 {
-    // Tentukan nama tabel yang digunakan oleh model ini
-    protected $table = 'historifasilitas';
+    protected $table = 'historijaringan';
 
-    // Tentukan kolom-kolom yang bisa diisi secara mass-assignment
     protected $fillable = [
-        'RO',
-        'tipe_jaringan',
+        'id_jaringan',
+        'kode_region',
+        'kode_tipejaringan',
         'segmen',
         'jartatup_jartaplok',
         'mainlink_backuplink',
@@ -22,20 +21,19 @@ class HistoriJaringan extends Model
         'jenis_kabel',
         'tipe_kabel',
         'status',
-        'ket',
-        'ket2',
+        'keterangan',
         'kode_site_insan',
-        'update',
-        'route',
         'dci_eqx',
+        'travelling_time',
+        'verification_time',
+        'restoration_time',
+        'total_corrective_time',
+        'milik',
         'histori',
         'tanggal_perubahan',
     ];
-
-    // Jika kamu tidak menggunakan timestamps default dari Eloquent (created_at, updated_at)
     public $timestamps = false;
 
-    // Tentukan format tanggal jika diperlukan
     protected $dates = ['tanggal_perubahan'];
     public function listjaringan()
     {
@@ -44,12 +42,12 @@ class HistoriJaringan extends Model
 
     public function tipe()
     {
-        return $this->belongsTo(Tipe::class, 'tipe_jaringan', 'kode_tipe');
+        return $this->belongsTo(TipeJaringan::class, 'kode_tipejaringan', 'kode_tipejaringan');
     }
 
     public function region()
     {
-        return $this->belongsTo(Region::class, 'RO', 'kode_region')->select(['kode_region', 'nama_region']);
+        return $this->belongsTo(Region::class, 'kode_region', 'kode_region')->select(['kode_region', 'nama_region']);
     }
 
 }

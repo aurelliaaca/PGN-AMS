@@ -15,6 +15,7 @@ body {
 .main {
     margin-left: 42.5px;
     padding: 10px;
+    padding-top: 0px;
     transition: all 0.4s ease;
 }
 
@@ -645,7 +646,7 @@ table.dataTable thead th {
 select, .search-bar input {
     width: 100%;
     font-size: 12px;
-    padding: 12px 12px;
+    padding: 8px 8px;
     border: 1px solid #4f52ba;
     border-radius: 5px;
     background-color: #fff;
@@ -660,20 +661,20 @@ select:focus, .search-bar input:focus {
     border-color: #4f52ba;
     box-shadow: 0 0 5px rgba(79, 82, 186, 0.5);
 }
+select:focus, .search-bar input:focus {
+    border-color: #4f52ba;
+    box-shadow: 0 0 5px rgba(79, 82, 186, 0.5);
+}
 
 .select2-container {
     width: 100%;
 }
 
 .select2-selection {
-    width: 100%;
-    font-size: 12px;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    transition: border-color 0.3s;
     border: 1px solid #4f52ba !important;
+    background-color: #fff;
+    font-size: 12px;
+    padding-top: 2.5px;
 }
 
 .select2-selection:focus {
@@ -683,7 +684,6 @@ select:focus, .search-bar input:focus {
 
 .select2-selection__placeholder {
     color: #4f52ba;
-    font-size: 12px;
 }
 
 .select2-container--open .select2-selection {
@@ -700,6 +700,8 @@ select:focus, .search-bar input:focus {
     background-color: #4f52ba !important;
     color: #fff;
 }
+
+
 
 .status-box {
     width: 20px;

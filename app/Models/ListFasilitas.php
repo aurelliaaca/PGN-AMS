@@ -79,7 +79,7 @@ class ListFasilitas extends Model
                 array_key_exists('no_rack', $changes) && $changes['no_rack'] === null &&
                 array_key_exists('uawal', $changes) && $changes['uawal'] === null &&
                 array_key_exists('uakhir', $changes) && $changes['uakhir'] === null;
-        
+
             if ($isDikeluarkanDariRack && count($changes) == 3) {
                 $noRackLama = $fasilitas->getOriginal('no_rack');
                 $uAwalLama = $fasilitas->getOriginal('uawal');
@@ -87,11 +87,24 @@ class ListFasilitas extends Model
                 $histori = "Dikeluarkan dari rack $noRackLama u$uAwalLama – $uAkhirLama.";
             } else {
                 $histori = 'Diedit: ';
+                $logPerubahan = [];
+
                 foreach ($changes as $field => $newValue) {
                     $oldValue = $fasilitas->getOriginal($field);
-                    $histori .= "$field dari '$oldValue' menjadi '$newValue'. ";
+                    $logPerubahan[] = "$field dari '$oldValue' menjadi '$newValue'";
+                }
+
+                $count = count($logPerubahan);
+                if ($count === 1) {
+                    $histori .= $logPerubahan[0];
+                } elseif ($count === 2) {
+                    $histori .= $logPerubahan[0] . ' dan ' . $logPerubahan[1];
+                } else {
+                    $histori .= implode(', ', array_slice($logPerubahan, 0, -1));
+                    $histori .= ', dan ' . end($logPerubahan);
                 }
             }
+
 
             DB::table('historifasilitas')->insert([
                 'id_fasilitas' => $fasilitas->id_fasilitas,

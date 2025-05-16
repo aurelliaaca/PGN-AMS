@@ -33,28 +33,42 @@ class HomeController extends Controller
      */
 
      public function index()
-     {
-         // Mengambil nama user yang sedang login
-         $userName = Auth::user()->id; // Ambil nama user yang sedang login
-     
-         // Mengambil data berdasarkan nama user (milik == name)
-         $jumlahPerangkat = ListPerangkat::where('milik', $userName)->count();
-         $jumlahFasilitas = ListFasilitas::where('milik', $userName)->count();
-         $jumlahAlatUkur = ListAlatukur::where('milik', $userName)->count();
-         $jumlahRegion = Region::count();
-     
-         // Menghitung jumlah jenis site dan totalnya
-         $jumlahJenisSite = Site::select('jenis_site', DB::raw('count(*) as total'))
-             ->groupBy('jenis_site')
-             ->pluck('total', 'jenis_site');
-     
-         // Mengirim data ke view
-         return view('home', compact(
-             'jumlahPerangkat',
-             'jumlahFasilitas',
-             'jumlahAlatUkur',
-             'jumlahRegion',
-             'jumlahJenisSite'
-         ));
-     }     
+{
+    $user = Auth::user();
+    $role = $user->role; 
+    $userId = $user->id;
+    $userRegion = $user->region; 
+
+    if ($role == 1) {
+        $jumlahPerangkat = ListPerangkat::count();
+        $jumlahFasilitas = ListFasilitas::count();
+        $jumlahAlatUkur = ListAlatukur::count();
+    } elseif ($role == 2) {
+        $jumlahPerangkat = ListPerangkat::where('region', $userRegion)->count();
+        $jumlahFasilitas = ListFasilitas::where('region', $userRegion)->count();
+        $jumlahAlatUkur = ListAlatukur::where('region', $userRegion)->count();
+    } elseif (in_array($role, [3, 4])) {
+        $jumlahPerangkat = ListPerangkat::where('milik', $userId)->count();
+        $jumlahFasilitas = ListFasilitas::where('milik', $userId)->count();
+        $jumlahAlatUkur = ListAlatukur::where('milik', $userId)->count();
+    } else {
+        $jumlahPerangkat = 0;
+        $jumlahFasilitas = 0;
+        $jumlahAlatUkur = 0;
+    }
+
+    $jumlahRegion = Region::count();
+
+    $jumlahJenisSite = Site::select('jenis_site', DB::raw('count(*) as total'))
+        ->groupBy('jenis_site')
+        ->pluck('total', 'jenis_site');
+
+    return view('home', compact(
+        'jumlahPerangkat',
+        'jumlahFasilitas',
+        'jumlahAlatUkur',
+        'jumlahRegion',
+        'jumlahJenisSite'
+    ));
+}
 }

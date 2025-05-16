@@ -3,23 +3,42 @@
 @section('title', 'Aset Jaringan')
 @section('page_title', 'Aset Jaringan')
 
+
 @section('styles')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 @endsection
 
 @section('content')
     <div class="main">
-        <div class="button-wrapper">
-            @if(auth()->user()->role == '1')
+        @if (auth()->user()->role == '1')
+            <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahJaringan')">+ Tambah Jaringan</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
-                    Jaringan</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data
-                    Jaringan</button>
-            @endif
-        </div>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Jaringan</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Jaringan</button>
+            </div>
+            
+            <form method="GET" action="{{ route('jaringan.index') }}" id="filterForm">
+                <div class="filter-container" style="margin-top: 20px;">
+                    <select name="kode_region[]" class="select2" multiple data-placeholder="Pilih Region" onchange="document.getElementById('filterForm').submit()">
+                        @foreach ($regions as $region)
+                            <option value="{{ $region->kode_region }}" {{ in_array($region->kode_region, request('kode_region', [])) ? 'selected' : '' }}>
+                                {{ $region->nama_region }}
+                            </option>
+                        @endforeach
+                    </select>
 
-        <div class="table-responsive">
+                    <select name="kode_tipejaringan[]" class="select2" multiple data-placeholder="Pilih Tipe Jaringan" onchange="document.getElementById('filterForm').submit()">
+                        @foreach ($types as $type)
+                            <option value="{{ $type->kode_tipejaringan }}" {{ in_array($type->kode_tipejaringan, request('kode_tipejaringan', [])) ? 'selected' : '' }}>
+                                {{ $type->nama_tipejaringan }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </form>
+        @endif
+
+        <div class="table-responsive" style="margin-top: 20px;">
             <table id="jaringanTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -27,121 +46,327 @@
                         <th>Region</th>
                         <th>Tipe Jaringan</th>
                         <th>Segmen</th>
-                        <th>Jartatup/Jartaplok</th>
-                        <th>Mainlink/Backuplink</th>
                         <th>Panjang</th>
-                        <th>Panjang Drawing</th>
-                        <th>Jumlah Core</th>
                         <th>Jenis Kabel</th>
                         <th>Tipe Kabel</th>
-                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($jaringan as $data)
+                    @foreach ($datajaringan as $jaringan)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $data->region ? $data->region->nama_region : 'Region Tidak Ditemukan' }}</td>
-                            <td>{{ $data->tipe ? $data->tipe->nama_tipe : 'Tipe Tidak Ditemukan' }}</td>
-                            <td>{{ $data->segmen }}</td>
-                            <td>{{ $data->jartatup_jartaplok }}</td>
-                            <td>{{ $data->mainlink_backuplink }}</td>
-                            <td>{{ $data->panjang }}</td>
-                            <td>{{ $data->panjang_drawing }}</td>
-                            <td>{{ $data->jumlah_core }}</td>
-                            <td>{{ $data->jenis_kabel }}</td>
-                            <td>{{ $data->tipe_kabel }}</td>
-                            <td>{{ $data->status }}</td>
+                            <td>{{ $jaringan->region ? $jaringan->region->nama_region : 'Region Tidak Ditemukan' }}</td>
+                            <td>{{ $jaringan->tipejaringan ? $jaringan->tipejaringan->nama_tipejaringan : 'Tipe Tidak Ditemukan' }}</td>
+                            <td>{{ $jaringan->segmen }}</td>
+                            <td>{{ $jaringan->panjang }}</td>
+                            <td>{{ $jaringan->jenis_kabel }}</td>
+                            <td>{{ $jaringan->tipe_kabel }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-eye btn-sm mb-1"
-                                        onclick="openModal('modalViewJaringan{{ $data->id_jaringan }}')">
+                                    <button class="btn btn-eye btn-sm mb-1" onclick="openModal('modalViewJaringan{{ $jaringan->id_jaringan }}')">
                                         <i class="fas fa-eye"></i> Lihat
                                     </button>
-                                    <button class="btn btn-edit btn-sm mb-1"
-                                        onclick="openModal('modalEditJaringan{{ $data->id_jaringan }}')">
+                                    <button class="btn btn-edit btn-sm mb-1" onclick="openModal('modalEditJaringan{{ $jaringan->id_jaringan }}')">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
-                                    <button class="btn btn-delete btn-sm"
-                                        onclick="confirmDelete({{ $data->id_jaringan }})">
+                                    <button class="btn btn-delete btn-sm" onclick="confirmDelete({{ $jaringan->id_jaringan }})">
                                         <i class="fas fa-trash-alt"></i> Hapus
                                     </button>
-
-                                    <form id="delete-form-{{ $data->id_jaringan }}"
-                                        action="" method="POST"
-                                        style="display: none;">
+                                    <form id="delete-form-{{ $jaringan->id_jaringan }}" action="{{ route('jaringan.destroy', $jaringan->id_jaringan) }}" method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
                                     </form>
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+
+                        <div id="modalViewJaringan{{ $jaringan->id_jaringan }}" class="modal">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal('modalViewJaringan{{ $jaringan->id_jaringan }}')">×</span>
+                                <h5>Detail Jaringan</h5>
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                    <div style="display: flex; gap: 10px;">
+                                        <div style="width: 35%;">  <!-- Kolom pertama lebih besar -->
+                                            <label>Region</label>
+                                            <input type="text" value="{{ $jaringan->region ? $jaringan->region->nama_region : 'N/A' }}" readonly class="form-control">
+                                            <label>Segmen</label>
+                                            <textarea readonly class="form-control" style="resize:none; height: 60px;">{{ $jaringan->segmen ?? 'N/A' }}</textarea>
+                                            <label>Jartatup Jartaplok</label>
+                                            <input type="text" value="{{ $jaringan->jartatup_jartaplok ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Panjang</label>
+                                            <input type="text" value="{{ $jaringan->panjang ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Jumlah Core</label>
+                                            <input type="text" value="{{ $jaringan->jumlah_core ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Jenis Kabel</label>
+                                            <input type="text" value="{{ $jaringan->jenis_kabel ?? 'N/A' }}" readonly class="form-control">
+                                        </div>
+
+                                        <div style="width: 30%;"> <!-- Kolom kedua -->
+                                            <label>Tipe Jaringan</label>
+                                            <input type="text" value="{{ $jaringan->tipejaringan ? $jaringan->tipejaringan->nama_tipejaringan : 'N/A' }}" readonly class="form-control">
+                                            <label>Panjang Drawing</label>
+                                            <input type="text" value="{{ $jaringan->panjang_drawing ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Tipe Kabel</label>
+                                            <input type="text" value="{{ $jaringan->tipe_kabel ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Status</label>
+                                            <input type="text" value="{{ $jaringan->status ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Keterangan</label>
+                                            <input type="text" value="{{ $jaringan->keterangan ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Ket 2</label>
+                                            <input type="text" value="{{ $jaringan->ket2 ?? 'N/A' }}" readonly class="form-control">
+                                        </div>
+
+                                        <div style="width: 30%;"> <!-- Kolom ketiga -->
+                                            <label>Kode Site Insan</label>
+                                            <input type="text" value="{{ $jaringan->kode_site_insan ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Route</label>
+                                            <input type="text" value="{{ $jaringan->route ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Dci Eqx</label>
+                                            <input type="text" value="{{ $jaringan->dci_eqx ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Milik</label>
+                                            <input type="text" value="{{ $jaringan->milik ?? 'N/A' }}" readonly class="form-control">
+                                            <label>Update</label>
+                                            <input type="text" value="{{ $jaringan->updated_at ?? 'N/A' }}" readonly class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Edit Jaringan -->
+                        <div id="modalEditJaringan{{ $jaringan->id_jaringan }}" class="modal">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeModal('modalEditJaringan{{ $jaringan->id_jaringan }}')">×</span>
+                                <h5>Edit Jaringan</h5>
+                                <form action="{{ route('jaringan.update', $jaringan->id_jaringan) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div style="width: 31.5%;">
+                                    <label>Kode Region</label>
+                                    <select name="kode_region" class="form-control" required>
+                                        <option value="">Pilih Region</option>
+                                        @foreach ($regions as $region)
+                                            <option value="{{ $region->kode_region }}" {{ $jaringan->kode_region == $region->kode_region ? 'selected' : '' }}>
+                                                {{ $region->nama_region }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    
+                                    <label>Segmen</label>
+                                    <input type="text" name="segmen" class="form-control" value="{{ $jaringan->segmen ?? '' }}">
+
+                                    <label>Jartatup Jartaplok</label>
+                                    <input type="text" name="jartatup_jartaplok" class="form-control" value="{{ $jaringan->jartatup_jartaplok ?? '' }}">
+
+                                    <label>Panjang</label>
+                                    <input type="text" name="panjang" class="form-control" value="{{ $jaringan->panjang ?? '' }}">
+
+                                    <label>Jumlah Core</label>
+                                    <input type="text" name="jumlah_core" class="form-control" value="{{ $jaringan->jumlah_core ?? '' }}">
+                                </div>
+
+                                <div style="width: 32%;">
+                                    <label>Tipe Kabel</label>
+                                    <input type="text" name="tipe_kabel" class="form-control" value="{{ $jaringan->tipe_kabel ?? '' }}">
+
+                                    <label>Keterangan</label>
+                                    <input type="text" name="keterangan" class="form-control" value="{{ $jaringan->keterangan ?? '' }}">
+
+                                    <label>Kode Site Insan</label>
+                                    <input type="text" name="kode_site_insan" class="form-control" value="{{ $jaringan->kode_site_insan ?? '' }}">
+
+                                    <label>Kode Tipe Jaringan</label>
+                                    <select name="kode_tipejaringan" class="form-control" required>
+                                        <option value="">Pilih Tipe Jaringan</option>
+                                        @foreach ($types as $type)
+                                            <option value="{{ $type->kode_tipejaringan }}" {{ $jaringan->kode_tipejaringan == $type->kode_tipejaringan ? 'selected' : '' }}>
+                                                {{ $type->nama_tipejaringan }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div style="width: 31.5%;">
+                                    <label>Panjang Drawing</label>
+                                    <input type="text" name="panjang_drawing" class="form-control" value="{{ $jaringan->panjang_drawing ?? '' }}">
+
+                                    <label>Jenis Kabel</label>
+                                    <input type="text" name="jenis_kabel" class="form-control" value="{{ $jaringan->jenis_kabel ?? '' }}">
+
+                                    <label>Status</label>
+                                    <input type="text" name="status" class="form-control" value="{{ $jaringan->status ?? '' }}">
+
+                                    <label>Dci Eqx</label>
+                                    <input type="text" name="dci_eqx" class="form-control" value="{{ $jaringan->dci_eqx ?? '' }}">
+
+                                    <label>Milik</label>
+                                    <input type="text" name="milik" class="form-control" value="{{ $jaringan->milik ?? '' }}">
+                                </div>
+                            </div>
+
+                                    <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <div id="modalViewJaringan{{ $data->id_jaringan }}" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('modalViewJaringan{{ $data->id_jaringan }}')">&times;</span>
-        <h5>Detail Jaringan</h5>
+        <!-- Modal Tambah Jaringan -->
+        <div id="modalTambahJaringan" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modalTambahJaringan')">×</span>
+                <h5>Tambah Jaringan</h5>
+                <form action="{{ route('jaringan.store') }}" method="POST">
+                    @csrf
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="width: 31.5%;">
+                            <label>Kode Region</label>
+                            <select name="kode_region" class="form-control" required>
+                                <option value="">Pilih Region</option>
+                                @foreach ($regions as $region)
+                                    <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
+                                @endforeach
+                            </select>
 
-        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-            <div style="width: 48%;">
-                <label>Region</label>
-                <input type="text" value="{{ $data->RO }}" readonly class="form-control">
-               
-                <label>Segmen</label>
-                <input type="text" value="{{ $data->segmen }}" readonly class="form-control">
+                            <label>Segmen</label>
+                            <input type="text" name="segmen" class="form-control" required>
 
-                <label>Jartatup Jartaplok</label>
-                <input type="text" value="{{ $data->jartatup_jartaplok }}" readonly class="form-control">
+                            <label>Jartatup Jartaplok</label>
+                            <input type="text" name="jartatup_jartaplok" class="form-control">
 
-                <label>Panjang</label>
-                <input type="text" value="{{ $data->panjang }}" readonly class="form-control">
+                            <label>Panjang</label>
+                            <input type="text" name="panjang" class="form-control">
+                        </div>
 
-                <label>Jumlah Core</label>
-                <input type="text" value="{{ $data->jumlah_core }}" readonly class="form-control">
+                        <div style="width: 32%;">
+                            <label>Jumlah Core</label>
+                            <input type="text" name="jumlah_core" class="form-control">
 
-                <label>Tipe Kabel</label>
-                <input type="text" value="{{ $data->tipe_kabel }}" readonly class="form-control">
+                            <label>Tipe Kabel</label>
+                            <input type="text" name="tipe_kabel" class="form-control">
 
-                <label>Ket</label>
-                <input type="text" value="{{ $data->ket }}" readonly class="form-control">
+                            <label>Keterangan</label>
+                            <input type="text" name="keterangan" class="form-control">
 
-                <label>Kode Site Insan</label>
-                <input type="text" value="{{ $data->kode_site_insan }}" readonly class="form-control">
+                            <label>Kode Site Insan</label>
+                            <input type="text" name="kode_site_insan" class="form-control">
+                        </div>
 
-                <label>Route</label>
-                <input type="text" value="{{ $data->route }}" readonly class="form-control">
+                        <div style="width: 31.5%;">
+                        
+                            <label>Kode Tipe Jaringan</label>
+                            <select name="kode_tipejaringan" class="form-control" required>
+                                <option value="">Pilih Tipe Jaringan</option>
+                                @foreach ($types as $type)
+                                    <option value="{{ $type->kode_tipejaringan }}">{{ $type->nama_tipejaringan }}</option>
+                                @endforeach
+                            </select>
+
+                            <label>Panjang Drawing</label>
+                            <input type="text" name="panjang_drawing" class="form-control">
+
+                            <label>Jenis Kabel</label>
+                            <input type="text" name="jenis_kabel" class="form-control">
+
+                            <label>Status</label>
+                            <input type="text" name="status" class="form-control">
+
+                            <label>Dci Eqx</label>
+                            <input type="text" name="dci_eqx" class="form-control">
+
+                            <label>Milik</label>
+                            <input type="text" name="milik" class="form-control">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Tambah</button>
+                </form>
             </div>
+        </div>
 
-            <div style="width: 48%;">
-                <label>Tipe Jaringan</label>
-                <input type="text" value="{{ $data->tipe_jaringan }}" readonly class="form-control">
+        <div id="importModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('importModal')">×</span>
+                <h5>Impor Data Jaringan</h5>
+                <form action="{{ route('import.jaringan') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="file">Pilih File (XLSX, XLS, CSV)</label>
+                        <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Impor Data</button>
+                </form>
+            </div>
+        </div>
 
-              
-                <label>Panjang Drawing</label>
-                <input type="text" value="{{ $data->panjang_drawing }}" readonly class="form-control">
-
-                <label>Jenis Kabel</label>
-                <input type="text" value="{{ $data->jenis_kabel }}" readonly class="form-control">
-
-                <label>status</label>
-                <input type="text" value="{{ $data->status }}" readonly class="form-control">
-
-                <label>Ket 2</label>
-                <input type="text" value="{{ $data->ket2 }}" readonly class="form-control">
-
-                <label>Update</label>
-                <input type="text" value="{{ $data->update }}" readonly class="form-control">
-
-                <label>Dci Eqx</label>
-                <input type="text" value="{{ $data->dci_eqx }}" readonly class="form-control">
+        <!-- Modal Ekspor Data -->
+        <div id="exportModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('exportModal')">×</span>
+                <h5>Ekspor Data Jaringan</h5>
+                <form id="exportForm" action="{{ url('export/jaringan') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="regions">Pilih Region:</label>
+                        <div id="regions">
+                            @foreach ($regions as $region)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="regions[]" value="{{ $region->kode_region }}" id="region-{{ $loop->index }}">
+                                    <label class="form-check-label" for="region-{{ $loop->index }}">
+                                        {{ $region->nama_region }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="mb-3" style="margin-top: 20px;">
+                            <label for="format">Pilih Format File:</label>
+                            <select name="format" id="format" class="form-select" required>
+                                <option value="excel">Excel (.xlsx)</option>
+                                <option value="pdf">PDF (.pdf)</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">*Jika tidak memilih, semua data region akan diekspor.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Ekspor</button>
+                </form>
             </div>
         </div>
     </div>
-    </div>
+@endsection
+
+@section('scripts')
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2();
+            $('#jaringanTable').DataTable({
+                language: {
+                    search: "Cari",
+                    lengthMenu: "_MENU_",
+                    zeroRecords: "Tidak ada data yang ditemukan",
+                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    infoEmpty: "Tidak ada data yang tersedia",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "<i class='fas fa-arrow-right'></i>",
+                        previous: "<i class='fas fa-arrow-left'></i>"
+                    }
+                },
+                pageLength: 10,
+                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                order: [], 
+                columnDefs: [
+                    { targets: [7], orderable: false }
+                ]
+            });
+        });
+    </script>
 @endsection

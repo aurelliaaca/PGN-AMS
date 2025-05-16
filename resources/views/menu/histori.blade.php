@@ -130,7 +130,7 @@
         }
     </style>
     <div class="main">
-        <div class="container">
+        <div class="container" style="margin-top: 20px;">
             <div id="mainContent" class="kotak-containerhistori">
                 <div class="kotak">
                     <div class="kotak-header">
