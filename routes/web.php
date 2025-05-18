@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NDAController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PerangkatController;
@@ -254,10 +255,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
 
     // Routes untuk verifikasi NDA 
-    Route::get('/verifikasi/nda', [VerifikasiDokumenController::class, 'indexNda'])->name('verifikasi.superadmin.nda');
+    Route::get('/verifikasi/nda', [NDAController::class, 'indexNdaSuperadmin'])->name('verifikasi.superadmin.nda');
     Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeVerifNda'])->name('verifikasi.nda.store');
-    Route::get('/pendaftaran/nda', [VerifikasiDokumenController::class, 'userNdaIndex'])->name('verifikasi.user.nda');
-    Route::post('/pendaftaran/nda/store', [VerifikasiDokumenController::class, 'storeNda'])->name('nda.store');
+    Route::get('/pendaftaran/nda', [NDAController::class, 'indexNdaUser'])->name('verifikasi.user.nda');
+    Route::post('/pendaftaran/nda/store', [NDAController::class, 'store'])->name('nda.store');
     Route::get('pendaftaran/nda/download/{id}', [VerifikasiDokumenController::class, 'downloadNda'])->name('nda.download');
     Route::put('/nda/{nda}', [VerifikasiDokumenController::class, 'update'])->name('nda.update');
     Route::delete('/nda/{nda}', [VerifikasiDokumenController::class, 'destroy'])->name('nda.destroy');

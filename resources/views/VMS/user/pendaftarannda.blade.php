@@ -1,6 +1,8 @@
 @extends('layouts.app')
-@section('title', 'Portal VMS')
-@section('page_title', 'Portal VMS')
+
+@section('title', 'NDA')
+@section('page_title', 'NDA')
+
 @section('content')
     <div class="main">
         <div class="container">
@@ -13,37 +15,17 @@
                         @csrf
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                             <div style="width: 48%;">
-                                <label>Nama</label>
-                                <input type="text" name="nda_name" class="form-control" required>
-
                                 <label>No. KTP</label>
                                 <input type="text" name="no_ktp" class="form-control" required>
 
-                                <label>Alamat</label>
-                                <input type="text" name="alamat" class="form-control" required>
+                                <label>Nama</label>
+                                <input type="text" name="name" class="form-control" value="{{ $nda->users->name ?? '' }}">
 
-                                <div id="perusahaanField">
-                                    <label>Perusahaan</label>
-                                    <input type="text" name="perusahaan" class="form-control">
-                                </div>
+                                <label>Alamat</label>
+                                <input type="text" name="alamat" class="form-control" required>                    
                             </div>
 
                             <div style="width: 48%;">
-                                <div id="regionField">
-                                    <label>Kode Region</label>
-                                    <select id="regionSelectTambah" name="kode_region" class="form-control">
-                                        <option value="">Pilih Region</option>
-                                        @foreach($regions as $region)
-                                            <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div id="bagianField">
-                                    <label>Bagian</label>
-                                    <input type="text" name="bagian" class="form-control">
-                                </div>
-
                                 <div class="form-group">
                                     <label for="signature-eksternal">Tanda Tangan</label>
                                     <canvas id="signature-pad-eksternal"
@@ -116,25 +98,19 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama</th>
-                                    <th>No. KTP</th>
-                                    <th>Alamat</th>
                                     <th>Tanggal Pengajuan</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if($NDA->isEmpty())
+                                @if($ndas->isEmpty())
                                     <tr>
                                         <td colspan="7" class="no-data">Tidak ada data NDA</td>
                                     </tr>
                                 @else
-                                    @foreach($NDA as $index => $nda)
+                                    @foreach($ndas as $index => $nda)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $nda->name }}</td>
-                                            <td>{{ $nda->no_ktp }}</td>
-                                            <td>{{ $nda->alamat }}</td>
                                             <td>{{ \Carbon\Carbon::parse($nda->tanggal)->format('d-m-Y') }}</td>
                                             <td>
                                                 <span style="display: inline-flex; align-items: center;">
@@ -169,7 +145,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($VerNdas->where('status', 'diterima') as $index => $nda)
+                                @forelse($activeNdas->where('status', 'diterima') as $index => $nda)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $nda->updated_at->format('d/m/Y H:i') }}</td>

@@ -72,7 +72,7 @@
                                 class="fas fa-file"></i></span><span class="text">Verifikasi DCAF</span></a></li>
             @endif
 
-            @if(auth()->user()->role == '3')
+            @if(auth()->user()->role == '3' || auth()->user()->role == '4')
                 <li><a href="{{ route('verifikasi.user.nda') }}"><span class="icon"><i
                                 class="fas fa-paperclip"></i></span><span class="text">NDA</span></a></li>
                 <li><a href="{{ route('verifikasi.user.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span

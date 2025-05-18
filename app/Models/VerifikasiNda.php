@@ -9,17 +9,19 @@ class VerifikasiNda extends Model
 {
     use HasFactory;
 
-    protected $table = 'verifikasi_nda';
+    protected $table = 'verifikasinda';
     
     protected $casts = [
         'masa_berlaku' => 'datetime'
     ];
     
     protected $fillable = [
+        'id',
         'user_id',
-        'nda_id',
         'file_path',
         'status',
+        'signature',
+        'signed_by',
         'catatan',
         'masa_berlaku'
     ];
