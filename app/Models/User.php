@@ -23,7 +23,11 @@ class User extends Authenticatable
         'password',
         'role',
         'region',
-        'mobile_number'
+        'mobile_number',
+        'perusahaan',
+        'noktp',
+        'alamat',
+        'bagian'
     ];
 
     /**

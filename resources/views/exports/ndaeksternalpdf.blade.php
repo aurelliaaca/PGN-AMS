@@ -6,15 +6,12 @@
     <style>
         @page {
             margin: 20px;
-            /* Atur margin halaman */
         }
 
         body {
             font-family: Arial, sans-serif;
             font-size: 14px;
-            /* Ukuran font yang lebih kecil */
             margin: 30px;
-            /* Margin yang lebih kecil */
             text-align: justify;
         }
 
@@ -76,41 +73,34 @@
 </head>
 
 <body>
-    <!-- Header dengan border tertutup dan logo diperbesar -->
     <table style="width: 100%; border-collapse: collapse; font-size: 13px; font-weight: bold; border: 1px solid black;">
         <tr>
-            <!-- Logo (kiri) -->
             <td rowspan="4"
                 style="width: 25%; text-align: center; vertical-align: middle; border-right: 1px solid black; padding: 10px;">
                 <img src="{{ public_path('img/pgncom.png') }}" alt="Logo" style="width: 100px; height: auto;">
             </td>
 
-            <!-- Baris 1 -->
             <td style="border-bottom: 1px solid black; text-align: center; padding: 6px;">
                 FORMULIR
             </td>
         </tr>
         <tr>
-            <!-- Baris 2 -->
             <td style="border-bottom: 1px solid black; text-align: center; padding: 6px;">
                 PERNYATAAN MENJAGA KERAHASIAAN INFORMASI
             </td>
         </tr>
         <tr>
-            <!-- Baris 3 -->
             <td style="border-bottom: 1px solid black; text-align: center; padding: 6px;">
                 (NON DISCLOSURE AGREEMENT)
             </td>
         </tr>
         <tr>
-            <!-- Baris 4 -->
             <td style="text-align: center; padding: 6px;">
                 PT PGAS TELEKOMUNIKASI NUSANTARA
             </td>
         </tr>
     </table>
 
-    <!-- Metadata -->
     <table class="meta-table" style="margin-top: 20px;">
         <tr>
             <td>No. Dok: O-002/0.93/F02</td>
@@ -127,32 +117,33 @@
     <table class="info-table" style="margin-top: 20px;">
         <tr>
             <td style="width: 100px;">Nama</td>
-            <td>: {{ $user->name }}</td>
+            <td>: {{ $nda->user->name }}</td>
         </tr>
         <tr>
             <td>No. KTP</td>
-            <td>: {{ $nda->no_ktp }}</td>
+            <td>: {{ $nda->user->noktp }}</td>
         </tr>
         <tr>
             <td>Alamat</td>
-            <td>: {{ $nda->alamat }}</td>
+            <td>: {{ $nda->user->alamat }}</td>
         </tr>
         <tr>
             <td>Perusahaan</td>
-            <td>: {{ $user->perusahaan }}</td>
+            <td>: {{ $nda->user->perusahaan }}</td>
         </tr>
         <tr>
             <td>Region</td>
-            <td>: {{ $user->region }}</td>
+            <td>: {{ $nda->user->region }}</td>
         </tr>
         <tr>
             <td>Bagian</td>
-            <td>: {{ $user->bagian }}</td>
+            <td>: {{ $nda->user->bagian }}</td>
         </tr>
     </table>
 
-    <p>Adalah Pekerja dari PT/CV {{ $user->perusahaan }} yang berkedudukan di {{ $user->region }}, dimana saya ditugaskan
-        dan ditempatkan di bagian {{ $user->bagian }}, sehubungan dengan penugasan saya tersebut, saya menyatakan
+    <p>Adalah Pekerja dari PT/CV {{ $nda->user->perusahaan }} yang berkedudukan di {{ $nda->user->region }}, dimana saya
+        ditugaskan
+        dan ditempatkan di bagian {{ $nda->user->bagian }}, sehubungan dengan penugasan saya tersebut, saya menyatakan
         bersedia untuk:</p>
 
     <ol>
@@ -173,7 +164,6 @@
 
     <p>Demikian, Pernyataan ini saya buat dalam keadaan sadar dan tanpa paksaan dari pihak manapun.</p>
 
-    <!-- TTD -->
     <div style="margin-top: 80px;">
         <table style="width: 100%;">
             <tr>
@@ -181,17 +171,15 @@
                     Jakarta, {{ \Carbon\Carbon::parse($nda->created_at)->format('d F Y') }}<br>
                     Hormat saya,<br><br><br>
                     <img src="{{ $nda->signature }}" alt="Tanda Tangan" style="width: 200px; height: auto;"><br>
-                    ({{ $user->name }})
+                    {{ $nda->user->name }}
                 </td>
                 <td style="width: 50%; text-align: center;">
                     Mengetahui,<br><br>
-                    <img src="{{ public_path('img/ttd.png') }}" alt="TTD Head"
-                        style="width: 120px; height: auto;"><br><br><br>
-                    <em>(Department Head of Network Reliability)</em>
+                    <img src="{{ $user->signature }}" alt="TTD Head" style="width: 120px; height: auto;"><br><br><br>
+                    <em>{{ $nda->signedBy->name ?? '' }}</em>
                 </td>
             </tr>
         </table>
     </div>
 </body>
-
 </html>

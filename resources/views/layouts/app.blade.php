@@ -82,7 +82,7 @@
             <h4><span>Akun</span>
                 <div class="menu-separator"></div>
             </h4>
-            <li><a href="#"><span class="icon"><i class="fas fa-user-circle"></i></span><span
+            <li><a href="{{ route('profile.show') }}"><span class="icon"><i class="fas fa-user-circle"></i></span><span
                         class="text">Profil</span></a></li>
             <li>
                 <form action="{{ route('logout') }}" method="POST">

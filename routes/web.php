@@ -26,6 +26,7 @@ use App\Http\Controllers\VerifikasiDokumenController;
 
 
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\ProfileController;
 
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
@@ -194,7 +195,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/import-alatukur', [AlatukurImportController::class, 'import'])->name('import.alatukur');
     Route::post('export/alatukur', function (Request $request) {
         $regions = $request->input('regions');
-        $format = $request->input('format');  
+        $format = $request->input('format');
         if ($format === 'excel') {
             return Excel::download(new AlatukurExport($regions), 'dataalatukur.xlsx');
         } elseif ($format === 'pdf') {
@@ -260,7 +261,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pendaftaran/nda', [NDAController::class, 'indexNdaUser'])->name('verifikasi.user.nda');
     Route::post('/pendaftaran/nda/store', [NDAController::class, 'store'])->name('nda.store');
     Route::get('pendaftaran/nda/download/{id}', [VerifikasiDokumenController::class, 'downloadNda'])->name('nda.download');
-    Route::put('/nda/{nda}', [VerifikasiDokumenController::class, 'update'])->name('nda.update');
+    Route::put('/nda/{nda}', [NDAController::class, 'update'])->name('nda.update');
     Route::delete('/nda/{nda}', [VerifikasiDokumenController::class, 'destroy'])->name('nda.destroy');
 
     // Routes untuk verifikasi DCAF
@@ -286,10 +287,17 @@ Route::middleware('auth')->group(function () {
     // Route untuk menampilkan view pendaftarandcaf
     Route::get('/pendaftarandcaf', [PendaftaranController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
     Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
-   Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
+    Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
 
     Route::get('/pendaftaran/dcaf', [PendaftaranController::class, 'pendaftaranDCAF'])->name('pendaftaran.dcaf');
     Route::get('/pendaftaran/ajukan-dcs', [PendaftaranController::class, 'ajukanDCS'])->name('pendaftaran.ajukan-dcs');
 
+
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/email/verification-notification', [ProfileController::class, 'sendVerification'])->name('verification.send');
+    Route::post('/signature', [ProfileController::class, 'uploadSignature'])->name('users.signature.upload');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

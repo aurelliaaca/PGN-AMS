@@ -14,46 +14,72 @@
         @endif
 
         <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Data NDA Active</h3>
-                </div>
-                <div class="table-responsive" style="margin-top: 20px;">
-                    <table id="pendingTable" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama User</th>
-                                <th>Tanggal Upload</th>
-                                <th>Tanggal Verifikasi</th>
-                                <th>Masa Berlaku</th>
-                                <th>Catatan</th>
-                                <th>File</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($pendingNdas as $index => $nda)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $nda->user->name }}</td>
-                                <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                                <td>{{ $nda->masa_berlaku ? \Carbon\Carbon::parse($nda->masa_berlaku)->translatedFormat('j F Y H:i') : '-' }}</td>
-                                <td>{{ $nda->catatan ?? '-' }}</td>
-                                <td>
-                                    <a href="{{ asset($nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="8" class="text-center">Tidak ada NDA yang masih berlaku</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+            <h3>Data NDA yang Diajukan</h3>
+        </div>
+        <div class="table-responsive" style="margin-top: 20px;">
+            <table id="pendingTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama User</th>
+                        <th>Tanggal Upload</th>
+                        <th>Tanggal Verifikasi</th>
+                        <th>Masa Berlaku</th>
+                        <th>Catatan</th>
+                        <th>File</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($pendingNdas as $index => $nda)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $nda->user->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ $nda->updated_at ? \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') : '-' }}</td>
+                            <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                            </td>
+                            <td>{{ $nda->catatan ?? '-' }}</td>
+                            <td>
+                                <a href="{{ asset($nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    File</a>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    onclick="konfirmasiSetuju({{ $nda->id }})">Terima</button>
+
+                                <button type="button" class="btn btn-delete btn-sm" style="font-size: 14px;"
+                                    onclick="konfirmasiTolak({{ $nda->id }})">Tolak</button>
+
+                                <form id="form-terima-{{ $nda->id }}" action="{{ route('nda.update', $nda->id) }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="status" value="diterima">
+                                </form>
+
+                                <form id="form-tolak-{{ $nda->id }}" action="{{ route('nda.update', $nda->id) }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="status" value="ditolak">
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center">Tidak ada NDA yang masih berlaku</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
 
         <div class="tables-container dua">
             <div class="table-column">
-                <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <div class="title"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
                     <h3>Data NDA Active</h3>
                 </div>
                 <div class="table-responsive" style="margin-top: 20px;">
@@ -71,21 +97,23 @@
                         </thead>
                         <tbody>
                             @forelse($activeNdas as $index => $nda)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $nda->user->name }}</td>
-                                <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                                <td>{{ $nda->masa_berlaku ? \Carbon\Carbon::parse($nda->masa_berlaku)->translatedFormat('j F Y H:i') : '-' }}</td>
-                                <td>{{ $nda->catatan ?? '-' }}</td>
-                                <td>
-                                    <a href="{{ asset('pdf/' . $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $nda->user->name }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                                    <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                                    </td>
+                                    <td>{{ $nda->catatan ?? '-' }}</td>
+                                    <td>
+                                        <a href="{{ asset($nda->file_path) }}" target="_blank"
+                                            class="btn btn-sm btn-info">Lihat File</a>
+                                    </td>
+                                </tr>
                             @empty
-                            <tr>
-                                <td colspan="8" class="text-center">Tidak ada NDA yang masih berlaku</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="8" class="text-center">Tidak ada NDA yang masih berlaku</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -93,7 +121,8 @@
             </div>
 
             <div class="table-column">
-                <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <div class="title"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
                     <h3>Data NDA Kadaluarsa</h3>
                 </div>
                 <div class="table-responsive" style="margin-top: 20px;">
@@ -111,21 +140,24 @@
                         </thead>
                         <tbody>
                             @forelse($expiredNdas as $index => $nda)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $nda->user->name }}</td>
-                    <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                    <td>{{ $nda->masa_berlaku ? \Carbon\Carbon::parse($nda->masa_berlaku)->translatedFormat('j F Y H:i') : '-' }}</td>                        <td>{{ $nda->catatan ?? '-' }}</td>
-                    <td>
-                        <a href="{{ asset( $nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat File</a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="8" class="text-center">Belum ada riwayat NDA yang tidak berlaku</td>
-                </tr>
-                @endforelse
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $nda->user->name }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                                    <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                                    </td>
+                                    <td>{{ $nda->catatan ?? '-' }}</td>
+                                    <td>
+                                        <a href="{{ asset($nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                            File</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center">Belum ada riwayat NDA yang tidak berlaku</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -156,7 +188,7 @@
                     },
                     pageLength: 10,
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-                    order: [], 
+                    order: [],
                     columnDefs: [
                         { targets: [5, 6], orderable: false }
                     ]
@@ -179,7 +211,7 @@
                     },
                     pageLength: 10,
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-                    order: [], 
+                    order: [],
                     columnDefs: [
                         { targets: [5, 6], orderable: false }
                     ]
@@ -202,12 +234,42 @@
                     },
                     pageLength: 10,
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-                    order: [], 
+                    order: [],
                     columnDefs: [
                         { targets: [5, 6], orderable: false }
                     ]
                 });
             });
+
+            function konfirmasiSetuju(id) {
+                Swal.fire({
+                    title: 'Terima NDA?',
+                    text: "NDA ini akan disetujui.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Terima',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-terima-' + id).submit();
+                    }
+                });
+            }
+
+            function konfirmasiTolak(id) {
+                Swal.fire({
+                    title: 'Yakin mau tolak?',
+                    text: 'NDA ini akan ditolak.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Tolak!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('form-tolak-' + id).submit();
+                    }
+                });
+            }
         </script>
     @endsection
 @endsection

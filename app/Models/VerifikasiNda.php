@@ -10,22 +10,25 @@ class VerifikasiNda extends Model
     use HasFactory;
 
     protected $table = 'verifikasinda';
-    
+
     protected $casts = [
         'masa_berlaku' => 'datetime'
     ];
-    
+
     protected $fillable = [
         'id',
         'user_id',
         'file_path',
         'status',
         'signature',
+        'created_at',
         'signed_by',
         'catatan',
         'masa_berlaku'
     ];
 
+    public $timestamps = false;
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -35,4 +38,10 @@ class VerifikasiNda extends Model
     {
         return $this->belongsTo(Nda::class);
     }
-} 
+
+    public function signedBy()
+    {
+        return $this->belongsTo(User::class, 'signed_by');
+    }
+
+}
