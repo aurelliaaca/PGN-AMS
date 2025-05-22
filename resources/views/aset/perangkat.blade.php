@@ -71,7 +71,19 @@
                                 <div class="status-box {{ $perangkat->no_rack ? 'bg-success' : 'bg-danger' }}"></div>
                             </td>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $perangkat->region->kode_region }}-{{ $perangkat->site->kode_site }}</td>
+                            <td>
+                                {{
+                                    implode('-', array_filter([
+                                        $perangkat->kode_region,
+                                        $perangkat->kode_site,
+                                        $perangkat->no_rack,
+                                        $perangkat->kode_perangkat,
+                                        $perangkat->perangkat_ke,
+                                        $perangkat->kode_brand,
+                                        $perangkat->type
+                                    ]))
+                                }}
+                            </td>
                             <td>{{ $perangkat->region->nama_region }}</td>
                             <td>{{ $perangkat->site->nama_site }}</td>
                             <td>{{ $perangkat->no_rack }}</td>
@@ -82,16 +94,16 @@
                                 <div class="action-buttons">
                                     <button class="btn btn-eye btn-sm mb-1"
                                         onclick="openModal('modalViewPerangkat{{ $perangkat->id_perangkat }}')">
-                                        <i class="fas fa-eye"></i> Lihat
+                                        <i class="fas fa-eye"></i> 
                                     </button>   
                                     @if(auth()->user()->role == '1')
                                     <button class="btn btn-edit btn-sm mb-1"
                                         onclick="openModal('modalEditPerangkat{{ $perangkat->id_perangkat }}')">
-                                        <i class="fas fa-edit"></i> Edit
+                                        <i class="fas fa-edit"></i> 
                                     </button>
                                     <button class="btn btn-delete btn-sm"
                                         onclick="confirmDelete({{ $perangkat->id_perangkat }})">
-                                        <i class="fas fa-trash-alt"></i> Hapus
+                                        <i class="fas fa-trash-alt"></i> 
                                     </button>
 
                                     <form id="delete-form-{{ $perangkat->id_perangkat }}" 
@@ -113,32 +125,32 @@
                                     <div style="width: 48%;">
                                         <label>Region</label>
                                         <input type="text" value="{{ $perangkat->region->nama_region }}" readonly class="form-control">
-
-                                        <label>Site</label>
-                                        <input type="text" value="{{ $perangkat->site->nama_site }}" readonly class="form-control">
-
+                                                                              
+                                        <label>Jenis</label>
+                                        <input type="text" value="{{ $perangkat->jenisperangkat->nama_perangkat }}" readonly class="form-control">
+                                        
                                         <label>No Rack</label>
                                         <input type="text" value="{{ $perangkat->no_rack }}" readonly class="form-control">
 
-                                        <label>Jenis Perangkat</label>
-                                        <input type="text" value="{{ $perangkat->jenisperangkat->nama_perangkat }}" readonly class="form-control">
+                                        <label>U Awal - U Akhir</label>
+                                        <input type="text" value="{{ $perangkat->uawal }} - {{ $perangkat->uakhir }}" readonly class="form-control">
 
-                                        <label>Milik</label>
-                                        <input type="text" value="{{ $perangkat->user->name }}" readonly class="form-control">
+                                        <label>Perangkat ke-</label>
+                                        <input type="text" value="{{ $perangkat->perangkat_ke }}" readonly class="form-control">
                                     </div>
 
                                     <div style="width: 48%;">
-                                        <label>Perangkat ke-</label>
-                                        <input type="text" value="{{ $perangkat->perangkat_ke }}" readonly class="form-control">
+                                        <label>Site</label>
+                                        <input type="text" value="{{ $perangkat->site->nama_site }}" readonly class="form-control">
 
                                         <label>Brand</label>
                                         <input type="text" value="{{ optional($perangkat->brandperangkat)->nama_brand }}" readonly class="form-control">
 
-                                        <label>Tipe</label>
+                                        <label>Milik</label>
+                                        <input type="text" value="{{ $perangkat->user->name }}" readonly class="form-control">
+    
+                                        <label>Type</label>
                                         <input type="text" value="{{ $perangkat->type }}" readonly class="form-control">
-
-                                        <label>U Awal - U Akhir</label>
-                                        <input type="text" value="{{ $perangkat->uawal }} - {{ $perangkat->uakhir }}" readonly class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -156,8 +168,8 @@
                                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                                         <div style="width: 48%;">
                                             <div class="mb-3">
-                                                <label>Kode Region</label>
-                                                <select name="kode_region" class="form-control regionSelectEdit"
+                                                <label>Region</label>
+                                                <select name="kode_region" class="form-control regionSelectEdit" style="padding: 5px;"
                                                     data-id="{{ $perangkat->id_perangkat }}" required>
                                                     <option value="">Pilih Region</option>
                                                     @foreach($regions as $region)
@@ -166,21 +178,18 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                            </div>
+                                            </div>                                           
                                             <div class="mb-3">
-                                                <label>Kode Site</label>
-                                                <select name="kode_site" class="form-control siteSelectEdit"
-                                                    data-id="{{ $perangkat->id_perangkat }}" required>
-                                                    <option value="">Pilih Site</option>
-                                                    @foreach($sites as $site)
-                                                        @if($site->kode_region == $perangkat->kode_region)
-                                                            <option value="{{ $site->kode_site }}" {{ $perangkat->kode_site == $site->kode_site ? 'selected' : '' }}>
-                                                                {{ $site->nama_site }}
-                                                            </option>
-                                                        @endif
+                                                <label>Jenis</label>
+                                                <select name="kode_perangkat" class="form-control" required>
+                                                    <option value="">Pilih Perangkat</option>
+                                                    @foreach($types as $jenisperangkat)
+                                                        <option value="{{ $jenisperangkat->kode_perangkat }}" 
+                                                            {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->nama_perangkat }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
-                                            </div>
+                                            </div>  
                                             <label>No Rack</label>
                                             <select name="no_rack" class="form-control noRackSelectEdit"
                                                 data-id="{{ $perangkat->id_perangkat }}">
@@ -194,16 +203,43 @@
                                                 @endforeach
                                             </select>
                                             <div class="mb-3">
-                                                <label>Kode Perangkat</label>
-                                                <select name="kode_perangkat" class="form-control" required>
-                                                    <option value="">Pilih Kode Perangkat</option>
-                                                    @foreach($types as $jenisperangkat)
-                                                        <option value="{{ $jenisperangkat->kode_perangkat }}" 
-                                                            {{ $perangkat->kode_perangkat == $jenisperangkat->kode_perangkat ? 'selected' : '' }}>{{ $jenisperangkat->nama_perangkat }}
+                                                <label>U Awal</label>
+                                                <input type="number" name="uawal" class="form-control"
+                                                    value="{{ $perangkat->uawal ?? '' }}" >
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>U Akhir</label>
+                                                <input type="number" name="uakhir" class="form-control"
+                                                    value="{{ $perangkat->uakhir ?? '' }}" >
+                                            </div>
+                                        </div>
+                                        <div style="width: 48%;">
+                                            <div class="mb-3">
+                                                <label>Site</label>
+                                                <select name="kode_site" class="form-control siteSelectEdit"
+                                                    data-id="{{ $perangkat->id_perangkat }}" required>
+                                                    <option value="">Pilih Site</option>
+                                                    @foreach($sites as $site)
+                                                        @if($site->kode_region == $perangkat->kode_region)
+                                                            <option value="{{ $site->kode_site }}" {{ $perangkat->kode_site == $site->kode_site ? 'selected' : '' }}>
+                                                                {{ $site->nama_site }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Brand</label>
+                                                <select name="kode_brand" class="form-control">
+                                                    <option value="">Pilih Brand</option>
+                                                    @foreach($brands as $brandperangkat)
+                                                        <option value="{{ $brandperangkat->kode_brand }}" 
+                                                            {{ $perangkat->kode_brand == $brandperangkat->kode_brand ? 'selected' : '' }}>
+                                                            {{ $brandperangkat->nama_brand }}
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                            </div>  
+                                            </div>
                                             <div class="mb-3">
                                                 <label>Milik</label>
                                                 <select name="milik" class="form-control" required>
@@ -214,35 +250,11 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                            </div>   
-                                        </div>
-                                        <div style="width: 48%;">
-                                            <div class="mb-3">
-                                                <label>Kode Brand</label>
-                                                <select name="kode_brand" class="form-control">
-                                                    <option value="">Pilih Kode Brand</option>
-                                                    @foreach($brands as $brandperangkat)
-                                                        <option value="{{ $brandperangkat->kode_brand }}" 
-                                                            {{ $perangkat->kode_brand == $brandperangkat->kode_brand ? 'selected' : '' }}>
-                                                            {{ $brandperangkat->nama_brand }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label>Type</label>
                                                 <input type="text" name="type" class="form-control" value="{{ $perangkat->type ?? '' }}"
                                                     >
-                                            </div>
-                                            <div class="mb-3">
-                                                <label>U Awal</label>
-                                                <input type="number" name="uawal" class="form-control"
-                                                    value="{{ $perangkat->uawal ?? '' }}" >
-                                            </div>
-                                            <div class="mb-3">
-                                                <label>U Akhir</label>
-                                                <input type="number" name="uakhir" class="form-control"
-                                                    value="{{ $perangkat->uakhir ?? '' }}" >
                                             </div>
                                         </div>
                                     </div>
@@ -262,7 +274,7 @@
                 <form action="{{ route('import.perangkat') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
-                        <label for="file">Pilih File (XLSX, XLS, CSV)</label>
+                        <label for="file">Pilih File (XLSX)</label>
                         <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Impor Data</button>
@@ -312,7 +324,7 @@
                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                         <div style="width: 48%;">
                             <div class="mb-3">
-                                <label>Kode Region</label>
+                                <label>Region</label>
                                 <select id="regionSelectTambah" name="kode_region" class="form-control" required>
                                     <option value="">Pilih Region</option>
                                     @foreach($regions as $region)
@@ -322,9 +334,14 @@
                             </div>
 
                             <div class="mb-3">
-                                <label>Kode Site</label>
-                                <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
-                                    <option value="">Pilih Site</option>
+                                <label>Jenis</label>
+                                <select name="kode_perangkat" class="form-control" required>
+                                    <option value="">Pilih Perangkat</option>
+                                    @foreach($types as $jenisperangkat)
+                                        <option value="{{ $jenisperangkat->kode_perangkat }}">
+                                            {{ $jenisperangkat->nama_perangkat }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -336,12 +353,32 @@
                             </div>
 
                             <div class="mb-3">
-                                <label>Kode Perangkat</label>
-                                <select name="kode_perangkat" class="form-control" required>
-                                    <option value="">Pilih Kode Perangkat</option>
-                                    @foreach($types as $jenisperangkat)
-                                        <option value="{{ $jenisperangkat->kode_perangkat }}">
-                                            {{ $jenisperangkat->nama_perangkat }}
+                                <label>U Awal</label>
+                                <input type="number" name="uawal" class="form-control" id="uawal" value="">
+                            </div>
+
+                            <div class="mb-3">
+                                <label>U Akhir</label>
+                                <input type="number" name="uakhir" class="form-control" id="uakhir" value="">
+                            </div>
+                            
+                        </div>
+
+                        <div style="width: 48%;">
+                            <div class="mb-3">
+                                <label>Site</label>
+                                <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
+                                    <option value="">Pilih Site</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label>Brand</label>
+                                <select name="kode_brand" class="form-control">
+                                    <option value="">Pilih Brand</option>
+                                    @foreach($brands as $brandperangkat)
+                                        <option value="{{ $brandperangkat->kode_brand }}">
+                                            {{ $brandperangkat->nama_brand }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -356,35 +393,12 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-
-                        <div style="width: 48%;">
-                            <div class="mb-3">
-                                <label>Kode Brand</label>
-                                <select name="kode_brand" class="form-control">
-                                    <option value="">Pilih Kode Brand</option>
-                                    @foreach($brands as $brandperangkat)
-                                        <option value="{{ $brandperangkat->kode_brand }}">
-                                            {{ $brandperangkat->nama_brand }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
 
                             <div class="mb-3">
                                 <label>Type</label>
                                 <input type="text" name="type" class="form-control" value="">
                             </div>
 
-                            <div class="mb-3">
-                                <label>U Awal</label>
-                                <input type="number" name="uawal" class="form-control" id="uawal" value="">
-                            </div>
-
-                            <div class="mb-3">
-                                <label>U Akhir</label>
-                                <input type="number" name="uakhir" class="form-control" id="uakhir" value="">
-                            </div>
                         </div>
                     </div>
 

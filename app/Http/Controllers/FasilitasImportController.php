@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\JaringanImport;
+use App\Imports\FasilitasImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
-class JaringanImportController extends Controller
+class FasilitasImportController extends Controller
 {
     public function import(Request $request)
     {
@@ -16,10 +16,10 @@ class JaringanImportController extends Controller
 
         $file = $request->file('file');
         
-        Excel::import(new JaringanImport, $file);
+        Excel::import(new FasilitasImport, $file);
 
         return redirect()->back()
-        ->with('success', 'Data jaringan berhasil diimpor')
-        ->with('error', 'Terjadi kesalahan saat mengimpor jaringan. Silakan coba lagi.');
+        ->with('success', 'Data fasilitas berhasil diimpor')
+        ->with('error', 'Terjadi kesalahan saat mengimpor fasilitas. Silakan coba lagi.');
     }
 }

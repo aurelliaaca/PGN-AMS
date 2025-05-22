@@ -22,6 +22,7 @@
                         <th>U Awal</th>
                         <th>U Akhir</th>
                         <th>Aksi</th>
+                        <th>Tanggal Perubahan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +37,7 @@
                             <td>{{ $item->uawal }}</td>
                             <td>{{ $item->uakhir }}</td>
                             <td>{{ $item->histori }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->tanggal_perubahan)->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

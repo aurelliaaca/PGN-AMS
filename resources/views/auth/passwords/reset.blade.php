@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<div class="login-wrap">
+<div class="container">
     <a href="{{ route('login') }}" class="back-button">
         <i class="fa fa-arrow-left"></i>
     </a>
@@ -10,6 +10,7 @@
     </div>
     <form method="POST" action="{{ route('password.update') }}">
         @csrf
+        @method('PUT')
         <input type="hidden" name="token" value="{{ $token }}">
         <div class="form-group">
             <div class="input-group">
@@ -67,7 +68,7 @@
     const togglePassword1 = document.querySelector("#toggle-password1");
     const togglePassword2 = document.querySelector("#toggle-password2");
 
-    const passwordField = document.querySelector("#password-field");
+    const passwordField = document.querySelector("#password");
     const passwordConfirmField = document.querySelector("#password-confirm");
 
     togglePassword1.addEventListener("click", function () {

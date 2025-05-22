@@ -40,9 +40,10 @@ class HistoriJaringan extends Model
         return $this->belongsTo(ListJaringan::class, 'id_jaringan', 'id_jaringan');
     }
 
-    public function tipe()
+    public function tipejaringan()
     {
-        return $this->belongsTo(TipeJaringan::class, 'kode_tipejaringan', 'kode_tipejaringan');
+        return $this->belongsTo(TipeJaringan::class, 'kode_tipejaringan', 'kode_tipejaringan')
+            ->select(['kode_tipejaringan', 'nama_tipejaringan']);
     }
 
     public function region()

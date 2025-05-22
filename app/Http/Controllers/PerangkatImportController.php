@@ -12,7 +12,7 @@ class PerangkatImportController extends Controller
     {
         // Validasi file yang diupload
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv',
+            'file' => 'required|mimes:xlsx',
         ]);
 
         $file = $request->file('file');

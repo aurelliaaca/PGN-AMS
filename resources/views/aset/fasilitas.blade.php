@@ -54,6 +54,7 @@
                     <tr>
                         <th></th>
                         <th>No</th>
+                        <th>Hostname</th>
                         <th>Region</th>
                         <th>Site</th>
                         <th>No Rack</th>
@@ -70,6 +71,19 @@
                                 <div class="status-box {{ $fasilitas->no_rack ? 'bg-success' : 'bg-danger' }}"></div>
                             </td>
                             <td>{{ $loop->iteration }}</td>
+                                                        <td>
+                                {{
+                                    implode('-', array_filter([
+                                        $fasilitas->kode_region,
+                                        $fasilitas->kode_site,
+                                        $fasilitas->no_rack,
+                                        $fasilitas->kode_fasilitas,
+                                        $fasilitas->fasilitas_ke,
+                                        $fasilitas->kode_brand,
+                                        $fasilitas->type
+                                    ]))
+                                }}
+                            </td>
                             <td>{{ $fasilitas->region->nama_region }}</td>
                             <td>{{ $fasilitas->site->nama_site }}</td>
                             <td>{{ $fasilitas->no_rack }}</td>
@@ -80,16 +94,16 @@
                                 <div class="action-buttons">
                                     <button class="btn btn-eye btn-sm mb-1"
                                         onclick="openModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">
-                                        <i class="fas fa-eye"></i> Lihat
+                                        <i class="fas fa-eye"></i> 
                                     </button>
                                     @if(auth()->user()->role == '1')
                                         <button class="btn btn-edit btn-sm mb-1"
                                             onclick="openModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <i class="fas fa-edit"></i> 
                                         </button>
                                         <button class="btn btn-delete btn-sm"
                                             onclick="confirmDelete({{ $fasilitas->id_fasilitas }})">
-                                            <i class="fas fa-trash-alt"></i> Hapus
+                                            <i class="fas fa-trash-alt"></i> 
                                         </button>
 
                                         <form id="delete-form-{{ $fasilitas->id_fasilitas }}"
@@ -114,22 +128,23 @@
                                         <input type="text" value="{{ $fasilitas->region->nama_region }}" readonly
                                             class="form-control">
 
-                                        <label>No Rack</label>
-                                        <input type="text" value="{{ $fasilitas->no_rack }}" readonly class="form-control">
-
-                                        <label>Jenis Fasilitas</label>
+                                        <label>Jenis</label>
                                         <input type="text" value="{{ $fasilitas->jenisfasilitas->nama_fasilitas }}" readonly
                                             class="form-control">
 
-                                        <label>Fasilitas ke-</label>
-                                        <input type="text" value="{{ $fasilitas->fasilitas_ke }}" readonly class="form-control">
-
-                                        <label>Tipe</label>
-                                        <input type="text" value="{{ $fasilitas->type }}" readonly class="form-control">
+                                        <label>No Rack</label>
+                                        <input type="text" value="{{ $fasilitas->no_rack }}" readonly class="form-control">
 
                                         <label>U Awal - U Akhir</label>
                                         <input type="text" value="{{ $fasilitas->uawal }} - {{ $fasilitas->uakhir }}" readonly
                                             class="form-control">
+                                        
+                                        <label>Jumlah Fasilitas</label>
+                                        <input type="text" value="{{ $fasilitas->jml_fasilitas }}" readonly
+                                            class="form-control">
+
+                                        <label>Fasilitas ke-</label>
+                                        <input type="text" value="{{ $fasilitas->fasilitas_ke }}" readonly class="form-control">
                                     </div>
 
                                     <div style="width: 48%;">
@@ -142,18 +157,15 @@
 
                                         <label>Milik</label>
                                         <input type="text" value="{{ $fasilitas->user?->name }}" readonly class="form-control">
-
+                                        
+                                        <label>Type</label>
+                                        <input type="text" value="{{ $fasilitas->type }}" readonly class="form-control">
 
                                         <label>Serial Number</label>
                                         <input type="text" value="{{ $fasilitas->serialnumber }}" readonly class="form-control">
 
-                                        <label>Jumlah Fasilitas</label>
-                                        <input type="text" value="{{ $fasilitas->jml_fasilitas }}" readonly
-                                            class="form-control">
-
                                         <label>Status</label>
                                         <input type="text" value="{{ $fasilitas->status }}" readonly class="form-control">
-
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +182,7 @@
                                     @method('PUT')
                                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                                         <div style="width: 48%;">
-                                            <label>Kode Region</label>
+                                            <label>Region</label>
                                             <select name="kode_region" class="form-control regionSelectEdit"
                                                 data-id="{{ $fasilitas->id_fasilitas }}" required>
                                                 <option value="">Pilih Region</option>
@@ -181,9 +193,9 @@
                                                 @endforeach
                                             </select>
 
-                                            <label>Kode Fasilitas</label>
+                                            <label>Jenis</label>
                                             <select name="kode_fasilitas" class="form-control" required>
-                                                <option value="">Pilih Kode Fasilitas</option>
+                                                <option value="">Pilih Fasilitas</option>
                                                 @foreach($types as $jenisfasilitas)
                                                     <option value="{{ $jenisfasilitas->kode_fasilitas }}" {{ $fasilitas->kode_fasilitas == $jenisfasilitas->kode_fasilitas ? 'selected' : '' }}>
                                                         {{ $jenisfasilitas->nama_fasilitas }}
@@ -204,10 +216,6 @@
                                                 @endforeach
                                             </select>
 
-                                            <label>Type</label>
-                                            <input type="text" name="type" class="form-control"
-                                                value="{{ $fasilitas->type ?? '' }}">
-
                                             <label>U Awal</label>
                                             <input type="number" name="uawal" class="form-control"
                                                 value="{{ $fasilitas->uawal ?? '' }}">
@@ -215,10 +223,14 @@
                                             <label>U Akhir</label>
                                             <input type="number" name="uakhir" class="form-control"
                                                 value="{{ $fasilitas->uakhir ?? '' }}">
+                                            
+                                            <label>Jumlah Fasilitas</label>
+                                            <input type="text" name="jml_fasilitas" class="form-control"
+                                                value="{{ $fasilitas->jml_fasilitas ?? '' }}">
                                         </div>
 
                                         <div style="width: 48%;">
-                                            <label>Kode Site</label>
+                                            <label>Site</label>
                                             <select name="kode_site" class="form-control siteSelectEdit"
                                                 data-id="{{ $fasilitas->id_fasilitas }}" required>
                                                 <option value="">Pilih Site</option>
@@ -231,9 +243,9 @@
                                                 @endforeach
                                             </select>
 
-                                            <label>Kode Brand</label>
+                                            <label>Brand</label>
                                             <select name="kode_brand" class="form-control">
-                                                <option value="">Pilih Kode Brand</option>
+                                                <option value="">Pilih Brand</option>
                                                 @foreach($brands as $brandfasilitas)
                                                     <option value="{{ $brandfasilitas->kode_brand }}" {{ $fasilitas->kode_brand == $brandfasilitas->kode_brand ? 'selected' : '' }}>
                                                         {{ $brandfasilitas->nama_brand }}
@@ -251,17 +263,17 @@
                                                 @endforeach
                                             </select>
 
+                                            <label>Type</label>
+                                            <input type="text" name="type" class="form-control"
+                                                value="{{ $fasilitas->type ?? '' }}">
+
                                             <label>Serial Number</label>
                                             <input type="text" name="serialnumber" class="form-control"
                                                 value="{{ $fasilitas->serialnumber ?? '' }}">
 
-                                            <label>Jumlah Fasilitas</label>
-                                            <input type="text" name="jml_fasilitas" class="form-control"
-                                                value="{{ $fasilitas->jml_fasilitas ?? '' }}">
-
                                             <label>Status</label>
                                             <input type="text" name="status" class="form-control"
-                                                value="{{ $fasilitas->status ?? '' }}">
+                                                value="{{ $fasilitas->status ?? '' }}">                                       
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
@@ -280,7 +292,7 @@
                 <form action="{{ route('import.fasilitas') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
-                        <label for="file">Pilih File (XLSX, XLS, CSV)</label>
+                        <label for="file">Pilih File (XLSX)</label>
                         <input type="file" class="form-control" name="file" accept=".xlsx,.xls,.csv" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Impor Data</button>
@@ -329,7 +341,7 @@
                     @csrf
                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                         <div style="width: 48%;">
-                            <label>Kode Region</label>
+                            <label>Region</label>
                             <select id="regionSelectTambah" name="kode_region" class="form-control" required>
                                 <option value="">Pilih Region</option>
                                 @foreach($regions as $region)
@@ -337,9 +349,9 @@
                                 @endforeach
                             </select>
 
-                            <label>Kode Fasilitas</label>
+                            <label>Jenis</label>
                             <select name="kode_fasilitas" class="form-control" required>
-                                <option value="">Pilih Kode Fasilitas</option>
+                                <option value="">Pilih Fasilitas</option>
                                 @foreach($types as $jenisfasilitas)
                                     <option value="{{ $jenisfasilitas->kode_fasilitas }}">
                                         {{ $jenisfasilitas->nama_fasilitas }}
@@ -353,28 +365,28 @@
                                     <option value="">Pilih Rack</option>
                                 </select>
                             </div>
-
-                            <label>Type</label>
-                            <input type="text" name="type" class="form-control" value="">
-
+                            
                             <label>U Awal</label>
                             <input type="number" name="uawal" class="form-control" value="" id="uawal">
 
                             <label>U Akhir</label>
                             <input type="number" name="uakhir" class="form-control" value="" id="uakhir">
+
+                            <label>Jumlah Fasilitas</label>
+                            <input type="text" name="jml_fasilitas" class="form-control" value="">
                         </div>
 
                         <div style="width: 48%;">
                             <div class="mb-3">
-                                <label>Kode Site</label>
+                                <label>Site</label>
                                 <select id="siteSelectTambah" name="kode_site" class="form-control" required disabled>
                                     <option value="">Pilih Site</option>
                                 </select>
                             </div>
 
-                            <label>Kode Brand</label>
+                            <label>Brand</label>
                             <select name="kode_brand" class="form-control">
-                                <option value="">Pilih Kode Brand</option>
+                                <option value="">Pilih Brand</option>
                                 @foreach($brands as $brandfasilitas)
                                     <option value="{{ $brandfasilitas->kode_brand }}">
                                         {{ $brandfasilitas->nama_brand }}
@@ -392,11 +404,11 @@
                                 </select>
                             </div>
 
+                            <label>Type</label>
+                            <input type="text" name="type" class="form-control" value="">
+
                             <label>Serial Number</label>
                             <input type="text" name="serialnumber" class="form-control" value="">
-
-                            <label>Jumlah Fasilitas</label>
-                            <input type="text" name="jml_fasilitas" class="form-control" value="">
 
                             <label>Status</label>
                             <input type="text" name="status" class="form-control" value="">
@@ -484,7 +496,7 @@
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     order: [], 
                     columnDefs: [
-                        { targets: [0, 8], orderable: false }
+                        { targets: [0, 9], orderable: false }
                     ]
                 });
             });

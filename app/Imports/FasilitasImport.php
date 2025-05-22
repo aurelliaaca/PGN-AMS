@@ -10,42 +10,66 @@ class FasilitasImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        // Ambil kode_site untuk menentukan fasilitas_ke
-        $siteId = $row['kode_site'];
-        $fasilitasKe = $this->getFasilitasKe($siteId);
+        \DB::transaction(function () use ($row) {
+            $siteId = $row['kode_site'];
+            $fasilitasKe = $this->getFasilitasKe($siteId);
 
-        // Simpan ke tabel ListFasilitas dan simpan object-nya
-        $fasilitasBaru = ListFasilitas::create([
-            'kode_region'    => $row['kode_region'],
-            'kode_site'      => $row['kode_site'],
-            'no_rack'        => $row['no_rack'],
-            'kode_fasilitas' => $row['kode_fasilitas'],
-            'fasilitas_ke'   => $fasilitasKe,
-            'kode_brand'     => $row['kode_brand'],
-            'type'           => $row['type'],
-            'uawal'          => $row['uawal'],
-            'uakhir'         => $row['uakhir'],
-        ]);
+            $fasilitasBaru = ListFasilitas::create([
+                'kode_region' => $row['kode_region'],
+                'kode_site' => $row['kode_site'],
+                'no_rack' => $row['no_rack'],
+                'kode_fasilitas' => $row['kode_fasilitas'],
+                'fasilitas_ke' => $fasilitasKe,
+                'kode_brand' => $row['kode_brand'],
+                'type' => $row['type'],
+                'serialnumber' => $row['serialnumber'],
+                'jml_fasilitas' => $row['jml_fasilitas'],
+                'status' => $row['status'],
+                'uawal' => $row['uawal'],
+                'uakhir' => $row['uakhir'],
+                'milik' => $row['milik'],
+            ]);
 
-        // Simpan juga ke tabel HistoriFasilitas dengan id dari fasilitasBaru
-        HistoriFasilitas::create([
-            'id_fasilitas'   => $fasilitasBaru->id_fasilitas, // ambil ID dari ListFasilitas
-            'kode_region'    => $row['kode_region'],
-            'kode_site'      => $row['kode_site'],
-            'no_rack'        => $row['no_rack'],
-            'kode_fasilitas' => $row['kode_fasilitas'],
-            'fasilitas_ke'   => $fasilitasKe,
-            'kode_brand'     => $row['kode_brand'],
-            'type'           => $row['type'],
-            'uawal'          => $row['uawal'],
-            'uakhir'         => $row['uakhir'],
-            'histori'        => 'Diimpor',
-        ]);
+            HistoriFasilitas::create([
+                'id_fasilitas' => $fasilitasBaru->id_fasilitas,
+                'kode_region' => $row['kode_region'],
+                'kode_site' => $row['kode_site'],
+                'no_rack' => $row['no_rack'],
+                'kode_fasilitas' => $row['kode_fasilitas'],
+                'fasilitas_ke' => $fasilitasKe,
+                'kode_brand' => $row['kode_brand'],
+                'type' => $row['type'],
+                'serialnumber' => $row['serialnumber'],
+                'jml_fasilitas' => $row['jml_fasilitas'],
+                'status' => $row['status'],
+                'uawal' => $row['uawal'],
+                'uakhir' => $row['uakhir'],
+                'histori' => 'Diimpor',
+                'milik' => $row['milik'],
+            ]);
+
+            if (!empty($row['no_rack'])) {
+                for ($u = $row['uawal']; $u <= $row['uakhir']; $u++) {
+                    \DB::table('rack')->updateOrInsert(
+                        [
+                            'kode_region' => $row['kode_region'],
+                            'kode_site' => $row['kode_site'],
+                            'no_rack' => $row['no_rack'],
+                            'u' => $u
+                        ],
+                        [
+                            'id_fasilitas' => $fasilitasBaru->id_fasilitas,
+                            'milik' => $row['milik'],
+                            'updated_at' => now()
+                        ]
+                    );
+                }
+            }
+        });
 
         return null;
     }
-
-    protected function getFasilitasKe($kodeSite)
+    protected function getFasilitaske($kodeSite)
     {
         $lastFasilitasKe = ListFasilitas::where('kode_site', $kodeSite)
                                     ->max('fasilitas_ke');

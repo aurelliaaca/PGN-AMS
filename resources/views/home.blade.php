@@ -29,31 +29,35 @@
             </div>
         @endif
         <div class="card-section" style="margin-top: 20px;">
-            <div class="card-item">
+            <div class="card-item" onclick="window.location='{{ route('perangkat.index') }}'" style="cursor: pointer;">
                 <div class="card-icon"><i class="fas fa-tools"></i></div>
                 <div class="card-content">
                     <h4>Perangkat</h4>
                     <p>{{ $jumlahPerangkat }} data</p>
                 </div>
             </div>
-            <div class="card-item">
+
+            <div class="card-item" onclick="window.location='{{ route('fasilitas.index') }}'" style="cursor: pointer;">
                 <div class="card-icon"><i class="fas fa-building"></i></div>
                 <div class="card-content">
                     <h4>Fasilitas</h4>
                     <p>{{ $jumlahFasilitas }} data</p>
                 </div>
             </div>
-            <div class="card-item">
+
+            <div class="card-item" onclick="window.location='{{ route('alatukur.index') }}'" style="cursor: pointer;">
                 <div class="card-icon"><i class="fas fa-ruler"></i></div>
                 <div class="card-content">
                     <h4>Alat Ukur</h4>
                     <p>{{ $jumlahAlatUkur }} data</p>
                 </div>
             </div>
-            <div class="card-item">
+
+            <div class="card-item" onclick="window.location='{{ route('jaringan.index') }}'" style="cursor: pointer;">
                 <div class="card-icon"><i class="fas fa-network-wired"></i></div>
                 <div class="card-content">
                     <h4>Jaringan</h4>
+                    <p>{{ $jumlahJaringan }} data</p>
                 </div>
             </div>
         </div>

@@ -14,25 +14,42 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Jaringan</th>
-                        <th>Jaringan ke</th>
-                        <th>Brand</th>
-                        <th>Type</th>
-                        <th>U Awal</th>
-                        <th>U Akhir</th>
+                        <th>Region</th>
+                        <th>Kode Site Insan</th>
+                        <th>Tipe Jaringan</th>
+                        <th>Segmen</th>
+                        <th>Jartatup Jartaplok</th>
+                        <th>Panjang</th>
+                        <th>Panjang Drawing</th>
+                        <th>Jumlah Core</th>
+                        <th>Jenis Kabel</th>
+                        <th>Tipe Kabel</th>
+                        <th>Status</th>
+                        <th>Keterangan</th>
+                        <th>DCI EQX</th>
                         <th>Aksi</th>
+                        <th>Tanggal Perubahan</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($historijaringan as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->jaringan_ke }}</td>
-                            <td>{{ optional($item->brandjaringan)->nama_brand }}</td>
-                            <td>{{ $item->type }}</td>
-                            <td>{{ $item->uawal }}</td>
-                            <td>{{ $item->uakhir }}</td>
+                            <td>{{ $item->region->nama_region }}</td>
+                            <td>{{ $item->kode_site_insan }}</td>
+                            <td>{{ $item->tipejaringan->nama_tipejaringan}}</td>
+                            <td>{{ $item->segmen }}</td>
+                            <td>{{ $item->jartatup_jartaplok }}</td>
+                            <td>{{ $item->panjang }}</td>
+                            <td>{{ $item->panjang_drawing }}</td>
+                            <td>{{ $item->jumlah_core }}</td>
+                            <td>{{ $item->jenis_kabel }}</td>
+                            <td>{{ $item->tipe_kabel }}</td>
+                            <td>{{ $item->status }}</td>
+                            <td>{{ $item->keterangan }}</td>
+                            <td>{{ $item->dci_eqx }}</td>
                             <td>{{ $item->histori }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->tanggal_perubahan)->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NDAController;
 use App\Http\Controllers\DCAFController;
 use Illuminate\Support\Facades\Route;
@@ -42,10 +43,9 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 Auth::routes(['verify' => true]);
 Route::middleware('auth')->group(function () {
-
     // ------------------------------------------------------------------------ DATA ------------------------------------------------------------------------
     Route::get('/data', [App\Http\Controllers\DataController::class, 'index'])->name('data');
 
@@ -266,11 +266,9 @@ Route::middleware('auth')->group(function () {
     // Semantik
     Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
 
-
     // Route untuk menampilkan view pendaftarandcaf
     Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
     Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
-
 
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
