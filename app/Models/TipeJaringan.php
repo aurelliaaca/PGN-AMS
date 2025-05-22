@@ -10,6 +10,8 @@ class TipeJaringan extends Model
 
     protected $table = 'tipejaringan';
     protected $primaryKey = 'kode_tipejaringan';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'kode_tipejaringan',

@@ -221,6 +221,25 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Tipe Jaringan -->
+                <div class="kotak" onclick="window.location.href='{{ route('datajaringan.index') }}'" style="cursor: pointer;">
+                    <div class="kotak-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="header-text">
+                            <h3>Jaringan</h3>
+                        </div>
+                    </div>
+                    <div class="kotak-body">
+                        <p>Tipe Jaringan</p>
+                        <div class="view-btn">
+                            <span>Lihat Detail</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

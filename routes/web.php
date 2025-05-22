@@ -34,6 +34,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\SemantikController;
+use App\Http\Controllers\TipeJaringanController;
 
 
 
@@ -96,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/region/{id_region}', [DataController::class, 'destroyRegion'])->name('region.destroy');
 
     Route::get('/menu/data/datauser', [DataController::class, 'indexUser'])->name('datauser.index');
+    Route::get('/menu/data/datajaringan', [DataController::class, 'indexTipeJaringan'])->name('datajaringan.index');
     Route::get('/user/create', [DataController::class, 'createUser'])->name('user.create');
     Route::post('/user/store', [DataController::class, 'storeUser'])->name('user.store');
     Route::get('/user/{id_user}/edit', [DataController::class, 'editUser'])->name('user.edit');
@@ -277,5 +279,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/signature', [ProfileController::class, 'uploadSignature'])->name('users.signature.upload');
     Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::resource('tipejaringan', TipeJaringanController::class);
 });
 
