@@ -172,13 +172,13 @@
             </tr>
             <tr>
                 <td>
-                    <img src="{{ $nda->signature }}" alt="Tanda Tangan" style="width: 200px; height: auto;">
+                    <img src="{{ $nda->signature }}" alt="Tanda Tangan" style="width: auto; height: auto; max-width: 50%;">
                 </td>
                 <td></td>
                 <td style="text-align: center;">
                     @if($nda->signedBy && $nda->signedBy->signature)
                         <img src="{{ base_path('storage/app/public/' . $nda->signedBy->signature) }}" alt="TTD Head"
-                            style="width:200px; height:auto;">
+                            style="width:auto; height:auto; max-width: 50%;">
                     @endif
                 </td>
             </tr>
