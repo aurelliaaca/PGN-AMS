@@ -5,7 +5,7 @@
 <div class="main">
 <div class="container">
     <!-- Tombol untuk membuka modal -->
-    <button class="btn btn-primary mb-3" onclick="window.location.href='{{ route('pendaftarandcaf') }}'">Buat DCAF</button>
+    <button class="btn btn-primary mb-3" style="margin-top: 20px; margin-bottom: 10px;" onclick="window.location.href='{{ route('pendaftarandcaf') }}'">Buat DCAF</button>
 
     <div class="table-responsive">
         <table class="table">
@@ -41,7 +41,7 @@
                         <span style="display: inline-flex; align-items: center;">
                             <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
                                 background-color: 
-                                    {{ $dcaf->status == 'menunggu persetujuan' ? '#ffc107' : 
+                                    {{ $dcaf->status == 'pending' ? '#ffc107' : 
                                     ($dcaf->status == 'diterima' ? '#28a745' : 
                                     ($dcaf->status == 'ditolak' ? '#dc3545' : '#ffc107')) }};">
                             </span>
@@ -51,14 +51,14 @@
                     <td>{{ $dcaf->masa_berlaku ? $dcaf->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
                     <td>
                         @if($dcaf->nda->status == 'diterima')
-                            <a href="{{ asset('storage/' . $dcaf->nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat NDA</a>
+                            <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat NDA</a>
                         @else
                             <span class="text-muted">Belum dapat diakses</span>
                         @endif
                     </td>
                     <td>
                         @if($dcaf->status == 'diterima')
-                            <a href="{{ asset('storage/' . $dcaf->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat DCAF</a>
+                            <a href="{{ asset($dcaf->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat DCAF</a>
                         @else
                             <span class="text-muted">Belum dapat diakses</span>
                         @endif

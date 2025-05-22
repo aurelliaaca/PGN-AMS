@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Str;
+use App\Models\Region;
 
 class ProfileController extends Controller
 {
@@ -25,7 +26,8 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        return view('menu.profile');
+        $regions = Region::pluck('nama_region');
+        return view('menu.profile', compact('regions'));
     }
 
     /**

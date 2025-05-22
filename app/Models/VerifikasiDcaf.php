@@ -3,36 +3,65 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VerifikasiDcaf extends Model
 {
-    use HasFactory;
+    protected $table = 'verifikasidcaf';
 
-    protected $table = 'verifikasi_dcaf';
-    
-    protected $casts = [
-        'masa_berlaku' => 'datetime'
-    ];
-    
     protected $fillable = [
         'user_id',
-        'verifikasi_nda_id',
-        'status',
-        'catatan',
-        'masa_berlaku'
+        'nda_id',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'waktu_mulai',
+        'waktu_selesai',
+        'lokasi',
+        'no_rack',
+        'jenis_pekerjaan',
+        'signature',
+        'pengawas'
     ];
-
-    public $incrementing = true;
-    protected $keyType = 'integer';
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function nda()
+    public function rekanans()
     {
-        return $this->belongsTo(VerifikasiNda::class, 'verifikasi_nda_id');
+    return $this->hasMany(RekananVms::class, 'dcaf_id', 'id');
+    }
+
+    public function perlengkapans()
+    {
+        return $this->hasMany(PerlengkapanVms::class, 'dcaf_id', 'id');
+    }
+
+    public function barangMasuks()
+    {
+        return $this->hasMany(BarangMasukVms::class, 'dcaf_id', 'id');
+    }
+
+    public function barangKeluars()
+    {
+        return $this->hasMany(BarangKeluarVms::class, 'dcaf_id', 'id');
+    }
+
+     public function nda()
+    {
+        return $this->belongsTo(VerifikasiNda::class, 'nda_id');
+    }
+    public function dcaf()
+    {
+        return $this->belongsTo(VerifikasiDcaf::class);
+    }
+        public function signedBy()
+    {
+        return $this->belongsTo(User::class, 'signed_by');
+    }
+
+    public function pengawasDCAF()
+    {
+        return $this->belongsTo(User::class,'pengawas');
     }
 } 

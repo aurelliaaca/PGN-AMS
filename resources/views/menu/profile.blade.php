@@ -92,8 +92,14 @@
                         value="{{ old('bagian', auth()->user()->bagian) }}">
 
                     <label for="region">Region</label>
-                    <input type="text" id="region" name="region" class="form-control"
-                        value="{{ old('region', auth()->user()->region) }}">
+                    <select id="region" name="region" class="form-control">
+                        @foreach ($regions as $nama)
+                            <option value="{{ $nama }}" {{ old('region', auth()->user()->region) == $nama ? 'selected' : '' }}>
+                                {{ $nama }}
+                            </option>
+                        @endforeach
+                    </select>
+
 
                     <label for="noktp">No. KTP</label>
                     <input type="text" id="noktp" name="noktp" class="form-control"
@@ -111,7 +117,8 @@
                 </form>
             </div>
         </div>
-
+        
+        @if(auth()->user()->role == 1)
         <div class="section">
             <header class="header-profile">
                 <h2>{{ __('Tanda Tangan') }}</h2>
@@ -135,11 +142,13 @@
                 </div>
             @endif
         </div>
+        @endif
 
         <div class="section">
             <header class="header-profile">
                 <h2>{{ __('Perbarui Kata Sandi') }}</h2>
-                <p style="color: rgba(0, 0, 0, 0.5);">{{ __('Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.') }}</p>
+                <p style="color: rgba(0, 0, 0, 0.5);">
+                    {{ __('Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.') }}</p>
             </header>
 
             <form method="POST" action="{{ route('password.update') }}">
@@ -188,7 +197,8 @@
         <div class="section">
             <header class="header-profile">
                 <h2>{{ __('Hapus Akun') }}</h2>
-                <p style="color: rgba(0, 0, 0, 0.5);">{{ __('Setelah akun Anda dihapus, semua data dan sumber daya terkait akan dihapus secara permanen.') }}
+                <p style="color: rgba(0, 0, 0, 0.5);">
+                    {{ __('Setelah akun Anda dihapus, semua data dan sumber daya terkait akan dihapus secara permanen.') }}
                 </p>
             </header>
 

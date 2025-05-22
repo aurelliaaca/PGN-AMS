@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\NDAController;
+use App\Http\Controllers\DCAFController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PerangkatController;
@@ -243,36 +244,18 @@ Route::middleware('auth')->group(function () {
     // Route::post('/jaringan/export', [JaringanController::class, 'export'])->name('jaringan.export');
     // Route::get('/jaringan/{id}/lihat-detail', [JaringanController::class, 'lihatDetail'])->name('jaringan.lihatDetail');
 
-
-    // Superadmin - melihat dan memverifikasi dokumen
-    Route::get('/verifikasi', [VerifikasiDokumenController::class, 'index'])->name('verifikasi.superadmin.index');
-    Route::post('/verifikasi/approve/{id}', [VerifikasiDokumenController::class, 'approve'])->name('verifikasi.approve');
-    Route::post('/verifikasi/reject/{id}', [VerifikasiDokumenController::class, 'reject'])->name('verifikasi.reject');
-    Route::post('/verifikasi/sign/{id}', [VerifikasiDokumenController::class, 'sign'])->name('verifikasi.sign');
-
-    // User - upload dokumen dan lihat status
-    Route::get('/verifikasi/user', [VerifikasiDokumenController::class, 'userIndex'])->name('verifikasi.dcaf.index');
-    Route::get('/verifikasi/user/dcaf', [VerifikasiDokumenController::class, 'userDcafIndex'])->name('verifikasi.user.dcaf');
-    Route::post('/verifikasi/user/upload', [VerifikasiDokumenController::class, 'upload'])->name('dokumen.store');
-
-    // Routes untuk verifikasi NDA 
     Route::get('/verifikasi/nda', [NDAController::class, 'indexNdaSuperadmin'])->name('verifikasi.superadmin.nda');
-    Route::post('/verifikasi/nda', [VerifikasiDokumenController::class, 'storeVerifNda'])->name('verifikasi.nda.store');
     Route::get('/pendaftaran/nda', [NDAController::class, 'indexNdaUser'])->name('verifikasi.user.nda');
     Route::post('/pendaftaran/nda/store', [NDAController::class, 'store'])->name('nda.store');
-    Route::get('pendaftaran/nda/download/{id}', [VerifikasiDokumenController::class, 'downloadNda'])->name('nda.download');
     Route::put('/nda/{nda}', [NDAController::class, 'update'])->name('nda.update');
-    Route::delete('/nda/{nda}', [VerifikasiDokumenController::class, 'destroy'])->name('nda.destroy');
 
-    // Routes untuk verifikasi DCAF
-    Route::get('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'indexDcaf'])->name('verifikasi.superadmin.dcaf');
-    Route::post('/verifikasi/dcaf', [VerifikasiDokumenController::class, 'storeDcaf'])->name('verifikasi.dcaf.store');
+    Route::get('/verifikasi/user/dcaf', [DCAFController::class, 'indexDcafUser'])->name('verifikasi.user.dcaf');
+    Route::get('/pendaftaran/dcaf', [DCAFController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
+    Route::get('/pendaftaran/ajukan-dcs', [PendaftaranController::class, 'ajukanDCS'])->name('pendaftaran.ajukan-dcs');
+    Route::post('/dcaf', [DCAFController::class, 'store'])->name('dcaf.store');
+    Route::get('/verifikasi/admin/dcaf', [DCAFController::class, 'indexDcafSuperadmin'])->name('verifikasi.superadmin.dcaf');
+    Route::put('/dcaf/{dcaf}', [DCAFController::class, 'update'])->name('dcaf.update');
 
-    // Routes untuk aksi verifikasi
-    Route::post('/verifikasi/nda/approve/{id}', [VerifikasiDokumenController::class, 'approveNda'])->name('verifikasi.approve.nda');
-    Route::post('/verifikasi/nda/reject/{id}', [VerifikasiDokumenController::class, 'rejectNda'])->name('verifikasi.reject.nda');
-    Route::post('/verifikasi/dcaf/approve/{id}', [VerifikasiDokumenController::class, 'approveDcaf'])->name('verifikasi.approve.dcaf');
-    Route::post('/verifikasi/dcaf/reject/{id}', [VerifikasiDokumenController::class, 'rejectDcaf'])->name('verifikasi.reject.dcaf');
 
     // Route untuk upload foto
     Route::post('/upload-photo', [SemantikController::class, 'uploadPhoto'])->name('upload.photo');
@@ -285,12 +268,9 @@ Route::middleware('auth')->group(function () {
 
 
     // Route untuk menampilkan view pendaftarandcaf
-    Route::get('/pendaftarandcaf', [PendaftaranController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
     Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
     Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
 
-    Route::get('/pendaftaran/dcaf', [PendaftaranController::class, 'pendaftaranDCAF'])->name('pendaftaran.dcaf');
-    Route::get('/pendaftaran/ajukan-dcs', [PendaftaranController::class, 'ajukanDCS'])->name('pendaftaran.ajukan-dcs');
 
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

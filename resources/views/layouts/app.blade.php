@@ -105,7 +105,8 @@
                         $roleText = [
                             1 => 'Superadmin',
                             2 => 'Admin',
-                            3 => 'Guest',
+                            3 => 'Internal',
+                            4 => 'Eksternal',
                         ][auth()->user()->role] ?? 'Unknown';
                     @endphp
                     <span>{{ $roleText }}</span>

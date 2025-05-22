@@ -1,24 +1,22 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class RekananVms extends Model
 {
-    protected $table = 'rekanan_vms';
+    protected $table = 'rekanans';
 
     protected $fillable = [
-        'pendaftaran_vms_id',
+        'dcaf_id',
         'nama',
         'perusahaan',
-        'no_ktp',
-        'no_telepon'
+        'ktp',
+        'telp',
     ];
 
-    public $timestamps = false;  // Disable timestamps
-    public function pendaftaran()
+    public function dcaf()
     {
-        return $this->belongsTo(PendaftaranVms::class, 'pendaftaran_vms_id');
+        return $this->belongsTo(VerifikasiDcaf::class);
     }
 }

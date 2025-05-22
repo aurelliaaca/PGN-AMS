@@ -1,705 +1,444 @@
 @extends('layouts.app')
 
+@section('title', 'Pendaftaran DCAF')
+@section('page_title', 'Pendaftaran DCAF')
+
 @section('content')
+    <form method="POST" action="{{ route('dcaf.store') }}" enctype="multipart/form-data">
+        @csrf
+        <div class="main">
+            <div class="section" style="margin-top: 20px;">
+                <header class="header-profile">
+                    <h2>{{ __('Informasi NDA yang Berlaku') }}</h2>
+                    <p class="subtext">
+                        {{ __('Jika Anda belum memiliki NDA yang aktif, pengajuan DCAF tidak dapat dilakukan. Silakan buat terlebih dahulu melalui menu NDA.') }}
+                    </p>
+                </header>
 
-    <head>
-        <link rel="stylesheet" href="{{ asset('css/general.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/tabelaset.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/modal.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/filter.css') }}">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <style>
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.5);
-            }
-
-            .modal-content {
-                background-color: #fefefe;
-                margin: 15% auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 80%;
-                max-width: 500px;
-                border-radius: 8px;
-            }
-
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-                cursor: pointer;
-            }
-
-            .close:hover {
-                color: black;
-            }
-
-            .modal-footer {
-                margin-top: 20px;
-                text-align: right;
-            }
-
-            .btn-primary {
-                background-color: #5a54ea;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 6px;
-                cursor: pointer;
-            }
-
-            .btn-primary:hover {
-                background-color: #4a44da;
-            }
-
-            .form-control {
-                width: 100%;
-                padding: 8px;
-                margin: 8px 0;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-            }
-
-            .mb-3 {
-                margin-bottom: 1rem;
-            }
-        </style>
-    </head>
-
-    <div class="form-page-content">
-        <h1 style="text-align: center; margin-bottom: 24px; font-size: 28px; font-weight: bold;">
-            Kunjungan Data Center
-        </h1>
-
-        <form id="addPendaftaranForm" method="POST" action="{{ route('pendaftaran.store') }}" enctype="multipart/form-data">
-            @csrf
-            <div style="max-width: 900px; margin: 0 auto;">
-
-                <!-- Baris 1 -->
-                <div style="display: flex; gap: 20px; margin-bottom: 16px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Nama Pemohon</label>
-                        <input type="text" name="nama_pemohon" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>No HP Pemohon</label>
-                        <input type="text" name="no_hp_pemohon" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-
-                <!-- Baris 2 -->
-                <div style="display: flex; gap: 20px; margin-bottom: 16px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Pengawas Lapangan</label>
-                        <input type="text" name="pengawas" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>No HP Pengawas</label>
-                        <input type="text" name="no_hp_pengawas" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-
-                <!-- Rekanan -->
-                <div style="margin-bottom: 16px;">
-                    <label>Rekanan</label>
-                    <div id="rekanan-container">
-                        <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                            <input type="text" name="nama_rekanan[]" placeholder="Nama" required
-                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                            <input type="text" name="perusahaan_rekanan[]" placeholder="Nama Perusahaan" required
-                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                        </div>
-                        <div style="display: flex; gap: 20px;">
-                            <input type="text" name="ktp_rekanan[]" placeholder="No KTP" required
-                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                            <input type="text" name="telp_rekanan[]" placeholder="No Telepon" required
-                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                        </div>
-                    </div>
-                    <button type="button" onclick="addRekanan()"
-                        style="margin-top: 12px; background-color: #5a54ea; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">
-                        + Tambah Rekanan
-                    </button>
-                </div>
-
-                <!-- Divisi -->
-                <div style="display: flex; flex-direction: column; margin-bottom: 16px;">
-                    <label>Divisi</label>
-                    <input type="text" name="divisi" required
-                        style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                </div>
-
-                <!-- Tanggal -->
-                <div style="display: flex; gap: 20px; margin-bottom: 16px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Tanggal Mulai</label>
-                        <input type="date" name="tanggal_mulai" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Tanggal Selesai</label>
-                        <input type="date" name="tanggal_selesai" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-
-                <!-- Waktu -->
-                <div style="display: flex; gap: 20px; margin-bottom: 16px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Waktu Mulai</label>
-                        <input type="time" name="waktu_mulai" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Waktu Selesai</label>
-                        <input type="time" name="waktu_selesai" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-
-                <!-- Lokasi & Rack -->
-                <div style="display: flex; gap: 20px; margin-bottom: 16px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Lokasi Pengerjaan</label>
-                        <input type="text" name="lokasi" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Nomor Rack</label>
-                        <input type="text" name="no_rack" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-
-                <!-- Jenis Pekerjaan -->
-                <div style="display: flex; gap: 20px; margin-bottom: 16px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Jenis Pekerjaan</label>
-                        <select name="jenis_pekerjaan" id="jenis_pekerjaan" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                            <option value="">Pilih Jenis Pekerjaan</option>
-                            <option value="maintenance">Maintenance</option>
-                            <option value="checking">Checking</option>
-                            <option value="installation">Installation</option>
-                            <option value="dismantle">Dismantle</option>
-                            <option value="others">Others</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label>Deskripsi Pekerjaan</label>
-                        <textarea name="deskripsi" rows="4" required
-                            style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;"></textarea>
-                    </div>
-                </div>
-
-                <!-- Keterangan Others -->
-                <div id="keterangan_others" style="display: none; flex-direction: column; margin-bottom: 16px;">
-                    <label>Keterangan</label>
-                    <input type="text" name="keterangan" id="keterangan"
-                        style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                </div>
-
-                <!-- Detail Perlengkapan -->
-                <div style="margin-bottom: 16px;">
-                    <h3>Detail Perlengkapan Yang Dibawa</h3>
-                    <div id="perlengkapan-container">
-                        <div class="perlengkapan-block" style="margin-bottom: 16px;">
-                            <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                                <div style="flex: 1;">
-                                    <label>Nama Perlengkapan / Equipments Name</label>
-                                    <input type="text" name="nama_perlengkapan[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 20px;">
-                                <div style="flex: 1;">
-                                    <label>Jumlah / Amount</label>
-                                    <input type="number" name="jumlah_perlengkapan[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label>Keterangan</label>
-                                    <input type="text" name="keterangan_perlengkapan[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" onclick="addPerlengkapan()"
-                        style="margin-top: 12px; background-color: #5a54ea; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">
-                        + Tambah Perlengkapan
-                    </button>
-                    <small style="color: #666; display: block; margin-top: 8px;">*)diisi peralatan kerja yang akan dibawa masuk & keluar seperti : Laptop,Alat Ukur,Toolkit,..dll</small>
-                </div>
-
-                <!-- Detail Barang Masuk -->
-                <div style="margin-bottom: 16px;">
-                    <h3>Detail Barang Masuk</h3>
-                    <div id="barang-masuk-container">
-                        <div class="barang-masuk-block" style="margin-bottom: 16px;">
-                            <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                                <div style="flex: 1;">
-                                    <label>Nama / Name</label>
-                                    <input type="text" name="nama_barang_masuk[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 20px;">
-                                <div style="flex: 1;">
-                                    <label>Berat / Weight (kg)</label>
-                                    <input type="number" name="berat_barang_masuk[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label>Jumlah / Amount</label>
-                                    <input type="number" name="jumlah_barang_masuk[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label>Keterangan</label>
-                                    <input type="text" name="keterangan_barang_masuk[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" onclick="addBarangMasuk()"
-                        style="margin-top: 12px; background-color: #5a54ea; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">
-                        + Tambah Barang Masuk
-                    </button>
-                    <small style="color: #666; display: block; margin-top: 8px;">*)diisi nama Barang yang akan dipasang/diinstal di Data Center.</small>
-                </div>
-
-                <!-- Detail Barang Keluar -->
-                <div style="margin-bottom: 16px;">
-                    <h3>Detail Barang Keluar</h3>
-                    <div id="barang-keluar-container">
-                        <div class="barang-keluar-block" style="margin-bottom: 16px;">
-                            <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                                <div style="flex: 1;">
-                                    <label>Nama</label>
-                                    <input type="text" name="nama_barang_keluar[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 20px;">
-                                <div style="flex: 1;">
-                                    <label>Berat (kg)</label>
-                                    <input type="number" name="berat_barang_keluar[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label>Jumlah</label>
-                                    <input type="number" name="jumlah_barang_keluar[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                                <div style="flex: 1;">
-                                    <label>Keterangan</label>
-                                    <input type="text" name="keterangan_barang_keluar[]" required
-                                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" onclick="addBarangKeluar()"
-                        style="margin-top: 12px; background-color: #5a54ea; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">
-                        + Tambah Barang Keluar
-                    </button>
-                    <small style="color: #666; display: block; margin-top: 8px;">*)diisi nama Barang yang akan di‐dismantle/dicabut dari Data Center.</small>
-                </div>
-
-                <!-- Form Persetujuan -->
-                <div style="margin-top: 30px; margin-bottom: 30px;">
-                    <h3>Form Persetujuan</h3>
-                    
-                    <div style="display: flex; gap: 50px;">
-                        <!-- Kolom Pemohon -->
-                        <div style="flex: 1;">
-                            <h4>Pemohon</h4>
-                            <div style="margin-bottom: 20px;">
-                                <label>Tanggal:</label>
-                                <input type="date" name="tanggal_pemohon" required
-                                    style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-top: 5px;">
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <label>Nama:</label>
-                                <input type="text" name="nama_pemohon" required
-                                    style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-top: 5px;">
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <label>Tanda Tangan Pemohon:</label>
-                                <div style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin-top: 5px;">
-                                    <input type="file" id="ttd_pemohon" name="ttd_pemohon" accept="image/*" style="display: none;">
-                                    <img id="preview_ttd_pemohon" src="#" alt="Preview Tanda Tangan" style="max-width: 200px; max-height: 100px; display: none;">
-                                    <button type="button" onclick="document.getElementById('ttd_pemohon').click()"
-                                        style="background-color: #5a54ea; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">
-                                        Unggah Tanda Tangan
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Kolom Menyetujui -->
-                        <div style="flex: 1;">
-                            <h4>Menyetujui</h4>
-                            <div style="margin-bottom: 20px;">
-                                <label>Tanggal:</label>
-                                <input type="date" name="tanggal_menyetujui" required
-                                    style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-top: 5px;">
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <label>Nama Pengawas:</label>
-                                <input type="text" name="nama_menyetujui" required
-                                    style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-top: 5px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Submit -->
-                <div style="margin-top: 20px;">
-                    <button type="button" onclick="window.location.href='{{ route('pendaftaran.ajukan-dcs') }}'"
-                        style="background-color: #5a54ea; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer;">
-                        Next
-                    </button>
-                </div>
-
-            </div>
-        </form>
-    </div>
-
-    <!-- Modal Ajukan DCS -->
-    <div class="modal" id="modalAjukanDCS">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('modalAjukanDCS')">&times;</span>
-            <h5>Ajukan Visit DCS</h5>
-            <form action="{{ route('dokumen.store') }}" method="POST" id="formAjukanDCS" enctype="multipart/form-data">
-                @csrf
-                <div class="mb-3">
-                    <label>Catatan</label>
-                    <input type="text" name="catatan" class="form-control" id="catatan" value="">
-                </div>
-                <div class="mb-3">
-                    <label>Pilih NDA Aktif</label>
-                    <select name="verifikasi_nda_id" id="verifikasi_nda_id" class="form-control" required>
-                        <option value="">-- Pilih NDA --</option>
-                        @forelse($activeNdas as $nda)
-                            <option value="{{ $nda->id }}">NDA berlaku sampai {{ $nda->masa_berlaku->format('d F Y') }}</option>
-                        @empty
-                            <option value="" disabled>-- Tidak ada NDA aktif --</option>
-                        @endforelse
+                <div class="form-group">
+                    <select name="nda_id" id="nda_id" class="form-control select2" required>
+                        <option value="">Pilih NDA</option>
+                        @foreach ($ndas as $nda)
+                            <option value="{{ $nda->id }}">
+                                NDA - Berlaku s/d {{ \Carbon\Carbon::parse($nda->masa_berlaku)->translatedFormat('d M Y') }}
+                            </option>
+                        @endforeach
                     </select>
-                    @if($activeNdas->isEmpty())
-                        <small class="text-danger">Anda tidak memiliki NDA yang aktif. Silahkan ajukan verifikasi NDA terlebih dahulu.</small>
-                    @endif
                 </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="submitDCAF()" class="btn btn-primary" {{ $activeNdas->isEmpty() ? 'disabled' : '' }}>Kirim</button>
+            </div>
+            <div class="section" style="margin-top: 20px;">
+                <header class="header-profile">
+                    <h2>{{ __('Informasi Pemohon') }}</h2>
+                    <p class="subtext">{{ __('Mohon lengkapi data sesuai identitas Anda.') }}</p>
+                </header>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <div class="split">
+                        <div>
+                            <label for="name">Nama Pemohon</label>
+                            <input id="name" name="name" type="text" class="form-control"
+                                value="{{ old('name', auth()->user()->name) }}">
+                        </div>
+                        <div>
+                            <label for="mobile_number">No HP Pemohon</label>
+                            <input id="mobile_number" name="mobile_number" type="text" class="form-control"
+                                value="{{ old('mobile_number', auth()->user()->mobile_number) }}">
+                        </div>
+                    </div>
                 </div>
-            </form>
+
+                <div class="form-group" style="width: 49.5%;">
+                    <label for="signature">Tanda Tangan</label>
+                    <div class="mb-3">
+                        <label for="upload-signature" class="form-label"></label>
+                        <input type="file" id="upload-signature" accept="image/*" class="form-control">
+                    </div>
+                    <canvas id="signature-pad"
+                        style="border: 1px solid #000; width: 100%; height: 150px; cursor: crosshair;"></canvas>
+                    <button type="button" id="clear-signature" class="btn btn-delete mb-3"
+                        style="padding: 10px; font-size: 14px; margin-bottom: 20px; margin-top: 10px;">Reset</button>
+                    <input type="hidden" name="signature" id="signature" value="{{ $dcaf->signature ?? '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Detail Rekanan</label>
+                    <div class="section-container">
+                        <div id="rekanan-container">
+                            <div class="split">
+                                <input type="text" class="form-control" name="nama_rekanan[]" placeholder="Nama" required>
+                                <input type="text" class="form-control" name="perusahaan_rekanan[]"
+                                    placeholder="Nama Perusahaan" required>
+                            </div>
+                            <div class="split">
+                                <input type="text" class="form-control" style="margin-bottom: 0;" name="ktp_rekanan[]"
+                                    placeholder="No KTP" required>
+                                <input type="text" class="form-control" style="margin-bottom: 0;" name="telp_rekanan[]"
+                                    placeholder="No Telepon" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-primary" style="margin-top: 20px; margin-bottom: 20px;"
+                        onclick="addRekanan()">+ Tambah Rekanan</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Divisi</label>
+                    <input id="bagian" name="bagian" type="text" class="form-control"
+                        value="{{ old('bagian', auth()->user()->bagian) }}">
+                </div>
+
+                <div class="form-group">
+                    <div class="split">
+                        <div>
+                            <label>Tanggal Mulai</label>
+                            <input id="tanggal_mulai" type="date" class="form-control" name="tanggal_mulai" required>
+                        </div>
+                        <div>
+                            <label>Tanggal Selesai</label>
+                            <input id="tanggal_selesai" type="date" class="form-control" name="tanggal_selesai" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="split">
+                        <div>
+                            <label>Waktu Mulai</label>
+                            <input id="waktu_mulai" type="time" class="form-control" name="waktu_mulai" required>
+                        </div>
+                        <div>
+                            <label>Waktu Selesai</label>
+                            <input id="waktu_selesai" type="time" class="form-control" name="waktu_selesai" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="split">
+                        <div>
+                            <label>Lokasi Pengerjaan</label>
+                            <input id="lokasi" type="text" class="form-control" name="lokasi" required>
+                        </div>
+                        <div>
+                            <label>Nomor Rack</label>
+                            <input id="no_rack" type="text" class="form-control" name="no_rack" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="split">
+                        <div>
+                            <label for="jenis_pekerjaan">Jenis Pekerjaan</label>
+                            <select name="jenis_pekerjaan" id="jenis_pekerjaan" class="form-control" required>
+                                <option value="">Pilih Jenis Pekerjaan</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="checking">Checking</option>
+                                <option value="installation">Installation</option>
+                                <option value="dismantle">Dismantle</option>
+                                <option value="others">Others</option>
+                            </select>
+                            <input type="text" id="jenis_pekerjaan_lainnya" name="jenis_pekerjaan_lainnya"
+                                class="form-control" placeholder="Masukkan jenis pekerjaan lainnya"
+                                style="display: none; margin-top: 10px;">
+                        </div>
+                        <div>
+                            <label>Deskripsi Pekerjaan</label>
+                            <input id="deskripsi_pekerjaan" type="text" class="form-control" name="deskripsi_pekerjaan"
+                                required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" style="margin-bottom: 0px;">
+                <header class="header-profile">
+                    <h2>{{ __('Informasi Pendataan Barang') }}</h2>
+                    <p class="subtext">
+                        {{ __('Lengkapi data berikut untuk keperluan pencatatan barang masuk, keluar, dan perlengkapan yang dibawa.') }}
+                    </p>
+                </header>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Detail Perlengkapan Yang Dibawa</label>
+                    <small style="color: #666; display: block; margin-bottom: 10px;">*) diisi peralatan kerja yang akan
+                        dibawa masuk & keluar seperti: Laptop, Alat Ukur, Toolkit, dll</small>
+                    <div class="section-container">
+                        <div id="perlengkapan-container">
+                            <div class="split">
+                                <input type="text" class="form-control" name="nama_perlengkapan[]"
+                                    placeholder="Nama Perlengkapan" required>
+                                <input type="number" class="form-control" name="jumlah_perlengkapan[]" placeholder="Jumlah"
+                                    required>
+                            </div>
+                            <input type="text" class="form-control" style="margin-bottom: 0;"
+                                name="keterangan_perlengkapan[]" placeholder="Keterangan" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-primary" style="margin-top: 20px; margin-bottom: 20px;"
+                        onclick="addPerlengkapan()">+ Tambah Perlengkapan</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Detail Barang Masuk</label>
+                    <small style="color: #666; display: block; margin-bottom: 10px;">*) diisi nama Barang yang akan
+                        dipasang/diinstal di Data Center.</small>
+                    <div class="section-container">
+                        <div id="barang-masuk-container">
+                            <div class="split">
+                                <input type="text" class="form-control" name="nama_barang_masuk[]" placeholder="Nama"
+                                    required>
+                                <input type="number" class="form-control" name="jumlah_barang_masuk[]" placeholder="Jumlah"
+                                    required>
+                            </div>
+                            <div class="split">
+                                <input type="number" class="form-control" style="margin-bottom: 0;"
+                                    name="berat_barang_masuk[]" placeholder="Berat (kg)" required>
+                                <input type="text" class="form-control" style="margin-bottom: 0;"
+                                    name="keterangan_barang_masuk[]" placeholder="Keterangan" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-primary" style="margin-top: 20px; margin-bottom: 20px;"
+                        onclick="addBarangMasuk()">+ Tambah Barang Masuk</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Detail Barang Keluar</label>
+                    <small style="color: #666; display: block; margin-bottom: 10px;">*) diisi nama Barang yang akan
+                        dipasang/diinstal di Data Center.</small>
+                    <div class="section-container">
+                        <div id="barang-keluar-container">
+                            <div class="split">
+                                <input type="text" class="form-control" name="nama_barang_keluar[]" placeholder="Nama"
+                                    required>
+                                <input type="number" class="form-control" name="jumlah_barang_keluar[]" placeholder="Jumlah"
+                                    required>
+                            </div>
+                            <div class="split">
+                                <input type="number" class="form-control" style="margin-bottom: 0;"
+                                    name="berat_barang_keluar[]" placeholder="Berat (kg)" required>
+                                <input type="text" class="form-control" style="margin-bottom: 0;"
+                                    name="keterangan_barang_keluar[]" placeholder="Keterangan" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-primary" style="margin-top: 20px; margin-bottom: 20px;"
+                        onclick="addBarangKeluar()">+ Tambah Barang Keluar</button>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <button type="submit" class="btn-primary" style="padding: 10px 20px;">Simpan</button>
+            </div>
         </div>
-    </div>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
     <script>
+        $(document).ready(function () {
+            $('#jenis_pekerjaan').select2({
+                placeholder: "Pilih Jenis Pekerjaan",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#jenis_pekerjaan').on('change', function () {
+                const value = $(this).val();
+                const $inputLainnya = $('#jenis_pekerjaan_lainnya');
+                if (value === 'others') {
+                    $inputLainnya.show().attr('required', true).focus();
+                } else {
+                    $inputLainnya.hide().val('').removeAttr('required');
+                }
+            });
+
+            $('#jenis_pekerjaan_lainnya').hide();
+        });
+
         function addRekanan() {
             const rekananContainer = document.getElementById('rekanan-container');
             const newRekanan = document.createElement('div');
-            newRekanan.classList.add('rekanan-block');
-            newRekanan.style.marginTop = '20px';
-
+            newRekanan.classList.add('rekanan-tambahan');
             newRekanan.innerHTML = `
-                                                                    <div style="position: relative; margin-bottom: 10px;">
-                                                                        <!-- Tombol hapus -->
-                                                                        <button type="button" onclick="this.closest('.rekanan-block').remove()"
-                                                                            style="position: absolute; top: 0px; right: -60px; background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 6px; z-index: 1;">
-                                                                            hapus
-                                                                        </button>
-
-                                                                        <!-- Baris 1: Nama & Nama Perusahaan -->
-                                                                        <div style="display: flex; gap: 20px; margin-bottom: 10px;">
-                                                                            <input type="text" name="nama_rekanan[]" placeholder="Nama" required
-                                                                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                            <input type="text" name="perusahaan_rekanan[]" placeholder="Nama Perusahaan" required
-                                                                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                        </div>
-
-                                                                        <!-- Baris 2: No KTP & No Telepon -->
-                                                                        <div style="display: flex; gap: 20px;">
-                                                                            <input type="text" name="ktp_rekanan[]" placeholder="No KTP" required
-                                                                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                            <input type="text" name="telp_rekanan[]" placeholder="No Telepon" required
-                                                                                style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                                                                        </div>
-                                                                    </div>
-                                                                `;
-
+                                <div style="position: relative; margin-top: 20px;">
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="nama_rekanan[]" placeholder="Nama" required>
+                                        <input type="text" class="form-control" name="perusahaan_rekanan[]" placeholder="Nama Perusahaan" required>
+                                    </div>
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="ktp_rekanan[]" placeholder="No KTP" required>
+                                        <input type="text" class="form-control" name="telp_rekanan[]" placeholder="No Telepon" required>
+                                    </div>
+                                    <button type="button" onclick="this.closest('.rekanan-tambahan').remove()" class="btn-delete">Hapus</button>
+                                </div>
+                            `;
             rekananContainer.appendChild(newRekanan);
         }
-    </script>
 
-<script>
-    // Fungsi untuk menambah perlengkapan
-    function addPerlengkapan() {
-        const container = document.getElementById('perlengkapan-container');
-        const newPerlengkapan = document.createElement('div');
-        newPerlengkapan.classList.add('perlengkapan-block');
-        newPerlengkapan.style.marginTop = '20px';
-
-        newPerlengkapan.innerHTML = `
-            <div style="position: relative; margin-bottom: 10px;">
-                <button type="button" onclick="this.closest('.perlengkapan-block').remove()"
-                    style="position: absolute; top: 0px; right: -60px; background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 6px; z-index: 1;">
-                    hapus
-                </button>
-
-                <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                        <label>Nama Perlengkapan</label>
-                        <input type="text" name="nama_perlengkapan[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <label>Jumlah</label>
-                        <input type="number" name="jumlah_perlengkapan[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Keterangan</label>
-                        <input type="text" name="keterangan_perlengkapan[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // FIXED: sebelumnya salah pakai variabel yang belum didefinisikan
-        container.appendChild(newPerlengkapan);
-    }
-</script>
-
-<script>
-    // Fungsi untuk menambah barang masuk
-    function addBarangMasuk() {
-        const container = document.getElementById('barang-masuk-container');
-        const newBarangMasuk = document.createElement('div');
-        newBarangMasuk.classList.add('barang-masuk-block');
-        newBarangMasuk.style.marginTop = '20px';
-
-        newBarangMasuk.innerHTML = `
-            <div style="position: relative; margin-bottom: 10px;">
-                <button type="button" onclick="this.closest('.barang-masuk-block').remove()"
-                    style="position: absolute; top: 0px; right: -60px; background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 6px; z-index: 1;">
-                    hapus
-                </button>
-
-                <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                        <label>Nama</label>
-                        <input type="text" name="nama_barang_masuk[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <label>Berat (kg)</label>
-                        <input type="number" name="berat_barang_masuk[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Jumlah</label>
-                        <input type="number" name="jumlah_barang_masuk[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Keterangan</label>
-                        <input type="text" name="keterangan_barang_masuk[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-            </div>
-        `;
-
-        container.appendChild(newBarangMasuk); // FIXED
-    }
-
-    // Fungsi untuk menambah barang keluar
-    function addBarangKeluar() {
-        const container = document.getElementById('barang-keluar-container');
-        const newBarangKeluar = document.createElement('div');
-        newBarangKeluar.classList.add('barang-keluar-block');
-        newBarangKeluar.style.marginTop = '20px';
-
-        newBarangKeluar.innerHTML = `
-            <div style="position: relative; margin-bottom: 10px;">
-                <button type="button" onclick="this.closest('.barang-keluar-block').remove()"
-                    style="position: absolute; top: 0px; right: -60px; background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 6px; z-index: 1;">
-                    hapus
-                </button>
-
-                <div style="display: flex; gap: 20px; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                        <label>Nama</label>
-                        <input type="text" name="nama_barang_keluar[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <label>Berat (kg)</label>
-                        <input type="number" name="berat_barang_keluar[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Jumlah</label>
-                        <input type="number" name="jumlah_barang_keluar[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Keterangan</label>
-                        <input type="text" name="keterangan_barang_keluar[]" required
-                            style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-                    </div>
-                </div>
-            </div>
-        `;
-
-        container.appendChild(newBarangKeluar); 
-    }
-</script>
-
-    <script>
-        function showModalAjukanDCS() {
-            document.getElementById('modalAjukanDCS').style.display = 'block';
+        function addPerlengkapan() {
+            const container = document.getElementById('perlengkapan-container');
+            const newPerlengkapan = document.createElement('div');
+            newPerlengkapan.classList.add('perlengkapan-tambahan');
+            newPerlengkapan.innerHTML = `
+                                <div style="position: relative; margin-top: 20px;">
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="nama_perlengkapan[]" placeholder="Nama Perlengkapan" required>
+                                        <input type="text" class="form-control" name="jumlah_perlengkapan[]" placeholder="Jumlah" required>
+                                    </div>
+                                    <input type="text" class="form-control" name="keterangan_perlengkapan[]" placeholder="Keterangan" required>
+                                    <button type="button" onclick="this.closest('.perlengkapan-tambahan').remove()" class="btn-delete">Hapus</button>
+                                </div>
+                            `;
+            container.appendChild(newPerlengkapan);
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+        function addBarangMasuk() {
+            const container = document.getElementById('barang-masuk-container');
+            const newBarangMasuk = document.createElement('div');
+            newBarangMasuk.classList.add('barang-masuk-tambahan');
+            newBarangMasuk.innerHTML = `
+                                <div style="position: relative; margin-top: 20px;">
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="nama_barang_masuk[]" placeholder="Nama" required>
+                                        <input type="text" class="form-control" name="jumlah_barang_masuk[]" placeholder="Jumlah" required>
+                                    </div>
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="berat_barang_masuk[]" placeholder="Berat (kg)" required>
+                                        <input type="text" class="form-control" name="keterangan_barang_masuk[]" placeholder="Keterangan" required>
+                                    </div>
+                                    <button type="button" onclick="this.closest('.barang-masuk-tambahan').remove()" class="btn-delete">Hapus</button>
+                                </div>
+                            `;
+            container.appendChild(newBarangMasuk);
         }
 
-        function submitDCAF() {
-            const form = document.getElementById('addPendaftaranForm');
-            const formData = new FormData(form);
-
-            Swal.fire({
-                title: 'Sedang Memproses...',
-                text: 'Mohon tunggu, data sedang disimpan...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Gagal menyimpan data');
-                }
-                return response.json();
-            })
-            .then(data => {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: 'Data berhasil disimpan.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = '/dashboard'; // atau halaman yang diinginkan
-                });
-            })
-            .catch(error => {
-                console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Terjadi kesalahan saat menyimpan data.'
-                });
-            });
+        function addBarangKeluar() {
+            const container = document.getElementById('barang-keluar-container');
+            const newBarangKeluar = document.createElement('div');
+            newBarangKeluar.classList.add('barang-keluar-tambahan');
+            newBarangKeluar.innerHTML = `
+                                <div style="position: relative; margin-top: 20px;">
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="nama_barang_keluar[]" placeholder="Nama" required>
+                                        <input type="text" class="form-control" name="jumlah_barang_keluar[]" placeholder="Jumlah" required>
+                                    </div>
+                                    <div class="split">
+                                        <input type="text" class="form-control" name="berat_barang_keluar[]" placeholder="Berat (kg)" required>
+                                        <input type="text" class="form-control" name="keterangan_barang_keluar[]" placeholder="Keterangan" required>
+                                    </div>
+                                    <button type="button" onclick="this.closest('.barang-keluar-tambahan').remove()" class="btn-delete">Hapus</button>
+                                </div>
+                            `;
+            container.appendChild(newBarangKeluar);
         }
-    </script>
 
-    <script>
-    // Preview tanda tangan pemohon
-    document.getElementById('ttd_pemohon').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('preview_ttd_pemohon').src = e.target.result;
-                document.getElementById('preview_ttd_pemohon').style.display = 'block';
-            }
-            reader.readAsDataURL(file);
+        const canvas = document.getElementById('signature-pad');
+        const context = canvas.getContext('2d');
+        const inputHidden = document.getElementById('signature');
+        const uploadInput = document.getElementById('upload-signature');
+        const clearButton = document.getElementById('clear-signature');
+        let isImageUploaded = false;
+        context.strokeStyle = '#000';
+        context.lineWidth = 2;
+        context.lineCap = 'round';
+
+        if (inputHidden.value) {
+            const img = new Image();
+            img.onload = function () {
+                context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                isImageUploaded = true;
+                canvas.style.cursor = 'default';
+            };
+            img.src = inputHidden.value;
         }
-    });
 
-    // Preview tanda tangan menyetujui
-    document.getElementById('ttd_menyetujui').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('preview_ttd_menyetujui').src = e.target.result;
-                document.getElementById('preview_ttd_menyetujui').style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Dapatkan elemen yang diperlukan
-            const jenisPekerjaanSelect = document.getElementById('jenis_pekerjaan');
-            const deskripsiTextarea = document.querySelector('textarea[name="deskripsi"]');
-            
-            // Function untuk mengatur deskripsi berdasarkan jenis pekerjaan
-            function setDeskripsiBasedOnJenisPekerjaan() {
-                const selectedValue = jenisPekerjaanSelect.value;
-                const selectedText = jenisPekerjaanSelect.options[jenisPekerjaanSelect.selectedIndex]?.text || '';
-                
-                if (selectedValue === 'others') {
-                    // Jika Others dipilih, biarkan pengguna mengisi deskripsi
-                    deskripsiTextarea.value = '';
-                    deskripsiTextarea.placeholder = 'Deskripsikan pekerjaan lain secara detail';
-                    deskripsiTextarea.removeAttribute('readonly');
-                    deskripsiTextarea.setAttribute('required', 'required');
-                } else if (selectedValue) {
-                    // Jika pilihan lain, isi otomatis dengan teks pilihan
-                    deskripsiTextarea.value = selectedText;
-                    deskripsiTextarea.setAttribute('readonly', 'readonly');
-                } else {
-                    // Jika belum ada pilihan
-                    deskripsiTextarea.value = '';
-                    deskripsiTextarea.removeAttribute('readonly');
-                }
-            }
-            
-            // Jalankan fungsi saat halaman dimuat
-            setDeskripsiBasedOnJenisPekerjaan();
-            
-            // Tambahkan event listener untuk perubahan jenis pekerjaan
-            jenisPekerjaanSelect.addEventListener('change', setDeskripsiBasedOnJenisPekerjaan);
+        clearButton.addEventListener('click', () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            inputHidden.value = '';
+            isImageUploaded = false;
+            canvas.style.cursor = 'crosshair';
         });
-    </script>
 
+        uploadInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const img = new Image();
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(img, 0, 0);
+                    inputHidden.value = canvas.toDataURL('image/png');
+                    isImageUploaded = true;
+                    canvas.style.cursor = 'default';
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function updateSignatureInput() {
+            if (!isImageUploaded) {
+                inputHidden.value = canvas.toDataURL('image/png');
+            }
+        }
+
+        let isDrawing = false;
+        function startDrawing(e) {
+            if (isImageUploaded) return;
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            context.beginPath();
+            context.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function draw(e) {
+            if (!isDrawing || isImageUploaded) return;
+            const rect = canvas.getBoundingClientRect();
+            context.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            context.stroke();
+        }
+
+        function stopDrawing() {
+            if (isImageUploaded) return;
+            isDrawing = false;
+            updateSignatureInput();
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        function resizeCanvas() {
+            const dataURL = inputHidden.value;
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            context.scale(ratio, ratio);
+            context.strokeStyle = '#000';
+            context.lineWidth = 2;
+            context.lineCap = 'round';
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            if (dataURL) {
+                const img = new Image();
+                img.onload = function () {
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = dataURL;
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+
+        resizeCanvas();
+    </script>
 @endsection

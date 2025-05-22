@@ -148,7 +148,7 @@
                         </div>
                         <h3>Pengajuan NDA</h3>
                     </div>
-                    <div class="table-responsive" style="margin-top: 20px;">
+                    <div class="table-responsive">
                         <table id="buatTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -186,9 +186,9 @@
 
                 <div class="table-column">
                     <div class="title" style="display: flex; justify-content: space-between; align-items: center;"></br>
-                        <h3>Riwayata NDA</h3>
+                        <h3>NDA Aktif</h3>
                     </div></br>
-                    <div class="table-responsive" style="margin-top: 20px;">
+                    <div class="table-responsive">
                         <table id="ajukanTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -197,6 +197,7 @@
                                     <th>Masa Berlaku</th>
                                     <th>Catatan</th>
                                     <th>File</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -214,11 +215,42 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td>
+                                            <span style="display: inline-flex; align-items: center;">
+                                                <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #28a745;">
+                                                </span>
+                                                Aktif
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                @forelse($expiredNdas->where('status', 'diterima') as $index => $nda)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                                        <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                                        <td>{{ $nda->catatan ?? '-' }}</td>
+                                        <td>
+                                            @if($nda->file_path)
+                                                <a href="{{ asset($nda->file_path) }}" target="_blank"
+                                                    class="btn btn-sm btn-info">Lihat File</a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span style="display: inline-flex; align-items: center;">
+                                                <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #dc3545;">
+                                                </span>
+                                                Kadaluarsa
+                                            </span>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="6" class="text-center">Tidak ada riwayat NDA yang disetujui</td>
                                     </tr>
+                                @endforelse
                                 @endforelse
                             </tbody>
                         </table>

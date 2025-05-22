@@ -37,12 +37,19 @@ class NDAController extends Controller
     public function indexNdaUser()
     {
         $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
-        $ndas = VerifikasiNda::with(['user'])
-            ->orderBy('id', 'desc')
-            ->get();
-
         $user = auth()->user();
         $role = $user->role;
+
+        if ($role == 3 || $role == 4) {
+            $ndas = VerifikasiNda::with('user')
+                ->where('user_id', $user->id)
+                ->orderBy('id', 'desc')
+                ->get();
+        } else {
+            $ndas = VerifikasiNda::with('user')
+                ->orderBy('id', 'desc')
+                ->get();
+        }
 
         $queryPending = VerifikasiNda::with('user')->where('status', 'pending')->orderBy('created_at', 'desc');
         $queryActive = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '>', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
@@ -160,5 +167,4 @@ class NDAController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-
 }

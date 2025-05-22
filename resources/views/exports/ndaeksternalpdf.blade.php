@@ -164,20 +164,40 @@
 
     <p>Demikian, Pernyataan ini saya buat dalam keadaan sadar dan tanpa paksaan dari pihak manapun.</p>
 
-    <div style="margin-top: 80px;">
-        <table style="width: 100%;">
+    <div style="margin-top: 40px;">
+        <table style="width: 100%; text-align: center;">
             <tr>
-                <td style="width: 50%; text-align: left;">
-                    Jakarta, {{ \Carbon\Carbon::parse($nda->created_at)->format('d F Y') }}<br>
-                    Hormat saya,<br><br><br>
-                    <img src="{{ $nda->signature }}" alt="Tanda Tangan" style="width: 200px; height: auto;"><br>
-                    {{ $nda->user->name }}
+                <td style="width: 33%;">Jakarta, {{ \Carbon\Carbon::parse($nda->created_at)->format('d F Y') }}</td>
+                <td style="width: 33%;"></td>
+                <td style="width: 33%;"></td>
+            </tr>
+            <tr>
+                <td>Hormat saya,</td>
+                <td></td>
+                <td style="text-align: center;">Mengetahui,</td>
+            </tr>
+            <tr>
+                <td colspan="3"><br></td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="{{ $nda->signature }}" alt="Tanda Tangan" style="width: 125px; height: auto;">
                 </td>
-                <td style="width: 50%; text-align: center;">
-                    Mengetahui,<br><br>
-                    <img src="{{ $user->signature }}" alt="TTD Head" style="width: 120px; height: auto;"><br><br><br>
-                    <em>{{ $nda->signedBy->name ?? '' }}</em>
+                <td></td>
+                <td style="text-align: center;">
+                    @if($nda->signedBy && $nda->signedBy->signature)
+                        <img src="{{ base_path('storage/app/public/' . $nda->signedBy->signature) }}" alt="TTD Head"
+                            style="width: 125px; height:auto; max-height: 125px;">
+                    @endif
                 </td>
+            </tr>
+            <tr>
+                <td colspan="3"><br></td>
+            </tr>
+            <tr>
+                <td>{{ $nda->user->name }}</td>
+                <td></td>
+                <td style="text-align: center;"><em>{{ $nda->signedBy->name ?? '' }}</em></td>
             </tr>
         </table>
     </div>

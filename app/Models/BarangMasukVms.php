@@ -1,24 +1,22 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BarangMasukVms extends Model
 {
-    use HasFactory;
+    protected $table = 'barang_masuks';
 
     protected $fillable = [
-        'pendaftaran_vms_id',
+        'dcaf_id',
         'nama',
-        'berat',
         'jumlah',
+        'berat',
         'keterangan',
     ];
 
-    public function pendaftaran()
+    public function dcaf()
     {
-        return $this->belongsTo(PendaftaranVms::class, 'pendaftaran_vms_id');
+        return $this->belongsTo(VerifikasiDcaf::class);
     }
 }

@@ -388,8 +388,10 @@ body {
 }
 
 .dua {
-    display: flex; /* Biar tabelnya sejajar */
-    gap: 20px; /* Jarak antar tabel */
+    display: flex;
+    /* Biar tabelnya sejajar */
+    gap: 20px;
+    /* Jarak antar tabel */
 }
 
 .table-column {
@@ -530,7 +532,7 @@ body {
     padding: 20px;
 }
 
-.dataTables_wrapper > div:first-child {
+.dataTables_wrapper>div:first-child {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -557,11 +559,11 @@ body {
 
 .dataTables_length select {
     appearance: menulist;
-    width: 100px;  
-    min-width: 100px; 
-    vertical-align: middle;  
-    align-self: center; 
-    margin-top: -15px; 
+    width: 100px;
+    min-width: 100px;
+    vertical-align: middle;
+    align-self: center;
+    margin-top: -15px;
 }
 
 .dataTables_filter input {
@@ -639,13 +641,15 @@ table.dataTable thead th {
     margin-top: 10px;
 }
 
-.filter-container > * {
+.filter-container>* {
     flex: 1;
 }
 
-select, .search-bar input {
+select,
+.search-bar input {
     width: 100%;
-    font-size: 12px;
+    height: 40px !important;
+    font-size: 14px;
     padding: 8px 8px;
     border: 1px solid #4f52ba;
     border-radius: 5px;
@@ -657,11 +661,14 @@ select, .search-bar input {
     outline: none;
 }
 
-select:focus, .search-bar input:focus {
+select:focus,
+.search-bar input:focus {
     border-color: #4f52ba;
     box-shadow: 0 0 5px rgba(79, 82, 186, 0.5);
 }
-select:focus, .search-bar input:focus {
+
+select:focus,
+.search-bar input:focus {
     border-color: #4f52ba;
     box-shadow: 0 0 5px rgba(79, 82, 186, 0.5);
 }
@@ -674,7 +681,9 @@ select:focus, .search-bar input:focus {
     border: 1px solid #4f52ba !important;
     background-color: #fff;
     font-size: 12px;
-    padding-top: 2.5px;
+    height: 40px !important;
+    display: flex;
+    align-items: center;
 }
 
 .select2-selection:focus {
@@ -684,6 +693,7 @@ select:focus, .search-bar input:focus {
 
 .select2-selection__placeholder {
     color: #4f52ba;
+    font-size: 14px;
 }
 
 .select2-container--open .select2-selection {
@@ -701,7 +711,17 @@ select:focus, .search-bar input:focus {
     color: #fff;
 }
 
+.select2-selection__rendered {
+    line-height: 40px !important;
+    font-size: 14px;
+    padding-left: 10px !important;
+}
 
+.select2-selection__arrow {
+    height: 40px !important;
+    display: flex;
+    align-items: center;
+}
 
 .status-box {
     width: 20px;
@@ -721,11 +741,21 @@ select:focus, .search-bar input:focus {
 .section {
     width: 100%;
     padding: 20px;
+    padding-bottom: 10px;
     margin-bottom: 1.5rem;
     box-sizing: border-box;
-    border: 1px solid #ddd;    
-    border-radius: 8px;       
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.section-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .header-profile {
@@ -770,4 +800,19 @@ select:focus, .search-bar input:focus {
     color: green;
     font-size: 0.9rem;
     margin-top: 0.5rem;
+}
+
+/* DCAF */
+
+.split {
+    display: flex;
+    gap: 16px;
+}
+
+.split>div {
+    flex: 1;
+}
+
+.split input {
+    width: 100%;
 }

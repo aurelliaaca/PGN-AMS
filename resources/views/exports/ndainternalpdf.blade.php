@@ -155,7 +155,7 @@
         Demikian, Pernyataan ini saya buat dalam keadaan sadar dan tanpa paksaan dari pihak manapun.
     </p>
 
-    <div style="margin-top: 80px;">
+    <div style="margin-top: 40px;">
         <table style="width: 100%; text-align: center;">
             <tr>
                 <td style="width: 33%;">Jakarta, {{ \Carbon\Carbon::parse($nda->created_at)->format('d F Y') }}</td>
