@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Data Perangkat</title>
+    <title>Data Fasilitas</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -42,7 +42,7 @@
 </head>
 
 <body>
-    <h3>Data Perangkat</h3>
+    <h3>Data Fasilitas</h3>
 
     <div class="content">
         <table>
@@ -52,12 +52,26 @@
                     <th>Region</th>
                     <th>Site</th>
                     <th>No Rack</th>
-                    <th>Perangkat</th>
-                    <th>Perangkat ke</th>
+                    <th>Fasilitas</th>
+                    <th>Fasilitas ke</th>
                     <th>Brand</th>
                     <th>Type</th>
                     <th>UAwal</th>
                     <th>UAkhir</th>
+                            'id_fasilitas',
+        'kode_region',
+        'kode_site',
+        'no_rack',
+        'kode_fasilitas',
+        'fasilitas_ke',
+        'kode_brand',
+        'type',
+        'serialnumber',
+        'jml_fasilitas',
+        'status',
+        'uawal',
+        'uakhir',
+        'milik',
                 </tr>
             </thead>
             <tbody>

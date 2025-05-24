@@ -9,12 +9,8 @@
 
 @section('content')
     <div class="main">
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
         <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-            <h3>Data NDA yang Diajukan</h3>
+            <h3>NDA yang Perlu Diverifikasi</h3>
         </div>
         <div class="table-responsive" style="margin-top: 20px;">
             <table id="pendingTable" class="table table-bordered table-striped">
@@ -23,21 +19,17 @@
                         <th>No</th>
                         <th>Nama User</th>
                         <th>Tanggal Upload</th>
-                        <th>Tanggal Verifikasi</th>
-                        <th>Masa Berlaku</th>
                         <th>Catatan</th>
-                        <th>File</th>
+                        <th>File NDA</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($pendingNdas as $index => $nda)
+                    @foreach($pendingNdas as $index => $nda)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $nda->user->name }}</td>
                             <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                            <td>{{ $nda->updated_at ? \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') : '-' }}</td>
-                            <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
                             </td>
                             <td>{{ $nda->catatan ?? '-' }}</td>
                             <td>
@@ -65,12 +57,8 @@
                                     <input type="hidden" name="status" value="ditolak">
                                 </form>
                             </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center">Tidak ada NDA yang masih berlaku</td>
-                        </tr>
-                    @endforelse
+                        </tr>                   
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -80,7 +68,7 @@
             <div class="table-column">
                 <div class="title"
                     style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Data NDA Active</h3>
+                    <h3>Data NDA yang Berlaku</h3>
                 </div>
                 <div class="table-responsive" style="margin-top: 20px;">
                     <table id="activeTable" class="table table-bordered table-striped">
@@ -96,7 +84,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($activeNdas as $index => $nda)
+                            @foreach($activeNdas as $index => $nda)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $nda->user->name }}</td>
@@ -110,11 +98,7 @@
                                             class="btn btn-sm btn-info">Lihat File</a>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center">Tidak ada NDA yang masih berlaku</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -123,7 +107,7 @@
             <div class="table-column">
                 <div class="title"
                     style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Data NDA Kadaluarsa</h3>
+                    <h3>Riwayat NDA yang Kadaluarsa</h3>
                 </div>
                 <div class="table-responsive" style="margin-top: 20px;">
                     <table id="expiredTable" class="table table-bordered table-striped">
@@ -139,7 +123,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($expiredNdas as $index => $nda)
+                            @foreach($expiredNdas as $index => $nda)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $nda->user->name }}</td>
@@ -153,11 +137,7 @@
                                             File</a>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center">Belum ada riwayat NDA yang tidak berlaku</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -190,7 +170,7 @@
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     order: [],
                     columnDefs: [
-                        { targets: [5, 6], orderable: false }
+                        { targets: [4, 5], orderable: false }
                     ]
                 });
 
@@ -213,7 +193,7 @@
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     order: [],
                     columnDefs: [
-                        { targets: [5, 6], orderable: false }
+                        { targets: [6], orderable: false }
                     ]
                 });
 
@@ -236,7 +216,7 @@
                     lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     order: [],
                     columnDefs: [
-                        { targets: [5, 6], orderable: false }
+                        { targets: [6], orderable: false }
                     ]
                 });
             });

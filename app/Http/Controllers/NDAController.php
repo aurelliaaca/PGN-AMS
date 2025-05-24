@@ -18,8 +18,8 @@ class NDAController extends Controller
         $role = $user->role;
 
         $queryPending = VerifikasiNda::with('user')->where('status', 'pending')->orderBy('created_at', 'desc');
-        $queryActive = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '>', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
-        $queryExpired = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '<=', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
+        $queryActive = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '>=', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
+        $queryExpired = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '<', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
 
         if ($role == 3 || $role == 4) {
             $queryPending->where('user_id', $user->id);

@@ -41,12 +41,12 @@ class DCAFController extends Controller
             ->get();
 
         $activeDcafs = VerifikasiDcaf::where('status', 'diterima')
-            ->where('masaberlaku', '>', Carbon::now())
+            ->where('masaberlaku', '>=', Carbon::now())
             ->orderBy('masaberlaku', 'desc')
             ->get();
 
         $expiredDcafs = VerifikasiDcaf::where('status', 'diterima')
-            ->where('masaberlaku', '<=', Carbon::now())
+            ->where('masaberlaku', '<', Carbon::now())
             ->orderBy('masaberlaku', 'desc')
             ->get();
 
@@ -66,7 +66,7 @@ class DCAFController extends Controller
         $dcafs = VerifikasiDcaf::all();
         $activeNdas = VerifikasiNda::where('user_id', $user->id)
             ->where('status', 'diterima')
-            ->where('masaberlaku', '>', Carbon::now())
+            ->where('masaberlaku', '>=', Carbon::now())
             ->orderBy('masaberlaku', 'desc')
             ->get();
 
@@ -161,6 +161,7 @@ class DCAFController extends Controller
             'deskripsi_pekerjaan' => $validated['deskripsi_pekerjaan'],
             'signature' => $validated['signature'],
             'status' => 'pending',
+            'created_at' => Carbon::now('Asia/Jakarta'),
         ]);
 
         $user->update([
