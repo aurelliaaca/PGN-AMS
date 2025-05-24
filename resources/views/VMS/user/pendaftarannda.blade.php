@@ -275,213 +275,171 @@
             }
         }
 
-        const canvasEksternal = document.getElementById('signature-pad-eksternal');
-        const contextEksternal = canvasEksternal.getContext('2d');
-        const inputHiddenEksternal = document.getElementById('signature-eksternal');
-        const uploadInputEksternal = document.getElementById('upload-signature-eksternal');
-        const clearButtonEksternal = document.getElementById('clear-signature-eksternal');
-        let isImageUploadedEksternal = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi untuk menginisialisasi signature pad
+            function initSignaturePad(canvasId, inputId, uploadId, clearId) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return; // Skip jika canvas tidak ditemukan
+                
+                const context = canvas.getContext('2d');
+                const inputHidden = document.getElementById(inputId);
+                const uploadInput = document.getElementById(uploadId);
+                const clearButton = document.getElementById(clearId);
+                let isImageUploaded = false;
+                
+                // Set ukuran canvas
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                context.strokeStyle = '#000';
+                context.lineWidth = 2;
+                context.lineCap = 'round';
 
-        const canvasInternal = document.getElementById('signature-pad-internal');
-        const contextInternal = canvasInternal.getContext('2d');
-        const inputHiddenInternal = document.getElementById('signature-internal');
-        const uploadInputInternal = document.getElementById('upload-signature-internal');
-        const clearButtonInternal = document.getElementById('clear-signature-internal');
-        let isImageUploadedInternal = false;
+                // Load existing signature if any
+                if (inputHidden && inputHidden.value) {
+                    const img = new Image();
+                    img.onload = function () {
+                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        isImageUploaded = true;
+                        canvas.style.cursor = 'default';
+                    };
+                    img.src = inputHidden.value;
+                }
 
-        contextEksternal.strokeStyle = '#000';
-        contextEksternal.lineWidth = 2;
-        contextEksternal.lineCap = 'round';
+                // Clear button handler
+                if (clearButton) {
+                    clearButton.addEventListener('click', () => {
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        if (inputHidden) inputHidden.value = '';
+                        isImageUploaded = false;
+                        canvas.style.cursor = 'crosshair';
+                    });
+                }
 
-        contextInternal.strokeStyle = '#000';
-        contextInternal.lineWidth = 2;
-        contextInternal.lineCap = 'round';
+                // Upload handler
+                if (uploadInput) {
+                    uploadInput.addEventListener('change', function (e) {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = function (event) {
+                            const img = new Image();
+                            img.onload = function () {
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                context.clearRect(0, 0, canvas.width, canvas.height);
+                                context.drawImage(img, 0, 0);
+                                if (inputHidden) inputHidden.value = canvas.toDataURL('image/png');
+                                isImageUploaded = true;
+                                canvas.style.cursor = 'default';
+                            };
+                            img.src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
 
-        if (inputHiddenEksternal.value) {
-            const img = new Image();
-            img.onload = function () {
-                contextEksternal.drawImage(img, 0, 0, canvasEksternal.width, canvasEksternal.height);
-                isImageUploadedEksternal = true;
-                canvasEksternal.style.cursor = 'default';
-            };
-            img.src = inputHiddenEksternal.value;
-        }
+                // Drawing functions
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
 
-        if (inputHiddenInternal.value) {
-            const img = new Image();
-            img.onload = function () {
-                contextInternal.drawImage(img, 0, 0, canvasInternal.width, canvasInternal.height);
-                isImageUploadedInternal = true;
-                canvasInternal.style.cursor = 'default';
-            };
-            img.src = inputHiddenInternal.value;
-        }
+                function startDrawing(e) {
+                    if (isImageUploaded) return;
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    lastX = e.clientX - rect.left;
+                    lastY = e.clientY - rect.top;
+                    context.beginPath();
+                    context.moveTo(lastX, lastY);
+                }
 
-        clearButtonEksternal.addEventListener('click', () => {
-            contextEksternal.clearRect(0, 0, canvasEksternal.width, canvasEksternal.height);
-            inputHiddenEksternal.value = '';
-            isImageUploadedEksternal = false;
-            canvasEksternal.style.cursor = 'crosshair';
-        });
+                function draw(e) {
+                    if (!isDrawing || isImageUploaded) return;
+                    const rect = canvas.getBoundingClientRect();
+                    const currentX = e.clientX - rect.left;
+                    const currentY = e.clientY - rect.top;
+                    
+                    context.beginPath();
+                    context.moveTo(lastX, lastY);
+                    context.lineTo(currentX, currentY);
+                    context.stroke();
+                    
+                    lastX = currentX;
+                    lastY = currentY;
+                    
+                    if (inputHidden) {
+                        inputHidden.value = canvas.toDataURL('image/png');
+                    }
+                }
 
-        clearButtonInternal.addEventListener('click', () => {
-            contextInternal.clearRect(0, 0, canvasInternal.width, canvasInternal.height);
-            inputHiddenInternal.value = '';
-            isImageUploadedInternal = false;
-            canvasInternal.style.cursor = 'crosshair';
-        });
+                function stopDrawing() {
+                    if (isImageUploaded) return;
+                    isDrawing = false;
+                }
 
-        uploadInputEksternal.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const img = new Image();
-                img.onload = function () {
-                    canvasEksternal.width = img.width;
-                    canvasEksternal.height = img.height;
-                    contextEksternal.clearRect(0, 0, canvasEksternal.width, canvasEksternal.height);
-                    contextEksternal.drawImage(img, 0, 0);
-                    inputHiddenEksternal.value = canvasEksternal.toDataURL('image/png');
-                    isImageUploadedEksternal = true;
-                    canvasEksternal.style.cursor = 'default';
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
+                // Event listeners
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mouseleave', stopDrawing);
 
-        uploadInputInternal.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const img = new Image();
-                img.onload = function () {
-                    canvasInternal.width = img.width;
-                    canvasInternal.height = img.height;
-                    contextInternal.clearRect(0, 0, canvasInternal.width, canvasInternal.height);
-                    contextInternal.drawImage(img, 0, 0);
-                    inputHiddenInternal.value = canvasInternal.toDataURL('image/png');
-                    isImageUploadedInternal = true;
-                    canvasInternal.style.cursor = 'default';
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
+                // Touch support
+                canvas.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousedown', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                });
 
-        function updateSignatureInputEksternal() {
-            if (!isImageUploadedEksternal) {
-                inputHiddenEksternal.value = canvasEksternal.toDataURL('image/png');
+                canvas.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousemove', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                });
+
+                canvas.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    const mouseEvent = new MouseEvent('mouseup', {});
+                    canvas.dispatchEvent(mouseEvent);
+                });
             }
-        }
 
-        function updateSignatureInputInternal() {
-            if (!isImageUploadedInternal) {
-                inputHiddenInternal.value = canvasInternal.toDataURL('image/png');
+            // Fungsi untuk menginisialisasi signature pad saat modal dibuka
+            function initModalSignaturePads(modalId) {
+                const modal = document.getElementById(modalId);
+                if (!modal) return;
+
+                // Inisialisasi signature pad saat modal dibuka
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'style') {
+                            const display = window.getComputedStyle(modal).display;
+                            if (display === 'block') {
+                                if (modalId === 'modalTambahNdaInternal') {
+                                    initSignaturePad('signature-pad-internal', 'signature-internal', 'upload-signature-internal', 'clear-signature-internal');
+                                } else if (modalId === 'modalTambahNdaEksternal') {
+                                    initSignaturePad('signature-pad-eksternal', 'signature-eksternal', 'upload-signature-eksternal', 'clear-signature-eksternal');
+                                }
+                            }
+                        }
+                    });
+                });
+
+                observer.observe(modal, { attributes: true });
             }
-        }
 
-        let isDrawingEksternal = false;
-        function startDrawingEksternal(e) {
-            if (isImageUploadedEksternal) return;
-            isDrawingEksternal = true;
-            const rect = canvasEksternal.getBoundingClientRect();
-            contextEksternal.beginPath();
-            contextEksternal.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-        }
-
-        function drawEksternal(e) {
-            if (!isDrawingEksternal || isImageUploadedEksternal) return;
-            const rect = canvasEksternal.getBoundingClientRect();
-            contextEksternal.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-            contextEksternal.stroke();
-        }
-
-        function stopDrawingEksternal() {
-            if (isImageUploadedEksternal) return;
-            isDrawingEksternal = false;
-            updateSignatureInputEksternal();
-        }
-
-        let isDrawingInternal = false;
-        function startDrawingInternal(e) {
-            if (isImageUploadedInternal) return;
-            isDrawingInternal = true;
-            const rect = canvasInternal.getBoundingClientRect();
-            contextInternal.beginPath();
-            contextInternal.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-        }
-
-        function drawInternal(e) {
-            if (!isDrawingInternal || isImageUploadedInternal) return;
-            const rect = canvasInternal.getBoundingClientRect();
-            contextInternal.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-            contextInternal.stroke();
-        }
-
-        function stopDrawingInternal() {
-            if (isImageUploadedInternal) return;
-            isDrawingInternal = false;
-            updateSignatureInputInternal();
-        }
-
-        canvasEksternal.addEventListener('mousedown', startDrawingEksternal);
-        canvasEksternal.addEventListener('mousemove', drawEksternal);
-        canvasEksternal.addEventListener('mouseup', stopDrawingEksternal);
-        canvasEksternal.addEventListener('mouseleave', stopDrawingEksternal);
-
-        canvasInternal.addEventListener('mousedown', startDrawingInternal);
-        canvasInternal.addEventListener('mousemove', drawInternal);
-        canvasInternal.addEventListener('mouseup', stopDrawingInternal);
-        canvasInternal.addEventListener('mouseleave', stopDrawingInternal);
-
-        function resizeCanvasEksternal() {
-            const dataURL = inputHiddenEksternal.value;
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            canvasEksternal.width = canvasEksternal.offsetWidth * ratio;
-            canvasEksternal.height = canvasEksternal.offsetHeight * ratio;
-            contextEksternal.scale(ratio, ratio);
-            contextEksternal.strokeStyle = '#000';
-            contextEksternal.lineWidth = 2;
-            contextEksternal.lineCap = 'round';
-            contextEksternal.clearRect(0, 0, canvasEksternal.width, canvasEksternal.height);
-            if (dataURL) {
-                const img = new Image();
-                img.onload = function () {
-                    contextEksternal.drawImage(img, 0, 0, canvasEksternal.width, canvasEksternal.height);
-                };
-                img.src = dataURL;
-            }
-        }
-
-        function resizeCanvasInternal() {
-            const dataURL = inputHiddenInternal.value;
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            canvasInternal.width = canvasInternal.offsetWidth * ratio;
-            canvasInternal.height = canvasInternal.offsetHeight * ratio;
-            contextInternal.scale(ratio, ratio);
-            contextInternal.strokeStyle = '#000';
-            contextInternal.lineWidth = 2;
-            contextInternal.lineCap = 'round';
-            contextInternal.clearRect(0, 0, canvasInternal.width, canvasInternal.height);
-            if (dataURL) {
-                const img = new Image();
-                img.onload = function () {
-                    contextInternal.drawImage(img, 0, 0, canvasInternal.width, canvasInternal.height);
-                };
-                img.src = dataURL;
-            }
-        }
-
-        window.addEventListener('resize', () => {
-            resizeCanvasEksternal();
-            resizeCanvasInternal();
+            // Inisialisasi observer untuk kedua modal
+            initModalSignaturePads('modalTambahNdaInternal');
+            initModalSignaturePads('modalTambahNdaEksternal');
         });
-
-        resizeCanvasEksternal();
-        resizeCanvasInternal();
     </script>
 
 @endsection
