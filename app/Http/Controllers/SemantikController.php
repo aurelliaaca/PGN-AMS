@@ -3,26 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Photos; // Pastikan model Photos diimport
+use App\Models\Photos;
 
 class SemantikController extends Controller
 {
     public function semantik()
     {
-    $photos = Photos::all(); // Ambil semua foto dari database
+    $photos = Photos::all();
     return view('menu.semantik', ['photos' => $photos]);
     }
 
 
     public function uploadPhoto(Request $request)
     {
-        // Log ukuran file
         \Log::info('Ukuran file: ' . $request->file('photo')->getSize());
 
         $request->validate([
-            'photo' => 'required|image|mimes:jpg,jpeg,png,gif|max:5120', // Ubah menjadi 5120 untuk 5 MB
+            'photo' => 'required|image|mimes:jpg,jpeg,png,gif|max:5120',
             'title' => 'required|string|max:255',
-            'text' => 'nullable|string|max:500', // Tetap nullable
+            'text' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -32,10 +31,10 @@ class SemantikController extends Controller
 
             $photo = new Photos();
             $photo->title = $request->input('title');
-            $photo->text = $request->input('text') ?? null; // Pastikan text bisa null
+            $photo->text = $request->input('text') ?? null; 
             $photo->file_path = 'img/' . $filename;
-            $photo->created_at = now(); // Set tanggal dan waktu saat ini
-            $photo->updated_at = now(); // Set tanggal dan waktu saat ini
+            $photo->created_at = now(); 
+            $photo->updated_at = now(); 
             $photo->save();
 
             return response()->json([
@@ -43,7 +42,7 @@ class SemantikController extends Controller
                 'photoUrl' => asset($photo->file_path),
                 'title' => $photo->title,
                 'text' => $photo->text,
-                'timestamp' => $photo->created_at->format('Y-m-d H:i:s'), // Format timestamp
+                'timestamp' => $photo->created_at->format('Y-m-d H:i:s'), 
                 'id' => $photo->id,
             ]);
         } catch (\Exception $e) {

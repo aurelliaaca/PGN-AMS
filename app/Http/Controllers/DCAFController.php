@@ -6,13 +6,13 @@ use App\Models\VerifikasiNda;
 use App\Models\VerifikasiDcaf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\DCAF;
+use App\Models\Rack;
 use App\Models\RekananVms;
 use App\Models\PerlengkapanVms;
 use App\Models\BarangMasukVms;
 use App\Models\BarangKeluarVms;
 use Illuminate\Support\Facades\Auth;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DCAFController extends Controller
 {
@@ -63,6 +63,11 @@ class DCAFController extends Controller
     {
         $user = auth()->user();
 
+        $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
+            ->where('milik', auth()->id()) 
+            ->distinct()
+            ->get();
+
         $dcafs = VerifikasiDcaf::all();
         $activeNdas = VerifikasiNda::where('user_id', $user->id)
             ->where('status', 'diterima')
@@ -80,11 +85,16 @@ class DCAFController extends Controller
 
         $rekanan = RekananVms::all();
 
-        return view('VMS.user.pendaftarankunjungan', compact('dcafs', 'activeNdas', 'rekanan'));
+        return view('VMS.user.pendaftarankunjungan', compact('dcafs', 'activeNdas', 'rekanan', 'racks'));
     }
 
     public function pendaftaranDCAF()
     {
+        $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
+            ->where('milik', auth()->id()) 
+            ->distinct()
+            ->get();
+
         $activeNdas = VerifikasiNda::where('status', 'diterima')
             ->where('masaberlaku', '>', now())
             ->get();
@@ -96,7 +106,7 @@ class DCAFController extends Controller
 
         $rekanan = RekananVms::all();
 
-        return view('VMS.user.pendaftarandcaf', compact('activeNdas', 'ndas', 'rekanan'));
+        return view('VMS.user.pendaftarandcaf', compact('activeNdas', 'ndas', 'rekanan', 'racks'));
     }
 
     public function store(Request $request)
@@ -240,14 +250,22 @@ class DCAFController extends Controller
 
             $dcaf->status = $status;
 
-            $updatedAt = \Carbon\Carbon::now('Asia/Jakarta');
+            $updatedAt = Carbon::now('Asia/Jakarta');
             $dcaf->updated_at = $updatedAt;
 
             if ($status === 'diterima') {
+                $pengawasId = $request->pengawas;
+
+                $pengawas = User::find($pengawasId);
+
+                if (!$pengawas || !$pengawas->name || !$pengawas->mobile_number) {
+                    return redirect()->back()->with('warning', 'Data pengawas belum lengkap. Mohon lengkapi nama dan nomor HP.');
+                }
+
                 $dcaf->signed_by = auth()->user()->id;
                 $dcaf->masaberlaku = $updatedAt->copy()->addWeeks(1)->setTime(23, 59, 59);
                 $dcaf->update([
-                    'pengawas' => $request->pengawas,
+                    'pengawas' => $pengawasId,
                 ]);
 
                 $dcaf->save();

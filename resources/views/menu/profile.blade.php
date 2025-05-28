@@ -32,37 +32,43 @@
             <div class="modal-content">
                 <span class="close" onclick="closeModal('viewProfileModal')">&times;</span>
                 <h5>Lihat Profil</h5>
-                <div class="form-group">
-                    <label>Nama</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->name }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->email }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Perusahaan</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->perusahaan }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Bagian</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->bagian }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Region</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->region }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>No. KTP</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->noktp }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Nomor HP</label>
-                    <input type="text" class="form-control" value="{{ auth()->user()->mobile_number }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Alamat</label>
-                    <textarea class="form-control" readonly>{{ auth()->user()->alamat }}</textarea>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div style="width: 48%;">
+                        <div class="form-group">
+                            <label>Nama</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->name }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->email }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Perusahaan</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->perusahaan }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Bagian</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->bagian }}" readonly>
+                        </div>
+                    </div>
+                    <div style="width: 48%;">
+                        <div class="form-group">
+                            <label>Region</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->region }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>No. KTP</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->noktp }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor HP</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->mobile_number }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->alamat }}" readonly>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,81 +80,85 @@
                 <form method="POST" action="{{ route('profile.update') }}">
                     @csrf
                     @method('PATCH')
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="width: 48%;">
+                            <label for="name">Nama</label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                value="{{ old('name', auth()->user()->name) }}" required>
 
-                    <label for="name">Nama</label>
-                    <input type="text" id="name" name="name" class="form-control"
-                        value="{{ old('name', auth()->user()->name) }}" required>
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                value="{{ old('email', auth()->user()->email) }}" required>
 
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" class="form-control"
-                        value="{{ old('email', auth()->user()->email) }}" required>
+                            <label for="perusahaan">Perusahaan</label>
+                            <input type="text" id="perusahaan" name="perusahaan" class="form-control"
+                                value="{{ old('perusahaan', auth()->user()->perusahaan) }}">
 
-                    <label for="perusahaan">Perusahaan</label>
-                    <input type="text" id="perusahaan" name="perusahaan" class="form-control"
-                        value="{{ old('perusahaan', auth()->user()->perusahaan) }}">
+                            <label for="bagian">Bagian</label>
+                            <input type="text" id="bagian" name="bagian" class="form-control"
+                                value="{{ old('bagian', auth()->user()->bagian) }}">
+                        </div>
+                        <div style="width: 48%;">
+                            <label for="region">Region</label>
+                            <select id="region" name="region" class="form-control">
+                                @foreach ($regions as $nama)
+                                    <option value="{{ $nama }}" {{ old('region', auth()->user()->region) == $nama ? 'selected' : '' }}>
+                                        {{ $nama }}
+                                    </option>
+                                @endforeach
+                            </select>
 
-                    <label for="bagian">Bagian</label>
-                    <input type="text" id="bagian" name="bagian" class="form-control"
-                        value="{{ old('bagian', auth()->user()->bagian) }}">
+                            <label for="noktp">No. KTP</label>
+                            <input type="text" id="noktp" name="noktp" class="form-control"
+                                value="{{ old('noktp', auth()->user()->noktp) }}">
 
-                    <label for="region">Region</label>
-                    <select id="region" name="region" class="form-control">
-                        @foreach ($regions as $nama)
-                            <option value="{{ $nama }}" {{ old('region', auth()->user()->region) == $nama ? 'selected' : '' }}>
-                                {{ $nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                            <label for="mobile_number">Nomor HP</label>
+                            <input type="text" id="mobile_number" name="mobile_number" class="form-control"
+                                value="{{ old('mobile_number', auth()->user()->mobile_number) }}">
 
+                            <label for="alamat">Alamat</label>
+                            <input type="text" id="alamat" name="alamat" class="form-control"
+                                value="{{ old('alamat', auth()->user()->alamat) }}">
 
-                    <label for="noktp">No. KTP</label>
-                    <input type="text" id="noktp" name="noktp" class="form-control"
-                        value="{{ old('noktp', auth()->user()->noktp) }}">
-
-                    <label for="mobile_number">Nomor HP</label>
-                    <input type="text" id="mobile_number" name="mobile_number" class="form-control"
-                        value="{{ old('mobile_number', auth()->user()->mobile_number) }}">
-
-                    <label for="alamat">Alamat</label>
-                    <textarea id="alamat" name="alamat"
-                        class="form-control">{{ old('alamat', auth()->user()->alamat) }}</textarea>
-
-                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Simpan Perubahan</button>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Simpan Perubahan</button>
+                        </div>
+                    </div>
                 </form>
             </div>
-        </div>
-        
+        </div>            
+
         @if(auth()->user()->role == 1)
-        <div class="section">
-            <header class="header-profile">
-                <h2>{{ __('Tanda Tangan') }}</h2>
-                <p style="color: rgba(0, 0, 0, 0.5);">{{ __('Unggah tanda tangan digital Anda di sini.') }}</p>
-            </header>
+            <div class="section">
+                <header class="header-profile">
+                    <h2>{{ __('Tanda Tangan') }}</h2>
+                    <p style="color: rgba(0, 0, 0, 0.5);">{{ __('Unggah tanda tangan digital Anda di sini.') }}</p>
+                </header>
 
-            <form action="{{ route('users.signature.upload') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="file" name="signature" accept="image/*" class="form-control">
-                @if ($errors->has('signature'))
-                    <div class="error">{{ $errors->first('signature') }}</div>
+                <form action="{{ route('users.signature.upload') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="signature" accept="image/*" class="form-control">
+                    @if ($errors->has('signature'))
+                        <div class="error">{{ $errors->first('signature') }}</div>
+                    @endif
+                    <button type="submit" class="btn-primary">{{ __('Unggah') }}</button>
+                </form>
+
+                @if (auth()->user()->signature)
+                    <div style="padding-top: 20px;">
+                        <p>{{ __('Pratinjau tanda tangan Anda:') }}</p>
+                        <img src="{{ asset('storage/' . auth()->user()->signature) }}" alt="Signature" class="signature-preview"
+                            style="max-width: 200px; height: auto;">
+                    </div>
                 @endif
-                <button type="submit" class="btn-primary">{{ __('Unggah') }}</button>
-            </form>
-
-            @if (auth()->user()->signature)
-                <div style="padding-top: 20px;">
-                    <p>{{ __('Pratinjau tanda tangan Anda:') }}</p>
-                    <img src="{{ asset('storage/' . auth()->user()->signature) }}" alt="Signature" class="signature-preview"
-                        style="max-width: 200px; height: auto;">
-                </div>
-            @endif
-        </div>
+            </div>
         @endif
 
         <div class="section">
             <header class="header-profile">
                 <h2>{{ __('Perbarui Kata Sandi') }}</h2>
                 <p style="color: rgba(0, 0, 0, 0.5);">
-                    {{ __('Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.') }}</p>
+                    {{ __('Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.') }}
+                </p>
             </header>
 
             <form method="POST" action="{{ route('password.update') }}">

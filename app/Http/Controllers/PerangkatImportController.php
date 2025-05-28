@@ -10,14 +10,12 @@ class PerangkatImportController extends Controller
 {
     public function import(Request $request)
     {
-        // Validasi file yang diupload
         $request->validate([
             'file' => 'required|mimes:xlsx',
         ]);
 
         $file = $request->file('file');
         
-        // Proses impor data
         Excel::import(new PerangkatImport, $file);
 
         return redirect()->back()

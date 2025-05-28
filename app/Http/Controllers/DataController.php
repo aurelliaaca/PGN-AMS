@@ -329,7 +329,6 @@ class DataController extends Controller
 
     public function storeRegion(Request $request)
     {
-        // Validasi input dari user
         $request->validate([
             'nama_region' => 'required',
             'kode_region' => 'required|unique:region,kode_region',
@@ -338,10 +337,8 @@ class DataController extends Controller
             'koordinat' => 'nullable',
         ]);
 
-        // Membuat data baru tanpa perlu menambahkan id_region secara manual
         Region::create($request->all());
 
-        // Redirect dengan pesan sukses
         return redirect()->route('dataregion.index')->with('success', 'Region berhasil ditambahkan.');
     }
 
@@ -430,7 +427,7 @@ class DataController extends Controller
     public function indexUser()
     {
         $users = User::all();
-        $regions = Region::all(); // untuk dropdown atau referensi region
+        $regions = Region::all(); 
         return view('menu.data.datauser', compact('users', 'regions'));
     }
 
@@ -460,7 +457,7 @@ class DataController extends Controller
     public function editUser($id_user)
     {
         $user = User::findOrFail($id_user);
-        $regions = Region::all(); // jika dropdown region diperlukan saat edit
+        $regions = Region::all(); 
         return view('user.edit', compact('user', 'regions'));
     }
 
@@ -483,7 +480,6 @@ class DataController extends Controller
 
         $data = $request->only('name', 'email', 'region', 'role', 'alamat', 'perusahaan', 'bagian', 'noktp', 'mobile_number');
 
-        // Update password jika diisi
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -504,53 +500,5 @@ class DataController extends Controller
     {
         $tipeJaringan = TipeJaringan::orderBy('kode_tipejaringan', 'asc')->get();
         return view('menu.data.datajaringan', compact('tipeJaringan'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

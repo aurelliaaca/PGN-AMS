@@ -389,9 +389,7 @@ body {
 
 .dua {
     display: flex;
-    /* Biar tabelnya sejajar */
     gap: 20px;
-    /* Jarak antar tabel */
 }
 
 .table-column {
@@ -812,7 +810,7 @@ select:focus,
     margin-top: 0.5rem;
 }
 
-/* DCAF */
+/* ---------------------------------------------------------------- DCAF ---------------------------------------------------------------- */
 
 .split {
     display: flex;

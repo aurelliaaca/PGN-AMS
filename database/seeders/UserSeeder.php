@@ -12,15 +12,15 @@ class UserSeeder extends Seeder
     public function run()
     {
         $users = [
-            ['name' => 'Aurellia',     'role' => 1],
-            ['name' => 'Putri',        'role' => 2],
-            ['name' => 'Budi',         'role' => 3],
+            ['name' => 'Aurellia', 'role' => 1],
+            ['name' => 'Putri', 'role' => 2],
+            ['name' => 'Budi', 'role' => 3],
             ['name' => 'Arsyaningrum', 'role' => 4],
-            ['name' => 'Farisah',      'role' => 5],
-            ['name' => 'Ghassani',     'role' => 1],
-            ['name' => 'Nabila',       'role' => 2],
-            ['name' => 'Najma',        'role' => 3],
-            ['name' => 'Manika',       'role' => 4],
+            ['name' => 'Farisah', 'role' => 5],
+            ['name' => 'Ghassani', 'role' => 1],
+            ['name' => 'Nabila', 'role' => 2],
+            ['name' => 'Najma', 'role' => 3],
+            ['name' => 'Manika', 'role' => 4],
         ];
 
         foreach ($users as $index => $data) {
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
                 'role' => $data['role'],
                 'region' => 'BTM',
                 'perusahaan' => $data['role'] == 5 ? 'Telkomsel' : 'PGNCOM',
-                'bagian' => rand(0, 1) ? 'Pengawas' : null,
+                'bagian' => $data['role'] == 5 ? null : (rand(0, 1) ? 'Pengawas' : null),
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),

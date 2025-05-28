@@ -24,7 +24,6 @@ use App\Exports\JaringanExport;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
-use App\Http\Controllers\VerifikasiDokumenController;
 
 
 use App\Http\Controllers\PendaftaranController;
@@ -35,6 +34,8 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\SemantikController;
 use App\Http\Controllers\TipeJaringanController;
+
+use Symfony\Component\HttpFoundation\Response;
 
 
 
@@ -151,17 +152,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
     Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
     Route::post('export/perangkat', function (Request $request) {
-        $regions = $request->input('regions'); 
+        $regions = $request->input('regions');
         $format = $request->input('format');
+
+        $dataExport = (new PerangkatExport($regions))->collection();
+
+        if ($dataExport->isEmpty()) {
+            return redirect()->back()->with('warning', 'Data tidak tersedia untuk export.');
+        }
+
         if ($format === 'excel') {
             return Excel::download(new PerangkatExport($regions), 'dataperangkat.xlsx');
         } elseif ($format === 'pdf') {
-            $data = (new PerangkatExport($regions))->collection();
-
-            $pdf = Pdf::loadView('exports.perangkat', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.perangkat', ['data' => $dataExport]);
             return $pdf->download('dataperangkat.pdf');
         } else {
-            return back()->with('error', 'Format file tidak dikenali.');
+            return redirect()->back()->with('error', 'Format file tidak dikenali.');
         }
     });
 
@@ -174,16 +180,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/import-fasilitas', [FasilitasImportController::class, 'import'])->name('import.fasilitas');
     Route::post('export/fasilitas', function (Request $request) {
         $regions = $request->input('regions');
-        $format = $request->input('format'); 
+        $format = $request->input('format');
+
+        $dataExport = (new FasilitasExport($regions))->collection();
+
+        if ($dataExport->isEmpty()) {
+            return redirect()->back()->with('warning', 'Data tidak tersedia untuk export.');
+        }
+
         if ($format === 'excel') {
             return Excel::download(new FasilitasExport($regions), 'datafasilitas.xlsx');
         } elseif ($format === 'pdf') {
-            $data = (new FasilitasExport($regions))->collection();
-
-            $pdf = Pdf::loadView('exports.fasilitas', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.fasilitas', ['data' => $dataExport]);
             return $pdf->download('datafasilitas.pdf');
         } else {
-            return back()->with('error', 'Format file tidak dikenali.');
+            return redirect()->back()->with('error', 'Format file tidak dikenali.');
         }
     });
 
@@ -197,15 +208,20 @@ Route::middleware('auth')->group(function () {
     Route::post('export/alatukur', function (Request $request) {
         $regions = $request->input('regions');
         $format = $request->input('format');
+
+        $dataExport = (new AlatukurExport($regions))->collection();
+
+        if ($dataExport->isEmpty()) {
+            return redirect()->back()->with('warning', 'Data tidak tersedia untuk export.');
+        }
+
         if ($format === 'excel') {
             return Excel::download(new AlatukurExport($regions), 'dataalatukur.xlsx');
         } elseif ($format === 'pdf') {
-            $data = (new AlatukurExport($regions))->collection();
-
-            $pdf = Pdf::loadView('exports.alatukur', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.alatukur', ['data' => $dataExport]);
             return $pdf->download('dataalatukur.pdf');
         } else {
-            return back()->with('error', 'Format file tidak dikenali.');
+            return redirect()->back()->with('error', 'Format file tidak dikenali.');
         }
     });
 
@@ -216,18 +232,24 @@ Route::middleware('auth')->group(function () {
     Route::put('/jaringan/{id_jaringan}', [JaringanController::class, 'update'])->name('jaringan.update');
     Route::delete('/jaringan/{id_jaringan}', [JaringanController::class, 'destroy'])->name('jaringan.destroy');
     Route::post('/import-jaringan', [JaringanImportController::class, 'import'])->name('import.jaringan');
+
     Route::post('export/jaringan', function (Request $request) {
-        $regions = $request->input('regions'); 
-        $format = $request->input('format');  
+        $regions = $request->input('regions');
+        $format = $request->input('format');
+
+        $dataExport = (new JaringanExport($regions))->collection();
+
+        if ($dataExport->isEmpty()) {
+            return redirect()->back()->with('warning', 'Data tidak tersedia untuk export.');
+        }
+
         if ($format === 'excel') {
             return Excel::download(new JaringanExport($regions), 'datajaringan.xlsx');
         } elseif ($format === 'pdf') {
-            $data = (new JaringanExport($regions))->collection();
-
-            $pdf = Pdf::loadView('exports.jaringan', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.jaringan', ['data' => $dataExport]);
             return $pdf->download('datajaringan.pdf');
         } else {
-            return back()->with('error', 'Format file tidak dikenali.');
+            return redirect()->back()->with('error', 'Format file tidak dikenali.');
         }
     });
 

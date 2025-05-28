@@ -143,7 +143,7 @@
                                             NDA</a>
                                     </td>
                                     <td>
-                                        <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank"
+                                        <a href="{{ asset($dcaf->file_path) }}" target="_blank"
                                             class="btn btn-sm btn-info">Lihat
                                             DCAF</a>
                                     </td>

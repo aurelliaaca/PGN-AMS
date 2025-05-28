@@ -2,8 +2,12 @@
 <html>
 
 <head>
-    <title>Data Alatukur</title>
+    <title>Data Perangkat</title>
     <style>
+        @page {
+            size: landscape;
+        }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 11pt;
@@ -84,8 +88,10 @@
     <div class="footer">
         <table style="width: 100%; margin-bottom: 60px; font-size: 12px; border: none;">
             <tr>
-                <td style="text-align: left; border: none;">Dibuat: {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('j F Y H:i') }}</td>
-                <td style="text-align: right; border: none;">Jakarta, {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('j F Y H:i') }}</td>
+                <td style="text-align: left; border: none;">Dibuat:
+                    {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('j F Y H:i') }}</td>
+                <td style="text-align: right; border: none;">Jakarta,
+                    {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('j F Y H:i') }}</td>
             </tr>
         </table>
 
@@ -96,4 +102,5 @@
     </div>
 
 </body>
+
 </html>

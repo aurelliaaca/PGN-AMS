@@ -13,7 +13,7 @@ class HistoriController extends Controller
     public function indexHistori()
     {
 
-        return view('menu.histori');
+        return view('menu.histori.histori');
     }
 
     public function showHistoriPerangkat()

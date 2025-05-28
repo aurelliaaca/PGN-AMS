@@ -182,8 +182,6 @@ class PerangkatController extends Controller
             ->with('error', 'Terjadi kesalahan saat menambahkan perangkat. Silakan coba lagi.');
     }
 
-
-
     public function update(Request $request, $id)
     {
         $request->validate([

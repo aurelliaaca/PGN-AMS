@@ -188,7 +188,7 @@
             <tr>
                 <td>{{ $nda->user->name }}</td>
                 <td></td>
-                <td style="text-align: center;"><em>{{ $nda->signedBy->name ?? '' }}</em></td>
+                <td style="text-align: center;">{{ $nda->signedBy->name ?? '' }}</td>
             </tr>
         </table>
     </div>

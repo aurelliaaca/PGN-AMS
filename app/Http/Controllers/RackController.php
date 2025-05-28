@@ -120,7 +120,6 @@ class RackController extends Controller
                 ->filter()
                 ->values();
 
-            // Render the HTML view
             $html = view('partials.racks', compact('racks'))->render();
 
             return response()->json([
@@ -176,7 +175,6 @@ class RackController extends Controller
             'no_rack' => 'required|string',
         ]);
 
-        // Check if any U in the rack has devices or facilities
         $hasOccupiedU = Rack::where('kode_region', $validated['kode_region'])
             ->where('kode_site', $validated['kode_site'])
             ->where('no_rack', $validated['no_rack'])
@@ -193,7 +191,6 @@ class RackController extends Controller
             ]);
         }
 
-        // Delete all U's in the rack
         $deleted = Rack::where('kode_region', $validated['kode_region'])
             ->where('kode_site', $validated['kode_site'])
             ->where('no_rack', $validated['no_rack'])
@@ -225,35 +222,29 @@ class RackController extends Controller
             ->where('u', $u)
             ->firstOrFail();
 
-        // Kalau ada perangkat
         if ($dataRack->id_perangkat) {
-            // Kosongkan di Rack
             Rack::where('id_perangkat', $dataRack->id_perangkat)
                 ->update(['id_perangkat' => null]);
 
-            // Update individual supaya trigger updating jalan
             $perangkat = ListPerangkat::where('id_perangkat', $dataRack->id_perangkat)->first();
             if ($perangkat) {
                 $perangkat->no_rack = null;
                 $perangkat->uawal = null;
                 $perangkat->uakhir = null;
-                $perangkat->save(); // trigger updating kalau ada event
+                $perangkat->save(); 
             }
         }
 
-        // Kalau ada fasilitas
         if ($dataRack->id_fasilitas) {
-            // Kosongkan di Rack
             Rack::where('id_fasilitas', $dataRack->id_fasilitas)
                 ->update(['id_fasilitas' => null]);
 
-            // Update individual supaya trigger updating jalan
             $fasilitas = ListFasilitas::where('id_fasilitas', $dataRack->id_fasilitas)->first();
             if ($fasilitas) {
                 $fasilitas->no_rack = null;
                 $fasilitas->uawal = null;
                 $fasilitas->uakhir = null;
-                $fasilitas->save(); // trigger updating yang akan simpan histori
+                $fasilitas->save(); 
             }
         }
 

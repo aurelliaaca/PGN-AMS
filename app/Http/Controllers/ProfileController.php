@@ -21,18 +21,12 @@ class ProfileController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the profile page.
-     */
     public function show()
     {
         $regions = Region::pluck('nama_region');
         return view('menu.profile', compact('regions'));
     }
 
-    /**
-     * Update the user's profile information.
-     */
     public function update(Request $request)
     {
         $request->validate([
@@ -65,10 +59,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.show')->with('success', 'Your profile has been updated successfully!');
     }
 
-
-    /**
-     * Resend email verification notification.
-     */
     public function sendVerification(Request $request)
     {
         $user = Auth::user();
@@ -82,9 +72,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.show')->with('success', 'Verification email has been sent.');
     }
 
-    /**
-     * Upload the user's signature.Í
-     */
     public function uploadSignature(Request $request)
     {
         $request->validate([
@@ -132,7 +119,6 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        // Delete signature if exists
         if ($user->signature) {
             Storage::disk('public')->delete($user->signature);
         }

@@ -26,7 +26,6 @@ class FasilitasController extends Controller
             ->distinct()
             ->get();
 
-
         $user = auth()->user();
         $role = $user->role;
 
@@ -195,8 +194,6 @@ class FasilitasController extends Controller
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')
             ->with('error', 'Terjadi kesalahan saat menambahkan fasilitas. Silakan coba lagi.');
     }
-
-
 
     public function update(Request $request, $id)
     {

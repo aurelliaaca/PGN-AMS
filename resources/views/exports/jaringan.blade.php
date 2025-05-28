@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Data Fasilitas</title>
+    <title>Data Jaringan</title>
     <style>
         @page {
             size: landscape;
@@ -46,7 +46,7 @@
 </head>
 
 <body>
-    <h3>Data Alatukur</h3>
+    <h3>Data Jaringan</h3>
 
     <div class="content">
         <table>

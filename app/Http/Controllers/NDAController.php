@@ -5,7 +5,8 @@ use App\Models\VerifikasiNda;
 use App\Models\Region;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class NDAController extends Controller
 {
     public function indexNdaSuperadmin()
@@ -105,7 +106,7 @@ class NDAController extends Controller
 
         $pdf = PDF::loadView('exports.nda' . $type . 'pdf', ['nda' => $ndaBaru, 'user' => $user]);
 
-        $pdfFileName = 'nda_' . $type . '_' . $ndaBaru->id . '.pdf';
+        $pdfFileName = 'nda' . $type . '_' . $ndaBaru->id . '.pdf';
         $publicPath = 'pdf/' . $pdfFileName;
 
         $pdf->save(public_path($publicPath));
@@ -126,14 +127,17 @@ class NDAController extends Controller
 
             $nda->status = $status;
 
-            $updatedAt = \Carbon\Carbon::now('Asia/Jakarta');
+            $updatedAt = Carbon::now('Asia/Jakarta');
             $nda->updated_at = $updatedAt;
 
             if ($status === 'diterima') {
+                if (!auth()->user()->signature) {
+                    return redirect()->back()->with('warning', 'User belum memiliki tanda tangan. Harap isi di menu Profil.');
+                }
+
                 $nda->signed_by = auth()->user()->id;
                 $nda->masaberlaku = $updatedAt->copy()->addMonths(3)->setTime(23, 59, 59);
 
-                // Simpan dulu supaya data updated dan signed_by sudah valid
                 $nda->save();
 
                 $type = ($nda->user->role == 3) ? 'internal' : 'eksternal';
@@ -141,7 +145,7 @@ class NDAController extends Controller
                 if ($nda->file_path && file_exists(public_path($nda->file_path))) {
                     $publicPath = $nda->file_path;
                 } else {
-                    $pdfFileName = 'nda_' . $type . '_' . $nda->id . '.pdf';
+                    $pdfFileName = 'nda' . $type . '_' . $nda->id . '.pdf';
                     $publicPath = 'pdf/' . $pdfFileName;
                 }
 
@@ -150,7 +154,7 @@ class NDAController extends Controller
 
                 if (!$nda->file_path) {
                     $nda->file_path = $publicPath;
-                    $nda->save(); // Simpan lagi kalau file_path baru diset
+                    $nda->save();
                 }
             } else {
                 $nda->signed_by = null;

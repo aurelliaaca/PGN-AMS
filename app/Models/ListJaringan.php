@@ -30,7 +30,9 @@ class ListJaringan extends Model
         'status',
         'keterangan',
         'kode_site_insan',
-        'dci_eqx',
+        'travelling_time',
+        'restoration_time',
+        'total_corrective_time',
         'milik',
     ];
 

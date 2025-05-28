@@ -15,34 +15,28 @@ class PendaftaranController extends Controller
 
     public function pendaftaranDCAF()
     {
-        // Ambil NDA aktif
         $activeNdas = VerifikasiNda::where('status', 'approved')
             ->where('masa_berlaku', '>', now())
             ->get();
 
-        // Mengembalikan view pendaftarandcaf dengan data NDA aktif
         return view('VMS.user.pendaftarandcaf', compact('activeNdas'));
     }
 
     public function ajukanDCS()
     {
-        // Ambil NDA aktif
         $activeNdas = VerifikasiNda::with(['nda'])
             ->where('status', 'diterima')
             ->where('masa_berlaku', '>', now())
             ->orderBy('masa_berlaku', 'desc')
             ->get();
 
-        // Debug untuk memastikan data terambil
         \Log::info('Active NDAs:', $activeNdas->toArray());
 
-        // Mengembalikan view ajukan-dcs dengan data NDA aktif
         return view('VMS.user.ajukan-dcs', compact('activeNdas'));
     }
 
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'nama_pemohon' => 'required|string|max:255',
             'no_hp_pemohon' => 'required|string|max:15',
@@ -64,14 +58,12 @@ class PendaftaranController extends Controller
             'ttd_pemohon' => 'nullable|image|max:2048',
         ]);
 
-        // Simpan tanda tangan jika ada
         $ttd_pemohon_path = null;
         if ($request->hasFile('ttd_pemohon')) {
             $file = $request->file('ttd_pemohon');
             $ttd_pemohon_path = 'data:image/' . $file->getClientOriginalExtension() . ';base64,' . base64_encode(file_get_contents($file));
         }
 
-        // Simpan data utama ke database
         $pendaftaran = PendaftaranVms::create($request->only([
             'nama_pemohon',
             'no_hp_pemohon',
@@ -90,7 +82,6 @@ class PendaftaranController extends Controller
             'status'
         ]));
 
-        // Simpan data rekanan
         foreach ($request->nama_rekanan as $i => $nama) {
             RekananVms::create([
                 'pendaftaran_vms_id' => $pendaftaran->id,
@@ -101,7 +92,6 @@ class PendaftaranController extends Controller
             ]);
         }
 
-        // Proses perlengkapan
         $perlengkapan = [];
         foreach ($request->input('nama_perlengkapan', []) as $i => $nama) {
             $perlengkapan[] = [
@@ -111,7 +101,6 @@ class PendaftaranController extends Controller
             ];
         }
 
-        // Proses barang masuk
         $barang_masuk = [];
         foreach ($request->input('nama_barang_masuk', []) as $i => $nama) {
             $barang_masuk[] = [
@@ -122,7 +111,6 @@ class PendaftaranController extends Controller
             ];
         }
 
-        // Proses barang keluar
         $barang_keluar = [];
         foreach ($request->input('nama_barang_keluar', []) as $i => $nama) {
             $barang_keluar[] = [
@@ -133,7 +121,6 @@ class PendaftaranController extends Controller
             ];
         }
 
-        // Data untuk PDF
         $data = [
             'nama_pemohon' => $pendaftaran->nama_pemohon,
             'no_hp_pemohon' => $pendaftaran->no_hp_pemohon,
@@ -156,15 +143,12 @@ class PendaftaranController extends Controller
             'ttd_pemohon' => $ttd_pemohon_path,
         ];
 
-        // Generate PDF menggunakan dompdf
-        $pdf = Pdf::loadView('VMS.pdf.pendaftaran', $data);
+        $pdf = Pdf::loadView('exports.dcaf', $data);
 
-        // Simpan file PDF
         $filename = "DATA_CENTER_FORM-{$pendaftaran->id}.pdf";
         $filePath = storage_path("app/generated/{$filename}");
         $pdf->save($filePath);
 
-        // Response dengan URL file PDF
         return response()->json([
             'success' => true,
             'file_url' => route('pendaftaran.download', ['filename' => $filename]),

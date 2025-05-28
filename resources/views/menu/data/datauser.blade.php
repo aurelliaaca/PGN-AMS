@@ -77,7 +77,7 @@
                     <div class="modal-content">
                         <span class="close" onclick="closeModal('modalEditUser{{ $user->id }}')">&times;</span>
                         <h5>Edit User</h5>
-                        <div action="{{ route('user.update', $user->id) }}" method="POST">
+                        <form action="{{ route('user.update', $user->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <div style="display: flex; gap: 20px;">
@@ -138,7 +138,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary mt-3">Perbarui</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
                 @endforeach

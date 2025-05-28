@@ -4,13 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\ListJaringan;
 use App\Models\TipeJaringan;
+use App\Models\HistoriJaringan;
 use App\Models\Region;
-use App\Models\Tipe;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\JaringanImport;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class JaringanController extends Controller
 {

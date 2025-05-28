@@ -29,6 +29,7 @@ class JaringanImport implements ToModel, WithHeadingRow
             'verification_time'     => $row['verification_time'],
             'restoration_time'      => $row['restoration_time'],
             'total_corrective_time' => $row['total_corrective_time'],
+            'milik' => $row['milik'],
         ]);
 
         HistoriJaringan::create([
@@ -51,6 +52,7 @@ class JaringanImport implements ToModel, WithHeadingRow
             'verification_time'     => $row['verification_time'],
             'restoration_time'      => $row['restoration_time'],
             'total_corrective_time' => $row['total_corrective_time'],
+            'milik'                 => $row['milik'],
             'histori'               => 'Diimpor',
         ]);
 
