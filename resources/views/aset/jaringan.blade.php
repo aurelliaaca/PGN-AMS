@@ -10,7 +10,7 @@
 
 @section('content')
     <div class="main">
-        @if (auth()->user()->role == '1')
+        @if (auth()->user()->role == '1' || auth()->user()->role == '2')
             <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahJaringan')">+ Tambah Jaringan</button>
                 <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
@@ -73,19 +73,21 @@
                                         onclick="openModal('modalViewJaringan{{ $jaringan->id_jaringan }}')">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-edit btn-sm mb-1"
-                                        onclick="openModal('modalEditJaringan{{ $jaringan->id_jaringan }}')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-delete btn-sm" onclick="confirmDelete({{ $jaringan->id_jaringan }})">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                    <form id="delete-form-{{ $jaringan->id_jaringan }}"
-                                        action="{{ route('jaringan.destroy', $jaringan->id_jaringan) }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                                    @if(auth()->user()->role == '1' || auth()->user()->role == '2')
+                                        <button class="btn btn-edit btn-sm mb-1"
+                                            onclick="openModal('modalEditJaringan{{ $jaringan->id_jaringan }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-delete btn-sm" onclick="confirmDelete({{ $jaringan->id_jaringan }})">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        <form id="delete-form-{{ $jaringan->id_jaringan }}"
+                                            action="{{ route('jaringan.destroy', $jaringan->id_jaringan) }}" method="POST"
+                                            style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

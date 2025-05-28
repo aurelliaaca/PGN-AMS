@@ -46,7 +46,7 @@
 </head>
 
 <body>
-    <h3>Data Fasilitas</h3>
+    <h3>Data Alatukur</h3>
 
     <div class="content">
         <table>
@@ -54,16 +54,14 @@
                 <tr>
                     <th>No</th>
                     <th>Region</th>
-                    <th>Site</th>
-                    <th>No Rack</th>
-                    <th>Fasilitas</th>
-                    <th>Fasilitas ke</th>
+                    <th>Alatukur</th>
+                    <th>Alatukur ke</th>
                     <th>Brand</th>
                     <th>Type</th>
                     <th>Serial Number</th>
-                    <th>Status</th>
-                    <th>UAwal</th>
-                    <th>UAkhir</th>
+                    <th>Tahun Perolehan</th>
+                    <th>Kondisi</th>
+                    <th>Keterangan</th>
                     <th>Milik</th>
                 </tr>
             </thead>
@@ -72,16 +70,14 @@
                     <tr>
                         <td style="text-align: center;">{{ $index + 1 }}</td>
                         <td>{{ $item->region->nama_region }}</td>
-                        <td>{{ $item->site->nama_site }}</td>
-                        <td style="text-align: center;">{{ $item->no_rack }}</td>
-                        <td>{{ $item->jenisfasilitas->nama_fasilitas }}</td>
-                        <td style="text-align: center;">{{ $item->fasilitas_ke }}</td>
-                        <td>{{ optional($item->brandfasilitas)->nama_brand }}</td>
+                        <td>{{ $item->jenisalatukur->nama_alatukur }}</td>
+                        <td style="text-align: center;">{{ $item->alatukur_ke }}</td>
+                        <td>{{ optional($item->brandalatukur)->nama_brand }}</td>
                         <td>{{ $item->type }}</td>
                         <td>{{ $item->serialnumber }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td style="text-align: center;">{{ $item->uawal }}</td>
-                        <td style="text-align: center;">{{ $item->uakhir }}</td>
+                        <td style="text-align: center;">{{ $item->tahunperolehan }}</td>
+                        <td>{{ $item->kondisi }}</td>
+                        <td>{{ $item->keterngan }}</td>
                         <td>{{ $item->user->name }}</td>
                     </tr>
                 @endforeach

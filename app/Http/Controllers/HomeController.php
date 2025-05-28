@@ -45,10 +45,15 @@ class HomeController extends Controller
             $jumlahAlatUkur = ListAlatukur::count();
             $jumlahJaringan = ListJaringan::count();
         } elseif ($role == 2) {
-            $jumlahPerangkat = ListPerangkat::where('region', $userRegion)->count();
-            $jumlahFasilitas = ListFasilitas::where('region', $userRegion)->count();
-            $jumlahAlatUkur = ListAlatukur::where('region', $userRegion)->count();
-            $jumlahJaringan = ListJaringan::where('region', $userRegion)->count();
+            $jumlahPerangkat = ListPerangkat::count();
+            $jumlahFasilitas = ListFasilitas::count();
+            $jumlahAlatUkur = ListAlatukur::count();
+            $jumlahJaringan = ListJaringan::count();
+        } elseif ($role == 3) {
+            $jumlahPerangkat = ListPerangkat::where('kode_region', $userRegion)->count();
+            $jumlahFasilitas = ListFasilitas::where('kode_region', $userRegion)->count();
+            $jumlahAlatUkur = ListAlatukur::where('kode_region', $userRegion)->count();
+            $jumlahJaringan = ListJaringan::where('kode_region', $userRegion)->count();
         } elseif (in_array($role, [3, 4])) {
             $jumlahPerangkat = ListPerangkat::where('milik', $userId)->count();
             $jumlahFasilitas = ListFasilitas::where('milik', $userId)->count();

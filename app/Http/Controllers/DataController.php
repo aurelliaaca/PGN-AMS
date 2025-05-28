@@ -471,13 +471,17 @@ class DataController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id . ',id',
-            'password' => 'nullable|string|min:6',
-            'role' => 'required|string',
             'region' => 'required|string',
+            'role' => 'required',
+            'password' => 'nullable|string|min:6',
+            'alamat' => 'required',
+            'perusahaan' => 'required',
+            'bagian' => 'required',
+            'noktp' => 'required',
             'mobile_number' => 'required|string|max:15',
         ]);
 
-        $data = $request->only('name', 'email', 'role', 'region', 'mobile_number');
+        $data = $request->only('name', 'email', 'region', 'role', 'alamat', 'perusahaan', 'bagian', 'noktp', 'mobile_number');
 
         // Update password jika diisi
         if ($request->filled('password')) {

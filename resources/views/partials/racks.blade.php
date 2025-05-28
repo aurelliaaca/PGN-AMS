@@ -45,7 +45,7 @@
                                 @foreach($rack->details as $detail)
                                     @php
                                         $deviceInfo = 'IDLE';
-                                        $isUserPosition = auth()->user()->role == 1 || $detail->milik == auth()->user()->id;
+                                        $isUserPosition = auth()->user()->role == 1 || auth()->user()->role == 2 || $detail->milik == auth()->user()->id;
 
                                         if ($isUserPosition) {
                                             if ($detail->id_perangkat && $detail->listperangkat) {

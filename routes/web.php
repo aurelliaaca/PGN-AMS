@@ -151,21 +151,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/perangkat/{id_perangkat}', [PerangkatController::class, 'destroy'])->name('perangkat.destroy');
     Route::post('/import-perangkat', [PerangkatImportController::class, 'import'])->name('import.perangkat');
     Route::post('export/perangkat', function (Request $request) {
-        $regions = $request->input('regions'); // array atau null
-        $format = $request->input('format');   // excel atau pdf
+        $regions = $request->input('regions'); 
+        $format = $request->input('format');
         if ($format === 'excel') {
             return Excel::download(new PerangkatExport($regions), 'dataperangkat.xlsx');
         } elseif ($format === 'pdf') {
             $data = (new PerangkatExport($regions))->collection();
 
-            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.perangkat', ['data' => $data]);
             return $pdf->download('dataperangkat.pdf');
         } else {
             return back()->with('error', 'Format file tidak dikenali.');
         }
     });
-
-
 
     Route::get('/aset/fasilitas', [FasilitasController::class, 'indexFasilitas'])->name('fasilitas.index');
     Route::get('/fasilitas/create', [FasilitasController::class, 'create'])->name('fasilitas.create');
@@ -175,14 +173,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/fasilitas/{id_fasilitas}', [FasilitasController::class, 'destroy'])->name('fasilitas.destroy');
     Route::post('/import-fasilitas', [FasilitasImportController::class, 'import'])->name('import.fasilitas');
     Route::post('export/fasilitas', function (Request $request) {
-        $regions = $request->input('regions'); // array atau null
-        $format = $request->input('format');   // excel atau pdf
+        $regions = $request->input('regions');
+        $format = $request->input('format'); 
         if ($format === 'excel') {
             return Excel::download(new FasilitasExport($regions), 'datafasilitas.xlsx');
         } elseif ($format === 'pdf') {
             $data = (new FasilitasExport($regions))->collection();
 
-            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.fasilitas', ['data' => $data]);
             return $pdf->download('datafasilitas.pdf');
         } else {
             return back()->with('error', 'Format file tidak dikenali.');
@@ -204,7 +202,7 @@ Route::middleware('auth')->group(function () {
         } elseif ($format === 'pdf') {
             $data = (new AlatukurExport($regions))->collection();
 
-            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.alatukur', ['data' => $data]);
             return $pdf->download('dataalatukur.pdf');
         } else {
             return back()->with('error', 'Format file tidak dikenali.');
@@ -219,37 +217,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('/jaringan/{id_jaringan}', [JaringanController::class, 'destroy'])->name('jaringan.destroy');
     Route::post('/import-jaringan', [JaringanImportController::class, 'import'])->name('import.jaringan');
     Route::post('export/jaringan', function (Request $request) {
-        $regions = $request->input('regions'); // array atau null
-        $format = $request->input('format');   // excel atau pdf
+        $regions = $request->input('regions'); 
+        $format = $request->input('format');  
         if ($format === 'excel') {
             return Excel::download(new JaringanExport($regions), 'datajaringan.xlsx');
         } elseif ($format === 'pdf') {
             $data = (new JaringanExport($regions))->collection();
 
-            $pdf = Pdf::loadView('exports.exportpdf', ['data' => $data]);
+            $pdf = Pdf::loadView('exports.jaringan', ['data' => $data]);
             return $pdf->download('datajaringan.pdf');
         } else {
             return back()->with('error', 'Format file tidak dikenali.');
         }
     });
 
-    // Route::get('/jaringan', [JaringanController::class, 'jaringan'])->name('jaringan');
-    // Route::post('/store-jaringan', [JaringanController::class, 'store'])->name('jaringan.store');
-    // Route::get('/jaringan/tipes/{tipe}', [JaringanController::class, 'getTipeJaringan']);
-    // Route::get('/jaringan/filter', [JaringanController::class, 'getJaringanByRegionAndTipe']);
-    // Route::delete('/delete-jaringan/{id_jaringan}', [JaringanController::class, 'deleteJaringan'])->name('jaringan.delete');
-    // Route::get('/edit-jaringan/{id_jaringan}', [JaringanController::class, 'editJaringan'])->name('jaringan.edit');
-    // Route::post('/update-jaringan/{id_jaringan}', [JaringanController::class, 'updateJaringan'])->name('jaringan.update');
-    // Route::get('/jaringan/{id_jaringan}/detail', [JaringanController::class, 'getDetail'])->name('jaringan.detail');
-    // Route::get('/get-last-kode-site-insan', [JaringanController::class, 'getLastKodeSiteInsan']);
-    // Route::post('/jaringan/import', [JaringanController::class, 'import'])->name('jaringan.import');
-    // Route::post('/jaringan/export', [JaringanController::class, 'export'])->name('jaringan.export');
-    // Route::get('/jaringan/{id}/lihat-detail', [JaringanController::class, 'lihatDetail'])->name('jaringan.lihatDetail');
+    // ------------------------------------------------------------------------ NDA ------------------------------------------------------------------------
 
     Route::get('/verifikasi/nda', [NDAController::class, 'indexNdaSuperadmin'])->name('verifikasi.superadmin.nda');
     Route::get('/pendaftaran/nda', [NDAController::class, 'indexNdaUser'])->name('verifikasi.user.nda');
     Route::post('/pendaftaran/nda/store', [NDAController::class, 'store'])->name('nda.store');
     Route::put('/nda/{nda}', [NDAController::class, 'update'])->name('nda.update');
+
+    // ------------------------------------------------------------------------ DCAF ------------------------------------------------------------------------
 
     Route::get('/verifikasi/user/dcaf', [DCAFController::class, 'indexDcafUser'])->name('verifikasi.user.dcaf');
     Route::get('/pendaftaran/dcaf', [DCAFController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
@@ -258,20 +247,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/verifikasi/admin/dcaf', [DCAFController::class, 'indexDcafSuperadmin'])->name('verifikasi.superadmin.dcaf');
     Route::put('/dcaf/{dcaf}', [DCAFController::class, 'update'])->name('dcaf.update');
 
+    // ------------------------------------------------------------------------ SEMANTIK ------------------------------------------------------------------------
 
-    // Route untuk upload foto
     Route::post('/upload-photo', [SemantikController::class, 'uploadPhoto'])->name('upload.photo');
-
-    // Route untuk menghapus foto
     Route::delete('/photos/{id}', [SemantikController::class, 'deletePhoto'])->name('photos.delete');
-
-    // Semantik
     Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
 
-    // Route untuk menampilkan view pendaftarandcaf
     Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
     Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
 
+    // ------------------------------------------------------------------------ PROFILE ------------------------------------------------------------------------
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

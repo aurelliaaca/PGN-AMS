@@ -26,37 +26,39 @@ class FasilitasController extends Controller
             ->distinct()
             ->get();
 
+
+        $user = auth()->user();
+        $role = $user->role;
+
+        $query = ListFasilitas::with(['region', 'site', 'jenisfasilitas', 'brandfasilitas']);
         
-    $user = auth()->user(); 
-    $role = $user->role;
+        if ($role == 4 || $role == 5) {
+            $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
+        }
 
-    $query = ListFasilitas::with(['region', 'site', 'jenisfasilitas', 'brandfasilitas']);
+        if ($request->filled('kode_region')) {
+            $query->whereIn('kode_region', $request->kode_region);
+        }
 
-    if ($role == 3 || $role == 4) {
-        $query->where('milik', $user->id);
-    }
+        if ($request->filled('kode_site')) {
+            $query->whereIn('kode_site', $request->kode_site);
+        }
 
-    if ($request->filled('kode_region')) {
-        $query->whereIn('kode_region', $request->kode_region);
-    }
+        if ($request->filled('kode_fasilitas')) {
+            $query->whereIn('kode_fasilitas', $request->kode_fasilitas);
+        }
 
-    if ($request->filled('kode_site')) {
-        $query->whereIn('kode_site', $request->kode_site);
-    }
-
-    if ($request->filled('kode_fasilitas')) {
-        $query->whereIn('kode_fasilitas', $request->kode_fasilitas);
-    }
-
-    $filteredSites = collect();
-    if ($request->filled('kode_region')) {
-        $filteredSites = Site::whereIn('kode_region', $request->kode_region)
-                            ->select('kode_region', 'nama_site', 'kode_site')
-                            ->orderBy('nama_site')
-                            ->get();
-    } else {
-        $filteredSites = $sites;
-    }
+        $filteredSites = collect();
+        if ($request->filled('kode_region')) {
+            $filteredSites = Site::whereIn('kode_region', $request->kode_region)
+                ->select('kode_region', 'nama_site', 'kode_site')
+                ->orderBy('nama_site')
+                ->get();
+        } else {
+            $filteredSites = $sites;
+        }
 
 
         $datafasilitas = $query->get();
@@ -90,7 +92,7 @@ class FasilitasController extends Controller
             'milik' => 'required',
         ]);
 
-        
+
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -111,7 +113,7 @@ class FasilitasController extends Controller
                     'uakhir' => 'UAkhir tidak boleh kurang dari 1.'
                 ])->withInput();
             }
-    
+
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 $existingRack = Rack::where('kode_region', $request->kode_region)
                     ->where('kode_site', $request->kode_site)
@@ -119,16 +121,16 @@ class FasilitasController extends Controller
                     ->where('u', $u)
                     ->where(function ($query) {
                         $query->whereNotNull('id_perangkat')
-                              ->orWhereNotNull('id_fasilitas');
+                            ->orWhereNotNull('id_fasilitas');
                     })
                     ->exists();
-            
+
                 if ($existingRack) {
                     return redirect()->route('fasilitas.index')
                         ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
                 }
             }
-            
+
         }
 
         $jumlahFasilitas = ListFasilitas::where('kode_site', $request->kode_site)->max('fasilitas_ke');
@@ -186,7 +188,7 @@ class FasilitasController extends Controller
                     ]
                 );
             }
-        }   
+        }
 
         return redirect()->route('fasilitas.index')
             ->with('success', 'Fasilitas berhasil ditambahkan.')
@@ -213,7 +215,7 @@ class FasilitasController extends Controller
             'milik' => 'required',
         ]);
 
-       
+
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -243,10 +245,10 @@ class FasilitasController extends Controller
                 ->where('u', $u)
                 ->where(function ($query) {
                     $query->whereNotNull('id_perangkat')
-                          ->orWhereNotNull('id_fasilitas');
+                        ->orWhereNotNull('id_fasilitas');
                 })
                 ->exists();
-        
+
             if ($existingRack) {
                 return redirect()->route('fasilitas.index')
                     ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
@@ -286,7 +288,7 @@ class FasilitasController extends Controller
                     ]
                 );
             }
-        }       
+        }
         return redirect()->route('fasilitas.index')
             ->with('success', 'Fasilitas berhasil diupdate.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')

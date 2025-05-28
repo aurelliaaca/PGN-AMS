@@ -9,7 +9,7 @@
 
 @section('content')
     <div class="main">
-        @if(auth()->user()->role == '1')
+        @if(auth()->user()->role == '1' || auth()->user()->role == '2')
             <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
                 <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Fasilitas</button>
@@ -96,7 +96,7 @@
                                         onclick="openModal('modalViewFasilitas{{ $fasilitas->id_fasilitas }}')">
                                         <i class="fas fa-eye"></i> 
                                     </button>
-                                    @if(auth()->user()->role == '1')
+                                    @if(auth()->user()->role == '1' || auth()->user()->role == '2')
                                         <button class="btn btn-edit btn-sm mb-1"
                                             onclick="openModal('modalEditFasilitas{{ $fasilitas->id_fasilitas }}')">
                                             <i class="fas fa-edit"></i> 

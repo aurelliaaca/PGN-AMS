@@ -2,8 +2,12 @@
 <html>
 
 <head>
-    <title>Data Perangkat</title>
+    <title>Data Fasilitas</title>
     <style>
+        @page {
+            size: landscape;
+        }
+
         body {
             font-family: Arial, sans-serif;
             font-size: 11pt;
@@ -42,7 +46,7 @@
 </head>
 
 <body>
-    <h3>Data Perangkat</h3>
+    <h3>Data Alatukur</h3>
 
     <div class="content">
         <table>
@@ -50,14 +54,19 @@
                 <tr>
                     <th>No</th>
                     <th>Region</th>
-                    <th>Site</th>
-                    <th>No Rack</th>
-                    <th>Perangkat</th>
-                    <th>Perangkat ke</th>
-                    <th>Brand</th>
-                    <th>Type</th>
-                    <th>UAwal</th>
-                    <th>UAkhir</th>
+                    <th>Tipe Jaringan</th>
+                    <th>Segmen</th>
+                    <th>Jartatup Jartaplok</th>
+                    <th>Panjang</th>
+                    <th>Panjang Drawing</th>
+                    <th>Jumlah Core</th>
+                    <th>Jenis Kabel</th>
+                    <th>Tipe Kabel</th>
+                    <th>Status</th>
+                    <th>Keterangan</th>
+                    <th>Kode Site Insan</th>
+                    <th>DCI EQX</th>
+                    <th>Milik</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,14 +74,19 @@
                     <tr>
                         <td style="text-align: center;">{{ $index + 1 }}</td>
                         <td>{{ $item->region->nama_region }}</td>
-                        <td>{{ $item->site->nama_site }}</td>
-                        <td style="text-align: center;">{{ $item->no_rack }}</td>
-                        <td>{{ $item->jenisperangkat->nama_perangkat }}</td>
-                        <td style="text-align: center;">{{ $item->perangkat_ke }}</td>
-                        <td>{{ optional($item->brandperangkat)->nama_brand }}</td>
-                        <td>{{ $item->type }}</td>
-                        <td style="text-align: center;">{{ $item->uawal }}</td>
-                        <td style="text-align: center;">{{ $item->uakhir }}</td>
+                        <td>{{ $item->tipejaringan->nama_tipejaringan }}</td>
+                        <td>{{ $item->segmen }}</td>
+                        <td>{{ $item->jartatup_jartaplok }}</td>
+                        <td>{{ $item->panjang }}</td>
+                        <td>{{ $item->panjang_drawing }}</td>
+                        <td>{{ $item->jumlah_core }}</td>
+                        <td>{{ $item->jenis_kabel }}</td>
+                        <td>{{ $item->tipe_kabel }}</td>
+                        <td>{{ $item->status }}</td>
+                        <td>{{ $item->keterangan }}</td>
+                        <td>{{ $item->kode_site_insan }}</td>
+                        <td>{{ $item->dci_eqx }}</td>
+                        <td>{{ $item->user->name }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -82,8 +96,8 @@
     <div class="footer">
         <table style="width: 100%; margin-bottom: 60px; font-size: 12px; border: none;">
             <tr>
-                <td style="text-align: left; border: none;">Dibuat: {{ now()->format('d/m/Y H:i:s') }}</td>
-                <td style="text-align: right; border: none;">Jakarta, {{ \Carbon\Carbon::now()->format('d F Y') }}</td>
+                <td style="text-align: left; border: none;">Dibuat: {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('j F Y H:i') }}</td>
+                <td style="text-align: right; border: none;">Jakarta, {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('j F Y H:i') }}</td>
             </tr>
         </table>
 
@@ -94,4 +108,5 @@
     </div>
 
 </body>
+
 </html>

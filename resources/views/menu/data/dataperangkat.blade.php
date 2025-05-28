@@ -13,10 +13,10 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <div class="tables-container dua">
+        <div class="tables-container dua" style="margin-top: 20px;">
             <div class="table-column">
                 <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn btn-primary mb-3" onclick="openModal('modalTambahJenis')">+ Tambah Jenis</button>
+                    <button class="btn btn-primary mb-3" style="margin-bottom: 10px;" onclick="openModal('modalTambahJenis')">+ Tambah Jenis</button>
                     <h3>Data Jenis</h3>
                 </div>
                 <div class="table-responsive">
@@ -85,7 +85,7 @@
 
             <div class="table-column">
                 <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn btn-primary mb-3" onclick="openModal('modalTambahBrand')">+ Tambah Brand</button>
+                    <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="openModal('modalTambahBrand')">+ Tambah Brand</button>
                     <h3>Data Brand</h3>
                 </div>
                 <div class="table-responsive">

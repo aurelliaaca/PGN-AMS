@@ -38,7 +38,7 @@
             </div>
 
             <div class="card-item" onclick="window.location='{{ route('fasilitas.index') }}'" style="cursor: pointer;">
-                <div class="card-icon"><i class="fas fa-building"></i></div>
+                <div class="card-icon"><i class="fas fa-warehouse"></i></div>
                 <div class="card-content">
                     <h4>Fasilitas</h4>
                     <p>{{ $jumlahFasilitas }} data</p>
@@ -54,7 +54,7 @@
             </div>
 
             <div class="card-item" onclick="window.location='{{ route('jaringan.index') }}'" style="cursor: pointer;">
-                <div class="card-icon"><i class="fas fa-network-wired"></i></div>
+                <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
                 <div class="card-content">
                     <h4>Jaringan</h4>
                     <p>{{ $jumlahJaringan }} data</p>

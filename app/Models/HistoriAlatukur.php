@@ -6,10 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class HistoriAlatukur extends Model
 {
-    // Tentukan nama tabel yang digunakan oleh model ini
     protected $table = 'historialatukur';
 
-    // Tentukan kolom-kolom yang bisa diisi secara mass-assignment
     protected $fillable = [
         'id_alatukur',
         'kode_region',
@@ -18,16 +16,15 @@ class HistoriAlatukur extends Model
         'kode_brand',
         'type',
         'serialnumber',
+        'tahunperolehan',
         'keterangan',
         'kondisi',
         'histori',
         'tanggal_perubahan',
     ];
 
-    // Jika kamu tidak menggunakan timestamps default dari Eloquent (created_at, updated_at)
     public $timestamps = false;
 
-    // Tentukan format tanggal jika diperlukan
     protected $dates = ['tanggal_perubahan'];
     public function listalatukur()
     {
@@ -53,5 +50,4 @@ class HistoriAlatukur extends Model
     {
         return $this->belongsTo(BrandAlatukur::class, 'kode_brand', 'kode_brand');
     }
-
 }

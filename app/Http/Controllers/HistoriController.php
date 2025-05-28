@@ -24,8 +24,10 @@ class HistoriController extends Controller
         $query = HistoriPerangkat::with('region', 'site', 'jenisperangkat', 'brandperangkat')
             ->orderBy('tanggal_perubahan', 'desc');
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
         }
 
         $historiperangkat = $query->get();
@@ -40,8 +42,10 @@ class HistoriController extends Controller
         $query = HistoriFasilitas::with('region', 'site', 'jenisfasilitas', 'brandfasilitas')
             ->orderBy('tanggal_perubahan', 'desc');
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
         }
 
         $historifasilitas = $query->get();
@@ -57,8 +61,10 @@ class HistoriController extends Controller
         $query = HistoriAlatukur::with('region', 'jenisalatukur', 'brandalatukur')
             ->orderBy('tanggal_perubahan', 'desc');
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
         }
 
         $historialatukur = $query->get();
@@ -69,7 +75,20 @@ class HistoriController extends Controller
     // Display data for jaringan (network history)
     public function showHistoriJaringan()
     {
-        $historijaringan = HistoriJaringan::all(); // Fetch all network history
+        $user = auth()->user();
+        $role = $user->role;  
+
+        $query = HistoriJaringan::with('region', 'tipejaringan')
+            ->orderBy('tanggal_perubahan', 'desc');
+
+        if ($role == 4 || $role == 5) {
+            $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
+        }
+
+        $historijaringan = $query->get();
+
         return view('menu.histori.historijaringan', compact('historijaringan'));
     }
 

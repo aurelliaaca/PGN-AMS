@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-    <div class="main">
+    <div class="main" style="padding-top: 10px">
         <div class="table-responsive">
             <table id="historiFasilitasTable" class="table table-bordered table-striped">
                 <thead>

@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-    <div class="main">
+    <div class="main" style="padding-top: 10px">
         <div class="table-responsive">
             <table id="historiAlatukurTable" class="table table-bordered table-striped">
                 <thead>
@@ -19,8 +19,10 @@
                         <th>Alatukur ke</th>
                         <th>Brand</th>
                         <th>Type</th>
-                        <th>U Awal</th>
-                        <th>U Akhir</th>
+                        <th>Serial Number</th>
+                        <th>Tahun Perolehan</th>
+                        <th>Kondisi</th>
+                        <th>Keterangan</th>
                         <th>Aksi</th>
                         <th>Tanggal Perubahan</th>
                     </tr>
@@ -34,8 +36,10 @@
                             <td>{{ $item->alatukur_ke }}</td>
                             <td>{{ optional($item->brandalatukur)->nama_brand }}</td>
                             <td>{{ $item->type }}</td>
-                            <td>{{ $item->uawal }}</td>
-                            <td>{{ $item->uakhir }}</td>
+                            <td>{{ $item->serialnumber }}</td>
+                            <td>{{ $item->tahunperolehan }}</td>
+                            <td>{{ $item->kondisi }}</td>
+                            <td>{{ $item->keterangan }}</td>
                             <td>{{ $item->histori }}</td>
                             <td>{{ \Carbon\Carbon::parse($item->tanggal_perubahan)->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }}</td>
                         </tr>

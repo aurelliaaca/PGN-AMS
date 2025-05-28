@@ -14,10 +14,9 @@ class RackController extends Controller
         $regions = Region::all();
         $sites = Site::all();
 
-        // Get racks based on user role
         $racks = Rack::with(['region', 'site'])
             ->select('kode_region', 'kode_site', 'no_rack')
-            ->when(auth()->user()->role != 1, function ($query) {
+            ->when(auth()->user()->role != 1 || auth()->user()->role != 2, function ($query) {
                 return $query->where('milik', auth()->user()->id);
             })
             ->groupBy('kode_region', 'kode_site', 'no_rack')
@@ -31,7 +30,15 @@ class RackController extends Controller
         try {
             $query = Rack::with(['region', 'site', 'listperangkat', 'listfasilitas'])
                 ->select('kode_region', 'kode_site', 'no_rack')
-                ->when(in_array(auth()->user()->role, [3, 4]), function ($query) {
+                ->when(auth()->user()->role == 3, function ($query) {
+                    return $query->whereIn('kode_region', function ($subquery) {
+                        $subquery->select('kode_region')
+                            ->from('rack')
+                            ->where('kode_region', auth()->user()->region);
+                    });
+                })
+
+                ->when(in_array(auth()->user()->role, [4, 5]), function ($query) {
                     return $query->whereExists(function ($subquery) {
                         $subquery->select(\DB::raw(1))
                             ->from('rack as r')
@@ -43,76 +50,73 @@ class RackController extends Controller
                 })
                 ->groupBy('kode_region', 'kode_site', 'no_rack');
 
-            // Apply region filter
             if ($request->has('regions') && !empty($request->regions)) {
                 $query->whereIn('kode_region', $request->regions);
             }
 
-            // Apply site filter
             if ($request->has('sites') && !empty($request->sites)) {
                 $query->whereIn('kode_site', $request->sites);
             }
 
-            // Apply search filter
             if ($request->has('search') && !empty($request->search)) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('no_rack', 'like', "%{$search}%")
-                      ->orWhereHas('site', function ($q) use ($search) {
-                          $q->where('nama_site', 'like', "%{$search}%");
-                      })
-                      ->orWhereHas('region', function ($q) use ($search) {
-                          $q->where('nama_region', 'like', "%{$search}%");
-                      });
+                        ->orWhereHas('site', function ($q) use ($search) {
+                            $q->where('nama_site', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('region', function ($q) use ($search) {
+                            $q->where('nama_region', 'like', "%{$search}%");
+                        });
                 });
             }
 
             $racks = $query->get()
-            ->map(function ($rack) {
-                try {
-                    $rackDetails = Rack::with(['listperangkat', 'listfasilitas'])
-                        ->where('kode_region', $rack->kode_region)
-                        ->where('kode_site', $rack->kode_site)
-                        ->where('no_rack', $rack->no_rack)
-                        ->orderBy('u', 'desc')
-                        ->get();
+                ->map(function ($rack) {
+                    try {
+                        $rackDetails = Rack::with(['listperangkat', 'listfasilitas'])
+                            ->where('kode_region', $rack->kode_region)
+                            ->where('kode_site', $rack->kode_site)
+                            ->where('no_rack', $rack->no_rack)
+                            ->orderBy('u', 'desc')
+                            ->get();
 
-                    $totalU = $rackDetails->count();
+                        $totalU = $rackDetails->count();
 
-                    $filledU = $rackDetails->filter(function ($detail) {
-                        return !is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas);
-                    })->count();
+                        $filledU = $rackDetails->filter(function ($detail) {
+                            return !is_null($detail->id_perangkat) || !is_null($detail->id_fasilitas);
+                        })->count();
 
-                    $emptyU = $rackDetails->filter(function ($detail) {
-                        return is_null($detail->id_perangkat) && is_null($detail->id_fasilitas);
-                    })->count();
+                        $emptyU = $rackDetails->filter(function ($detail) {
+                            return is_null($detail->id_perangkat) && is_null($detail->id_fasilitas);
+                        })->count();
 
-                    $uniqueDevices = $rackDetails->filter(function ($detail) {
-                        if (auth()->user()->role == 1) {
-                            return !is_null($detail->id_perangkat);
-                        }
-                        return (string)$detail->milik === (string)auth()->user()->id && !is_null($detail->id_perangkat);
-                    })->pluck('listperangkat.id_perangkat')->unique()->filter()->count();
+                        $uniqueDevices = $rackDetails->filter(function ($detail) {
+                            if (auth()->user()->role == 1 || auth()->user()->role == 2) {
+                                return !is_null($detail->id_perangkat);
+                            }
+                            return (string) $detail->milik === (string) auth()->user()->id && !is_null($detail->id_perangkat);
+                        })->pluck('listperangkat.id_perangkat')->unique()->filter()->count();
 
-                    $uniqueFacilities = $rackDetails->filter(function ($detail) {
-                        if (auth()->user()->role == 1) {
-                            return !is_null($detail->id_fasilitas);
-                        }
-                        return (string)$detail->milik === (string)auth()->user()->id && !is_null($detail->id_fasilitas);
-                    })->pluck('listfasilitas.id_fasilitas')->unique()->filter()->count();
+                        $uniqueFacilities = $rackDetails->filter(function ($detail) {
+                            if (auth()->user()->role == 1 || auth()->user()->role == 2) {
+                                return !is_null($detail->id_fasilitas);
+                            }
+                            return (string) $detail->milik === (string) auth()->user()->id && !is_null($detail->id_fasilitas);
+                        })->pluck('listfasilitas.id_fasilitas')->unique()->filter()->count();
 
-                    $rack->details = $rackDetails;
-                    $rack->filled_u = $filledU;
-                    $rack->empty_u = $emptyU;
-                    $rack->device_count = $uniqueDevices;
-                    $rack->facility_count = $uniqueFacilities;
+                        $rack->details = $rackDetails;
+                        $rack->filled_u = $filledU;
+                        $rack->empty_u = $emptyU;
+                        $rack->device_count = $uniqueDevices;
+                        $rack->facility_count = $uniqueFacilities;
 
-                    return $rack;
-                } catch (\Exception $e) {
-                    \Log::error('Error processing rack details: ' . $e->getMessage());
-                    return null;
-                }
-            })
+                        return $rack;
+                    } catch (\Exception $e) {
+                        \Log::error('Error processing rack details: ' . $e->getMessage());
+                        return null;
+                    }
+                })
                 ->filter()
                 ->values();
 

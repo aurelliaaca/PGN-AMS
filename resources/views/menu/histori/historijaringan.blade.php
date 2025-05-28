@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-    <div class="main">
+    <div class="main" style="padding-top: 10px">
         <div class="table-responsive">
             <table id="historiJaringanTable" class="table table-bordered table-striped">
                 <thead>
@@ -24,9 +24,6 @@
                         <th>Jumlah Core</th>
                         <th>Jenis Kabel</th>
                         <th>Tipe Kabel</th>
-                        <th>Status</th>
-                        <th>Keterangan</th>
-                        <th>DCI EQX</th>
                         <th>Aksi</th>
                         <th>Tanggal Perubahan</th>
                     </tr>
@@ -45,9 +42,6 @@
                             <td>{{ $item->jumlah_core }}</td>
                             <td>{{ $item->jenis_kabel }}</td>
                             <td>{{ $item->tipe_kabel }}</td>
-                            <td>{{ $item->status }}</td>
-                            <td>{{ $item->keterangan }}</td>
-                            <td>{{ $item->dci_eqx }}</td>
                             <td>{{ $item->histori }}</td>
                             <td>{{ \Carbon\Carbon::parse($item->tanggal_perubahan)->locale('id')->isoFormat('D MMMM YYYY, HH:mm') }}</td>
                         </tr>

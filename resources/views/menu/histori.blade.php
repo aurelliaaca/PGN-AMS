@@ -152,7 +152,7 @@
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
-                            <i class="fas fa-laptop"></i>
+                            <i class="fas fa-warehouse"></i>
                         </div>
                         <div class="header-text">
                             <h3>Fasilitas</h3>
@@ -169,7 +169,7 @@
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
-                            <i class="fas fa-laptop"></i>
+                            <i class="fas fa-ruler"></i>
                         </div>
                         <div class="header-text">
                             <h3>Alat Ukur</h3>
@@ -186,7 +186,7 @@
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
-                            <i class="fas fa-laptop"></i>
+                            <i class="fas fa-project-diagram"></i>
                         </div>
                         <div class="header-text">
                             <h3>Jaringan</h3>

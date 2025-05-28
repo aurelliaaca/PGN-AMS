@@ -37,7 +37,7 @@
             </h4>
             <li><a href="{{ route('home') }}"><span class="icon"><i class="fas fa-tachometer-alt"></i></span><span
                         class="text">Dasbor</span></a></li>
-            @if(auth()->user()->role == '1' || auth()->user()->role == '2')
+            @if(auth()->user()->role == '1')
                 <li><a href="{{ route('data') }}"><span class="icon"><i class="fas fa-database"></i></span><span
                             class="text">Data</span></a></li>
             @endif
@@ -45,7 +45,7 @@
                         class="text">Rack</span></a></li>
             <li><a href="{{ route('histori.index') }}"><span class="icon"><i class="fas fa-history"></i></span><span
                         class="text">Histori</span></a></li>
-            @if(auth()->user()->role == '1' || auth()->user()->role == '2')
+            @if(auth()->user()->role == '1')
                 <li><a href="{{ route('semantik') }}"><span class="icon"><i class="fas fa-image"></i></span><span
                             class="text">Semantik</span></a></li>
             @endif
@@ -59,12 +59,14 @@
                         class="text">Fasilitas</span></a></li>
             <li><a href="{{ route('alatukur.index') }}"><span class="icon"><i class="fas fa-ruler"></i></span><span
                         class="text">Alat Ukur</span></a></li>
-            <li><a href="{{ route('jaringan.index') }}"><span class="icon"><i class="fas fa-network-wired"></i></span><span
-                        class="text">Jaringan</span></a></li>
+            <li><a href="{{ route('jaringan.index') }}"><span class="icon"><i
+                            class="fas fa-project-diagram"></i></span><span class="text">Jaringan</span></a></li>
 
+            @if(auth()->user()->role == '1' || auth()->user()->role == '4' || auth()->user()->role == '5')
             <h4><span>Portal VMS</span>
                 <div class="menu-separator"></div>
             </h4>
+            @endif
             @if(auth()->user()->role == '1')
                 <li><a href="{{ route('verifikasi.superadmin.nda') }}"><span class="icon"><i
                                 class="fas fa-paperclip"></i></span><span class="text">Verifikasi NDA</span></a></li>
@@ -72,7 +74,7 @@
                                 class="fas fa-file"></i></span><span class="text">Verifikasi DCAF</span></a></li>
             @endif
 
-            @if(auth()->user()->role == '3' || auth()->user()->role == '4')
+            @if(auth()->user()->role == '4' || auth()->user()->role == '5')
                 <li><a href="{{ route('verifikasi.user.nda') }}"><span class="icon"><i
                                 class="fas fa-paperclip"></i></span><span class="text">NDA</span></a></li>
                 <li><a href="{{ route('verifikasi.user.dcaf') }}"><span class="icon"><i class="fas fa-file"></i></span><span
@@ -103,10 +105,11 @@
                     <h3>{{ auth()->user()->name }}</h3>
                     @php
                         $roleText = [
-                            1 => 'Superadmin',
-                            2 => 'Admin',
-                            3 => 'Internal',
-                            4 => 'Eksternal',
+                            1 => 'Admin',
+                            2 => 'Operator Aset',
+                            3 => 'Pengguna Region',
+                            4 => 'Pengguna Internal',
+                            5 => 'Pengguna Eksternal',
                         ][auth()->user()->role] ?? 'Unknown';
                     @endphp
                     <span>{{ $roleText }}</span>

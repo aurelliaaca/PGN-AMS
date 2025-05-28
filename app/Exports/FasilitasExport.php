@@ -42,6 +42,7 @@ class FasilitasExport implements FromCollection, WithHeadings
             'Status',
             'UAwal',
             'UAkhir',
+            'Milik',
         ];
     }
 }

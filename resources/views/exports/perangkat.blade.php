@@ -2,12 +2,8 @@
 <html>
 
 <head>
-    <title>Data Fasilitas</title>
+    <title>Data Alatukur</title>
     <style>
-        @page {
-            size: landscape;
-        }
-
         body {
             font-family: Arial, sans-serif;
             font-size: 11pt;
@@ -46,7 +42,7 @@
 </head>
 
 <body>
-    <h3>Data Fasilitas</h3>
+    <h3>Data Perangkat</h3>
 
     <div class="content">
         <table>
@@ -56,12 +52,10 @@
                     <th>Region</th>
                     <th>Site</th>
                     <th>No Rack</th>
-                    <th>Fasilitas</th>
-                    <th>Fasilitas ke</th>
+                    <th>Perangkat</th>
+                    <th>Perangkat ke</th>
                     <th>Brand</th>
                     <th>Type</th>
-                    <th>Serial Number</th>
-                    <th>Status</th>
                     <th>UAwal</th>
                     <th>UAkhir</th>
                     <th>Milik</th>
@@ -74,12 +68,10 @@
                         <td>{{ $item->region->nama_region }}</td>
                         <td>{{ $item->site->nama_site }}</td>
                         <td style="text-align: center;">{{ $item->no_rack }}</td>
-                        <td>{{ $item->jenisfasilitas->nama_fasilitas }}</td>
-                        <td style="text-align: center;">{{ $item->fasilitas_ke }}</td>
-                        <td>{{ optional($item->brandfasilitas)->nama_brand }}</td>
+                        <td>{{ $item->jenisperangkat->nama_perangkat }}</td>
+                        <td style="text-align: center;">{{ $item->perangkat_ke }}</td>
+                        <td>{{ optional($item->brandperangkat)->nama_brand }}</td>
                         <td>{{ $item->type }}</td>
-                        <td>{{ $item->serialnumber }}</td>
-                        <td>{{ $item->status }}</td>
                         <td style="text-align: center;">{{ $item->uawal }}</td>
                         <td style="text-align: center;">{{ $item->uakhir }}</td>
                         <td>{{ $item->user->name }}</td>
@@ -104,5 +96,4 @@
     </div>
 
 </body>
-
 </html>

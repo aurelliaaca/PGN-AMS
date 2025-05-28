@@ -3,6 +3,10 @@
 @section('title', 'NDA')
 @section('page_title', 'NDA')
 
+@section('styles')
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+@endsection
+
 @section('content')
     <div class="main">
         <div class="container">
@@ -136,12 +140,13 @@
 
             <div class="tables-container dua" style="margin-top: 20px;">
                 <div class="table-column">
-                    <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="button-wrapper">
-                            @if(auth()->user()->role == 3)
+                    <div class="title"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: -9px;">
+                        <div class="button-wrapper" style="margin-bottom: 20px;">
+                            @if(auth()->user()->role == 4)
                                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahNdaInternal')">Ajukan
                                     NDA</button>
-                            @elseif(auth()->user()->role == 4)
+                            @elseif(auth()->user()->role == 5)
                                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahNdaEksternal')">Ajukan
                                     NDA</button>
                             @endif
@@ -158,36 +163,33 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if($ndas->isEmpty())
+                                @foreach($ndas as $index => $nda)
                                     <tr>
-                                        <td colspan="7" class="no-data">Tidak ada data NDA</td>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                                        <td>
+                                            <span style="display: inline-flex; align-items: center;">
+                                            <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color:
+                                                {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' :
+                                                ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
+                                            </span>
+                                                {{ ucfirst($nda->status) }}
+                                            </span>
+                                        </td>
                                     </tr>
-                                @else
-                                    @foreach($ndas as $index => $nda)
-                                                        <tr>
-                                                            <td>{{ $index + 1 }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                                            <td>
-                                                                <span style="display: inline-flex; align-items: center;">
-                                                                    <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px;
-                                                                                                                                            background-color: {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' :
-                                        ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
-                                                                    </span>
-                                                                    {{ ucfirst($nda->status) }}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                    @endforeach
-                                @endif
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div class="table-column">
-                    <div class="title" style="display: flex; justify-content: space-between; align-items: center;"></br>
-                        <h3>NDA Aktif</h3>
-                    </div></br>
+                    <div class="title"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: -9px;">
+                        <div class="button-wrapper">
+                        </div>
+                        <h3 style="margin-bottom: 23px;">NDA Aktif</h3>
+                    </div>
                     <div class="table-responsive">
                         <table id="ajukanTable" class="table table-bordered table-striped">
                             <thead>
@@ -201,7 +203,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($activeNdas->where('status', 'diterima') as $index => $nda)
+                                @foreach($activeNdas->where('status', 'diterima') as $index => $nda)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
@@ -217,14 +219,15 @@
                                         </td>
                                         <td>
                                             <span style="display: inline-flex; align-items: center;">
-                                                <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #28a745;">
+                                                <span
+                                                    style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #28a745;">
                                                 </span>
                                                 Aktif
                                             </span>
                                         </td>
                                     </tr>
-                                @empty
-                                @forelse($expiredNdas->where('status', 'diterima') as $index => $nda)
+                                @endforeach
+                                @foreach($expiredNdas->where('status', 'diterima') as $index => $nda)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
@@ -240,18 +243,14 @@
                                         </td>
                                         <td>
                                             <span style="display: inline-flex; align-items: center;">
-                                                <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #dc3545;">
+                                                <span
+                                                    style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #dc3545;">
                                                 </span>
                                                 Kadaluarsa
                                             </span>
                                         </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center">Tidak ada riwayat NDA yang disetujui</td>
-                                    </tr>
-                                @endforelse
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -259,187 +258,224 @@
             </div>
         </div>
     </div>
+    @section('scripts')
+        <script>
+            $(document).ready(function () {
+                $('#buatTable').DataTable({
+                    "language": {
+                        "search": "Cari",
+                        "lengthMenu": "_MENU_",
+                        "zeroRecords": "Tidak ada data yang ditemukan",
+                        "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                        "infoEmpty": "Tidak ada data yang tersedia",
+                        "infoFiltered": "(difilter dari _MAX_ total data)",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "<i class='fas fa-arrow-right'></i>",
+                            "previous": "<i class='fas fa-arrow-left'></i>"
+                        }
+                    },
+                    pageLength: 10,
+                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    order: [],
+                    columnDefs: [
+                        { targets: [], orderable: false }
+                    ]
+                });
 
-    <script>
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = "block";
-        }
+                $('#ajukanTable').DataTable({
+                    "language": {
+                        "search": "Cari",
+                        "lengthMenu": "_MENU_",
+                        "zeroRecords": "Tidak ada data yang ditemukan",
+                        "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                        "infoEmpty": "Tidak ada data yang tersedia",
+                        "infoFiltered": "(difilter dari _MAX_ total data)",
+                        "paginate": {
+                            "first": "Pertama",
+                            "last": "Terakhir",
+                            "next": "<i class='fas fa-arrow-right'></i>",
+                            "previous": "<i class='fas fa-arrow-left'></i>"
+                        }
+                    },
+                    pageLength: 10,
+                    lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+                    order: [],
+                    columnDefs: [
+                        { targets: [5], orderable: false }
+                    ]
+                });
+            });
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
-
-        window.onclick = function (event) {
-            if (event.target.className === 'modal') {
-                event.target.style.display = "none";
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = "block";
             }
-        }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fungsi untuk menginisialisasi signature pad
-            function initSignaturePad(canvasId, inputId, uploadId, clearId) {
-                const canvas = document.getElementById(canvasId);
-                if (!canvas) return; // Skip jika canvas tidak ditemukan
-                
-                const context = canvas.getContext('2d');
-                const inputHidden = document.getElementById(inputId);
-                const uploadInput = document.getElementById(uploadId);
-                const clearButton = document.getElementById(clearId);
-                let isImageUploaded = false;
-                
-                // Set ukuran canvas
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-                
-                context.strokeStyle = '#000';
-                context.lineWidth = 2;
-                context.lineCap = 'round';
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = "none";
+            }
 
-                // Load existing signature if any
-                if (inputHidden && inputHidden.value) {
-                    const img = new Image();
-                    img.onload = function () {
-                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        isImageUploaded = true;
-                        canvas.style.cursor = 'default';
-                    };
-                    img.src = inputHidden.value;
+            window.onclick = function (event) {
+                if (event.target.className === 'modal') {
+                    event.target.style.display = "none";
                 }
+            }
 
-                // Clear button handler
-                if (clearButton) {
-                    clearButton.addEventListener('click', () => {
-                        context.clearRect(0, 0, canvas.width, canvas.height);
-                        if (inputHidden) inputHidden.value = '';
-                        isImageUploaded = false;
-                        canvas.style.cursor = 'crosshair';
-                    });
-                }
+            document.addEventListener('DOMContentLoaded', function () {
+                function initSignaturePad(canvasId, inputId, uploadId, clearId) {
+                    const canvas = document.getElementById(canvasId);
+                    if (!canvas) return;
 
-                // Upload handler
-                if (uploadInput) {
-                    uploadInput.addEventListener('change', function (e) {
-                        const file = e.target.files[0];
-                        if (!file) return;
-                        const reader = new FileReader();
-                        reader.onload = function (event) {
-                            const img = new Image();
-                            img.onload = function () {
-                                canvas.width = img.width;
-                                canvas.height = img.height;
-                                context.clearRect(0, 0, canvas.width, canvas.height);
-                                context.drawImage(img, 0, 0);
-                                if (inputHidden) inputHidden.value = canvas.toDataURL('image/png');
-                                isImageUploaded = true;
-                                canvas.style.cursor = 'default';
-                            };
-                            img.src = event.target.result;
+                    const context = canvas.getContext('2d');
+                    const inputHidden = document.getElementById(inputId);
+                    const uploadInput = document.getElementById(uploadId);
+                    const clearButton = document.getElementById(clearId);
+                    let isImageUploaded = false;
+
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+
+                    context.strokeStyle = '#000';
+                    context.lineWidth = 2;
+                    context.lineCap = 'round';
+
+                    if (inputHidden && inputHidden.value) {
+                        const img = new Image();
+                        img.onload = function () {
+                            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            isImageUploaded = true;
+                            canvas.style.cursor = 'default';
                         };
-                        reader.readAsDataURL(file);
-                    });
-                }
-
-                // Drawing functions
-                let isDrawing = false;
-                let lastX = 0;
-                let lastY = 0;
-
-                function startDrawing(e) {
-                    if (isImageUploaded) return;
-                    isDrawing = true;
-                    const rect = canvas.getBoundingClientRect();
-                    lastX = e.clientX - rect.left;
-                    lastY = e.clientY - rect.top;
-                    context.beginPath();
-                    context.moveTo(lastX, lastY);
-                }
-
-                function draw(e) {
-                    if (!isDrawing || isImageUploaded) return;
-                    const rect = canvas.getBoundingClientRect();
-                    const currentX = e.clientX - rect.left;
-                    const currentY = e.clientY - rect.top;
-                    
-                    context.beginPath();
-                    context.moveTo(lastX, lastY);
-                    context.lineTo(currentX, currentY);
-                    context.stroke();
-                    
-                    lastX = currentX;
-                    lastY = currentY;
-                    
-                    if (inputHidden) {
-                        inputHidden.value = canvas.toDataURL('image/png');
+                        img.src = inputHidden.value;
                     }
+
+                    if (clearButton) {
+                        clearButton.addEventListener('click', () => {
+                            context.clearRect(0, 0, canvas.width, canvas.height);
+                            if (inputHidden) inputHidden.value = '';
+                            isImageUploaded = false;
+                            canvas.style.cursor = 'crosshair';
+                        });
+                    }
+
+                    if (uploadInput) {
+                        uploadInput.addEventListener('change', function (e) {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = function (event) {
+                                const img = new Image();
+                                img.onload = function () {
+                                    canvas.width = img.width;
+                                    canvas.height = img.height;
+                                    context.clearRect(0, 0, canvas.width, canvas.height);
+                                    context.drawImage(img, 0, 0);
+                                    if (inputHidden) inputHidden.value = canvas.toDataURL('image/png');
+                                    isImageUploaded = true;
+                                    canvas.style.cursor = 'default';
+                                };
+                                img.src = event.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+
+                    let isDrawing = false;
+                    let lastX = 0;
+                    let lastY = 0;
+
+                    function startDrawing(e) {
+                        if (isImageUploaded) return;
+                        isDrawing = true;
+                        const rect = canvas.getBoundingClientRect();
+                        lastX = e.clientX - rect.left;
+                        lastY = e.clientY - rect.top;
+                        context.beginPath();
+                        context.moveTo(lastX, lastY);
+                    }
+
+                    function draw(e) {
+                        if (!isDrawing || isImageUploaded) return;
+                        const rect = canvas.getBoundingClientRect();
+                        const currentX = e.clientX - rect.left;
+                        const currentY = e.clientY - rect.top;
+
+                        context.beginPath();
+                        context.moveTo(lastX, lastY);
+                        context.lineTo(currentX, currentY);
+                        context.stroke();
+
+                        lastX = currentX;
+                        lastY = currentY;
+
+                        if (inputHidden) {
+                            inputHidden.value = canvas.toDataURL('image/png');
+                        }
+                    }
+
+                    function stopDrawing() {
+                        if (isImageUploaded) return;
+                        isDrawing = false;
+                    }
+
+                    canvas.addEventListener('mousedown', startDrawing);
+                    canvas.addEventListener('mousemove', draw);
+                    canvas.addEventListener('mouseup', stopDrawing);
+                    canvas.addEventListener('mouseleave', stopDrawing);
+
+                    canvas.addEventListener('touchstart', function (e) {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const mouseEvent = new MouseEvent('mousedown', {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY
+                        });
+                        canvas.dispatchEvent(mouseEvent);
+                    });
+
+                    canvas.addEventListener('touchmove', function (e) {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const mouseEvent = new MouseEvent('mousemove', {
+                            clientX: touch.clientX,
+                            clientY: touch.clientY
+                        });
+                        canvas.dispatchEvent(mouseEvent);
+                    });
+
+                    canvas.addEventListener('touchend', function (e) {
+                        e.preventDefault();
+                        const mouseEvent = new MouseEvent('mouseup', {});
+                        canvas.dispatchEvent(mouseEvent);
+                    });
                 }
 
-                function stopDrawing() {
-                    if (isImageUploaded) return;
-                    isDrawing = false;
-                }
+                function initModalSignaturePads(modalId) {
+                    const modal = document.getElementById(modalId);
+                    if (!modal) return;
 
-                // Event listeners
-                canvas.addEventListener('mousedown', startDrawing);
-                canvas.addEventListener('mousemove', draw);
-                canvas.addEventListener('mouseup', stopDrawing);
-                canvas.addEventListener('mouseleave', stopDrawing);
-
-                // Touch support
-                canvas.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    const mouseEvent = new MouseEvent('mousedown', {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY
-                    });
-                    canvas.dispatchEvent(mouseEvent);
-                });
-
-                canvas.addEventListener('touchmove', function(e) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    const mouseEvent = new MouseEvent('mousemove', {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY
-                    });
-                    canvas.dispatchEvent(mouseEvent);
-                });
-
-                canvas.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    const mouseEvent = new MouseEvent('mouseup', {});
-                    canvas.dispatchEvent(mouseEvent);
-                });
-            }
-
-            // Fungsi untuk menginisialisasi signature pad saat modal dibuka
-            function initModalSignaturePads(modalId) {
-                const modal = document.getElementById(modalId);
-                if (!modal) return;
-
-                // Inisialisasi signature pad saat modal dibuka
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.attributeName === 'style') {
-                            const display = window.getComputedStyle(modal).display;
-                            if (display === 'block') {
-                                if (modalId === 'modalTambahNdaInternal') {
-                                    initSignaturePad('signature-pad-internal', 'signature-internal', 'upload-signature-internal', 'clear-signature-internal');
-                                } else if (modalId === 'modalTambahNdaEksternal') {
-                                    initSignaturePad('signature-pad-eksternal', 'signature-eksternal', 'upload-signature-eksternal', 'clear-signature-eksternal');
+                    const observer = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if (mutation.attributeName === 'style') {
+                                const display = window.getComputedStyle(modal).display;
+                                if (display === 'block') {
+                                    if (modalId === 'modalTambahNdaInternal') {
+                                        initSignaturePad('signature-pad-internal', 'signature-internal', 'upload-signature-internal', 'clear-signature-internal');
+                                    } else if (modalId === 'modalTambahNdaEksternal') {
+                                        initSignaturePad('signature-pad-eksternal', 'signature-eksternal', 'upload-signature-eksternal', 'clear-signature-eksternal');
+                                    }
                                 }
                             }
-                        }
+                        });
                     });
-                });
 
-                observer.observe(modal, { attributes: true });
-            }
+                    observer.observe(modal, { attributes: true });
+                }
 
-            // Inisialisasi observer untuk kedua modal
-            initModalSignaturePads('modalTambahNdaInternal');
-            initModalSignaturePads('modalTambahNdaEksternal');
-        });
-    </script>
-
+                initModalSignaturePads('modalTambahNdaInternal');
+                initModalSignaturePads('modalTambahNdaEksternal');
+            });
+        </script>
+    @endsection
 @endsection

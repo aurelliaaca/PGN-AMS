@@ -15,59 +15,61 @@ use Carbon\Carbon;
 
 class PerangkatController extends Controller
 {
-   public function indexPerangkat(Request $request)
-{
-    $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
-    $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
-    $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
-    $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
-    $users = User::select('id', 'name')->orderBy('name')->get();
-    $racks = Rack::select('kode_region', 'kode_site', 'no_rack')->distinct()->get();
+    public function indexPerangkat(Request $request)
+    {
+        $regions = Region::select('kode_region', 'nama_region')->orderBy('nama_region')->get();
+        $sites = Site::select('kode_region', 'nama_site', 'kode_site')->orderBy('nama_site')->get();
+        $types = JenisPerangkat::select('kode_perangkat', 'nama_perangkat')->orderBy('nama_perangkat')->get();
+        $brands = BrandPerangkat::select('kode_brand', 'nama_brand')->orderBy('nama_brand')->get();
+        $users = User::select('id', 'name')->orderBy('name')->get();
+        $racks = Rack::select('kode_region', 'kode_site', 'no_rack')->distinct()->get();
 
-    $user = auth()->user(); 
-    $role = $user->role;
+        $user = auth()->user();
+        $role = $user->role;
 
-    $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
+        $query = ListPerangkat::with(['region', 'site', 'jenisperangkat', 'brandperangkat']);
 
-    if ($role == 3 || $role == 4) {
-        $query->where('milik', $user->id);
+        if ($role == 4 || $role == 5) {
+            $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
+        }
+
+        if ($request->filled('kode_region')) {
+            $query->whereIn('kode_region', $request->kode_region);
+        }
+
+        if ($request->filled('kode_site')) {
+            $query->whereIn('kode_site', $request->kode_site);
+        }
+
+        if ($request->filled('kode_perangkat')) {
+            $query->whereIn('kode_perangkat', $request->kode_perangkat);
+        }
+
+        $filteredSites = collect();
+        if ($request->filled('kode_region')) {
+            $filteredSites = Site::whereIn('kode_region', $request->kode_region)
+                ->select('kode_region', 'nama_site', 'kode_site')
+                ->orderBy('nama_site')
+                ->get();
+        } else {
+            $filteredSites = $sites;
+        }
+
+        $dataperangkat = $query->get();
+
+        return view('aset.perangkat', compact(
+            'regions',
+            'sites',
+            'filteredSites',
+            'types',
+            'brands',
+            'dataperangkat',
+            'users',
+            'racks'
+        ));
     }
-
-    if ($request->filled('kode_region')) {
-        $query->whereIn('kode_region', $request->kode_region);
-    }
-
-    if ($request->filled('kode_site')) {
-        $query->whereIn('kode_site', $request->kode_site);
-    }
-
-    if ($request->filled('kode_perangkat')) {
-        $query->whereIn('kode_perangkat', $request->kode_perangkat);
-    }
-
-    $filteredSites = collect();
-    if ($request->filled('kode_region')) {
-        $filteredSites = Site::whereIn('kode_region', $request->kode_region)
-                            ->select('kode_region', 'nama_site', 'kode_site')
-                            ->orderBy('nama_site')
-                            ->get();
-    } else {
-        $filteredSites = $sites;
-    }
-
-    $dataperangkat = $query->get();
-
-    return view('aset.perangkat', compact(
-        'regions',
-        'sites',
-        'filteredSites',
-        'types',
-        'brands',
-        'dataperangkat',
-        'users',
-        'racks'
-    ));
-}
 
     public function store(Request $request)
     {
@@ -82,8 +84,8 @@ class PerangkatController extends Controller
             'uakhir' => 'nullable|numeric|min:1',
             'milik' => 'required',
         ]);
-    
-        
+
+
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -104,7 +106,7 @@ class PerangkatController extends Controller
                     'uakhir' => 'UAkhir tidak boleh kurang dari 1.'
                 ])->withInput();
             }
-    
+
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 $existingRack = Rack::where('kode_region', $request->kode_region)
                     ->where('kode_site', $request->kode_site)
@@ -112,20 +114,20 @@ class PerangkatController extends Controller
                     ->where('u', $u)
                     ->where(function ($query) {
                         $query->whereNotNull('id_perangkat')
-                              ->orWhereNotNull('id_fasilitas');
+                            ->orWhereNotNull('id_fasilitas');
                     })
                     ->exists();
-            
+
                 if ($existingRack) {
                     return redirect()->route('perangkat.index')
                         ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
                 }
             }
         }
-    
+
         $jumlahPerangkat = ListPerangkat::where('kode_site', $request->kode_site)->max('perangkat_ke');
         $perangkatKe = $jumlahPerangkat + 1;
-    
+
         $perangkatBaru = ListPerangkat::create([
             'kode_region' => $request->kode_region,
             'kode_site' => $request->kode_site,
@@ -138,7 +140,7 @@ class PerangkatController extends Controller
             'uakhir' => $request->uakhir,
             'milik' => $request->milik,
         ]);
-    
+
         HistoriPerangkat::create([
             'id_perangkat' => $perangkatBaru->id_perangkat,
             'kode_region' => $request->kode_region,
@@ -154,7 +156,7 @@ class PerangkatController extends Controller
             'histori' => 'Ditambahkan',
             'tanggal_perubahan' => Carbon::now('Asia/Jakarta'),
         ]);
-    
+
         if ($request->no_rack) {
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 Rack::updateOrInsert(
@@ -172,14 +174,14 @@ class PerangkatController extends Controller
                     ]
                 );
             }
-        }        
-    
+        }
+
         return redirect()->route('perangkat.index')
             ->with('success', 'Perangkat berhasil ditambahkan.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')
             ->with('error', 'Terjadi kesalahan saat menambahkan perangkat. Silakan coba lagi.');
     }
-    
+
 
 
     public function update(Request $request, $id)
@@ -225,10 +227,10 @@ class PerangkatController extends Controller
                 ->where('u', $u)
                 ->where(function ($query) {
                     $query->whereNotNull('id_perangkat')
-                          ->orWhereNotNull('id_fasilitas');
+                        ->orWhereNotNull('id_fasilitas');
                 })
                 ->exists();
-        
+
             if ($existingRack) {
                 return redirect()->route('perangkat.index')
                     ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
@@ -265,8 +267,8 @@ class PerangkatController extends Controller
                     ]
                 );
             }
-        }        
-        
+        }
+
         return redirect()->route('perangkat.index')
             ->with('success', 'Perangkat berhasil diupdate.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')

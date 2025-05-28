@@ -35,9 +35,11 @@ class AlatukurExport implements FromCollection, WithHeadings
             'Alat Ukur ke',
             'Brand',
             'Type',
+            'Serial Number',
             'Tahun Perolehan',
             'Kondisi',
             'Keterangan',
+            'Milik',
         ];
     }
 }

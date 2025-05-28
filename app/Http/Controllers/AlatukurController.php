@@ -25,8 +25,10 @@ class AlatukurController extends Controller
 
         $query = ListAlatukur::with(['region', 'jenisalatukur', 'brandalatukur']); // Hapus 'site'
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $query->where('milik', $user->id);
+        } elseif ($role == 3) {
+            $query->where('kode_region', $user->region);
         }
 
         if ($request->filled('kode_region')) {

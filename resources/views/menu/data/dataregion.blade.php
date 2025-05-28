@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="main">
-        <button class="btn btn-primary mb-3" onclick="openModal('modalTambahRegion')">+ Tambah Region</button>
+        <button class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px;" onclick="openModal('modalTambahRegion')">+ Tambah Region</button>
         <div class="card-grid">
             @foreach($regions as $region)
                 <div class="toggle">
@@ -16,7 +16,6 @@
                             <p>{{ $region->alamat }}</p>
                             <p>{{ $region->koordinat }}</p>
 
-                            <!-- Action Buttons -->
                             <div
                                 class="action-buttons">
                                 <button class="btn btn-eye mb-3" onclick="toggleSites('{{ $region->kode_region }}')">
@@ -89,7 +88,6 @@
                         </div>
                     </div>
 
-                    <!-- Modal Tambah Site -->
                     <div id="modalTambahSite{{ $region->id_region }}" class="modal">
                         <div class="modal-content">
                             <span class="close" onclick="closeModal('modalTambahSite{{ $region->id_region }}')">&times;</span>

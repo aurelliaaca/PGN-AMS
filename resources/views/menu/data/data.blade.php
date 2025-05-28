@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Data') {{-- Ini buat title di tab browser --}}
-@section('page_title', 'Data') {{-- Ini buat judul yang tampil di halaman --}}
+@section('title', 'Manajemen Data') 
+@section('page_title', 'Manajemen Data') 
 @section('content')
     <style>
         .icon-wrapper {
@@ -129,6 +129,24 @@
     <div class="main">
         <div class="container">
             <div class="kotak-container">
+                <div class="kotak" onclick="window.location.href='/menu/data/datauser'" style="cursor: pointer;">
+                    <div class="kotak-header">
+                        <div class="icon-wrapper">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="header-text">
+                            <h3>User</h3>
+                        </div>
+                    </div>
+                    <div class="kotak-body">
+                        <p>User</p>
+                        <div class="view-btn">
+                            <span>Lihat Detail</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
@@ -147,7 +165,6 @@
                     </div>
                 </div>
 
-                <!-- Perangkat -->
                 <div class="kotak" onclick="window.location.href='/menu/data/dataperangkat'" style="cursor: pointer;">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
@@ -166,7 +183,6 @@
                     </div>
                 </div>
 
-                <!-- Fasilitas -->
                 <div class="kotak">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
@@ -185,7 +201,6 @@
                     </div>
                 </div>
 
-                <!-- Alat Ukur -->
                 <div class="kotak" onclick="window.location.href='/menu/data/dataalatukur'" style="cursor: pointer;">
                     <div class="kotak-header">
                         <div class="icon-wrapper">
@@ -202,27 +217,8 @@
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
-                </div>
+                </div>                
 
-                <div class="kotak" onclick="window.location.href='/menu/data/datauser'" style="cursor: pointer;">
-                    <div class="kotak-header">
-                        <div class="icon-wrapper">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="header-text">
-                            <h3>User</h3>
-                        </div>
-                    </div>
-                    <div class="kotak-body">
-                        <p>User</p>
-                        <div class="view-btn">
-                            <span>Lihat Detail</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tipe Jaringan -->
                 <div class="kotak" onclick="window.location.href='{{ route('datajaringan.index') }}'" style="cursor: pointer;">
                     <div class="kotak-header">
                         <div class="icon-wrapper">

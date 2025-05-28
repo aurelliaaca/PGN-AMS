@@ -20,21 +20,22 @@
         <div class="container">
 
             @if(auth()->user()->role == '1')
-            <button class="btn btn-primary mb-3" style="margin-top: 20px;" onclick="openModal('modalTambahRack')">+ Tambah Rack</button>
-            <div class="filter-container" style="margin-top: 20px;">
-                <select id="region-filter" name="region[]" multiple class="select2">
-                    @foreach($regions as $region)
-                        <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
-                    @endforeach
-                </select>
+                <button class="btn btn-primary mb-3" style="margin-top: 20px;" onclick="openModal('modalTambahRack')">+ Tambah
+                    Rack</button>
+                <div class="filter-container" style="margin-top: 20px;">
+                    <select id="region-filter" name="region[]" multiple class="select2">
+                        @foreach($regions as $region)
+                            <option value="{{ $region->kode_region }}">{{ $region->nama_region }}</option>
+                        @endforeach
+                    </select>
 
-                <select id="site-filter" name="site[]" multiple class="select2" disabled>
-                </select>
+                    <select id="site-filter" name="site[]" multiple class="select2" disabled>
+                    </select>
 
-                <div class="search-bar">
-                    <input type="text" id="searchInput" class="custom-select" placeholder="Cari" />
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" class="custom-select" placeholder="Cari" />
+                    </div>
                 </div>
-            </div>
             @endif
 
 
@@ -173,13 +174,14 @@
 
                 return pieCharts[elementId];
             }
+            
             function loadRacks() {
                 const loadingOverlay = document.getElementById('loading-overlay');
                 loadingOverlay.style.display = 'flex';
 
-            const selectedRegions = $('#region-filter').length ? $('#region-filter').val() || [] : [];
-            const selectedSites = $('#site-filter').length ? $('#site-filter').val() || [] : [];
-            const searchKeyword = $('#searchInput').length ? $('#searchInput').val().toLowerCase() : '';
+                const selectedRegions = $('#region-filter').length ? $('#region-filter').val() || [] : [];
+                const selectedSites = $('#site-filter').length ? $('#site-filter').val() || [] : [];
+                const searchKeyword = $('#searchInput').length ? $('#searchInput').val().toLowerCase() : '';
 
                 const racksContainer = document.getElementById('racks-container');
 
@@ -202,17 +204,17 @@
 
                         if (data.error) {
                             racksContainer.innerHTML = `
-                    <div class="error-message" style="text-align: center; padding: 20px;">
-                        <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 24px;"></i>
-                        <p style="color: #ff6b6b; margin-top: 10px;">${data.message}</p>
-                    </div>
-                `;
+                            <div class="error-message" style="text-align: center; padding: 20px;">
+                                <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 24px;"></i>
+                                <p style="color: #ff6b6b; margin-top: 10px;">${data.message}</p>
+                            </div>
+                        `;
                             return;
                         }
 
                         racksContainer.innerHTML = data.html;
 
-                        @if(auth()->user()->role == '1')
+                        @if(auth()->user()->role == '1' || auth()->user()->role == '2')
                             data.racks.forEach(rack => {
                                 const chartId = `pieChart-${rack.kode_region}-${rack.kode_site}-${rack.no_rack}`;
                                 const canvas = document.getElementById(chartId);
@@ -223,18 +225,18 @@
                                 }
                             });
                         @endif
-                    })
+                            })
                     .catch(error => {
                         console.error('Error loading rack data:', error);
                         loadingOverlay.style.display = 'none';
 
                         racksContainer.innerHTML = `
-                <div class="error-message" style="text-align: center; padding: 20px;">
-                    <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 24px;"></i>
-                    <p style="color: #ff6b6b; margin-top: 10px;">Failed to load rack data. Please try again later.</p>
-                    <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Error details: ${error.message}</p>
-                </div>
-            `;
+                        <div class="error-message" style="text-align: center; padding: 20px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; font-size: 24px;"></i>
+                            <p style="color: #ff6b6b; margin-top: 10px;">Failed to load rack data. Please try again later.</p>
+                            <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Error details: ${error.message}</p>
+                        </div>
+                    `;
                     });
             }
 
