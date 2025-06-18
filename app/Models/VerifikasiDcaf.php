@@ -18,8 +18,10 @@ class VerifikasiDcaf extends Model
         'lokasi',
         'no_rack',
         'jenis_pekerjaan',
+        'deskripsi_pekerjaan',
         'signature',
-        'pengawas'
+        'pengawas',
+        'created_at'
     ];
 
     public function user()

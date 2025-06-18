@@ -34,11 +34,6 @@ class VerifikasiNda extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function nda()
-    {
-        return $this->belongsTo(Nda::class);
-    }
-
     public function signedBy()
     {
         return $this->belongsTo(User::class, 'signed_by');

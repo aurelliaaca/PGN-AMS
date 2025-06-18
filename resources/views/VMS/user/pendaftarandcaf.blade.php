@@ -20,7 +20,8 @@
                         <option value="">Pilih NDA</option>
                         @foreach ($activeNdas as $nda)
                             <option value="{{ $nda->id }}">
-                                NDA {{ $nda->user->name }} - Berlaku s/d {{ \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('d M Y') }}
+                                NDA {{ $nda->user->name }} - Berlaku s/d
+                                {{ \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('d M Y') }}
                             </option>
                         @endforeach
                     </select>
@@ -123,7 +124,7 @@
                             <label>Nomor Rack</label>
                             <select name="no_rack" class="form-control" required>
                                 <option value="" disabled selected>Pilih No Rack</option>
-                                <option value="-">-</option> 
+                                <option value="-">-</option>
                                 @foreach($racks as $rack)
                                     <option value="{{ $rack->no_rack }}">
                                         Rack {{ $rack->no_rack }}, {{ $rack->site->nama_site }} {{ $rack->region->nama_region }}
@@ -138,7 +139,8 @@
                     <div class="split">
                         <div>
                             <label for="jenis_pekerjaan">Jenis Pekerjaan</label>
-                            <select name="jenis_pekerjaan" id="jenis_pekerjaan" class="form-control" required>
+                            <select name="jenis_pekerjaan" id="jenis_pekerjaan" class="form-control" required
+                                onchange="toggleDeskripsiPekerjaan()">
                                 <option value="">Pilih Jenis Pekerjaan</option>
                                 <option value="maintenance">Maintenance</option>
                                 <option value="checking">Checking</option>
@@ -146,14 +148,11 @@
                                 <option value="dismantle">Dismantle</option>
                                 <option value="others">Others</option>
                             </select>
-                            <input type="text" id="jenis_pekerjaan_lainnya" name="jenis_pekerjaan_lainnya"
-                                class="form-control" placeholder="Masukkan jenis pekerjaan lainnya"
-                                style="display: none; margin-top: 10px;">
                         </div>
-                        <div>
-                            <label>Deskripsi Pekerjaan</label>
-                            <input id="deskripsi_pekerjaan" type="text" class="form-control" name="deskripsi_pekerjaan"
-                                required>
+
+                        <div id="deskripsi_pekerjaan_container">
+                            <label for="deskripsi_pekerjaan">Deskripsi Pekerjaan</label>
+                            <input id="deskripsi_pekerjaan" type="text" class="form-control" name="deskripsi_pekerjaan">
                         </div>
                     </div>
                 </div>
@@ -247,43 +246,37 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
     <script>
-        $(document).ready(function () {
-            $('#jenis_pekerjaan').select2({
-                placeholder: "Pilih Jenis Pekerjaan",
-                allowClear: true,
-                width: '100%'
-            });
+        function toggleDeskripsiPekerjaan() {
+            const jenisPekerjaan = document.getElementById('jenis_pekerjaan').value;
+            const deskripsiContainer = document.getElementById('deskripsi_pekerjaan_container');
 
-            $('#jenis_pekerjaan').on('change', function () {
-                const value = $(this).val();
-                const $inputLainnya = $('#jenis_pekerjaan_lainnya');
-                if (value === 'others') {
-                    $inputLainnya.show().attr('required', true).focus();
-                } else {
-                    $inputLainnya.hide().val('').removeAttr('required');
-                }
-            });
-
-            $('#jenis_pekerjaan_lainnya').hide();
-        });
+            if (jenisPekerjaan === 'others') {
+                deskripsiContainer.style.display = 'block';
+                document.getElementById('deskripsi_pekerjaan').setAttribute('required', 'required');
+            } else {
+                deskripsiContainer.style.display = 'none';
+                document.getElementById('deskripsi_pekerjaan').removeAttribute('required');
+                document.getElementById('deskripsi_pekerjaan').value = '';
+            }
+        }
 
         function addRekanan() {
             const rekananContainer = document.getElementById('rekanan-container');
             const newRekanan = document.createElement('div');
             newRekanan.classList.add('rekanan-tambahan');
             newRekanan.innerHTML = `
-                                    <div style="position: relative; margin-top: 20px;">
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="nama_rekanan[]" placeholder="Nama" required>
-                                            <input type="text" class="form-control" name="perusahaan_rekanan[]" placeholder="Nama Perusahaan" required>
-                                        </div>
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="ktp_rekanan[]" placeholder="No KTP" required>
-                                            <input type="text" class="form-control" name="telp_rekanan[]" placeholder="No Telepon" required>
-                                        </div>
-                                        <button type="button" onclick="this.closest('.rekanan-tambahan').remove()" class="btn-delete">Hapus</button>
-                                    </div>
-                                `;
+                                            <div style="position: relative; margin-top: 20px;">
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="nama_rekanan[]" placeholder="Nama" required>
+                                                    <input type="text" class="form-control" name="perusahaan_rekanan[]" placeholder="Nama Perusahaan" required>
+                                                </div>
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="ktp_rekanan[]" placeholder="No KTP" required>
+                                                    <input type="text" class="form-control" name="telp_rekanan[]" placeholder="No Telepon" required>
+                                                </div>
+                                                <button type="button" onclick="this.closest('.rekanan-tambahan').remove()" class="btn-delete">Hapus</button>
+                                            </div>
+                                        `;
             rekananContainer.appendChild(newRekanan);
         }
 
@@ -292,15 +285,15 @@
             const newPerlengkapan = document.createElement('div');
             newPerlengkapan.classList.add('perlengkapan-tambahan');
             newPerlengkapan.innerHTML = `
-                                    <div style="position: relative; margin-top: 20px;">
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="nama_perlengkapan[]" placeholder="Nama Perlengkapan" required>
-                                            <input type="text" class="form-control" name="jumlah_perlengkapan[]" placeholder="Jumlah" required>
-                                        </div>
-                                        <input type="text" class="form-control" name="keterangan_perlengkapan[]" placeholder="Keterangan" required>
-                                        <button type="button" onclick="this.closest('.perlengkapan-tambahan').remove()" class="btn-delete">Hapus</button>
-                                    </div>
-                                `;
+                                            <div style="position: relative; margin-top: 20px;">
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="nama_perlengkapan[]" placeholder="Nama Perlengkapan" required>
+                                                    <input type="text" class="form-control" name="jumlah_perlengkapan[]" placeholder="Jumlah" required>
+                                                </div>
+                                                <input type="text" class="form-control" name="keterangan_perlengkapan[]" placeholder="Keterangan" required>
+                                                <button type="button" onclick="this.closest('.perlengkapan-tambahan').remove()" class="btn-delete">Hapus</button>
+                                            </div>
+                                        `;
             container.appendChild(newPerlengkapan);
         }
 
@@ -309,18 +302,18 @@
             const newBarangMasuk = document.createElement('div');
             newBarangMasuk.classList.add('barang-masuk-tambahan');
             newBarangMasuk.innerHTML = `
-                                    <div style="position: relative; margin-top: 20px;">
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="nama_barang_masuk[]" placeholder="Nama" required>
-                                            <input type="text" class="form-control" name="jumlah_barang_masuk[]" placeholder="Jumlah" required>
-                                        </div>
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="berat_barang_masuk[]" placeholder="Berat (kg)" required>
-                                            <input type="text" class="form-control" name="keterangan_barang_masuk[]" placeholder="Keterangan" required>
-                                        </div>
-                                        <button type="button" onclick="this.closest('.barang-masuk-tambahan').remove()" class="btn-delete">Hapus</button>
-                                    </div>
-                                `;
+                                            <div style="position: relative; margin-top: 20px;">
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="nama_barang_masuk[]" placeholder="Nama" required>
+                                                    <input type="text" class="form-control" name="jumlah_barang_masuk[]" placeholder="Jumlah" required>
+                                                </div>
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="berat_barang_masuk[]" placeholder="Berat (kg)" required>
+                                                    <input type="text" class="form-control" name="keterangan_barang_masuk[]" placeholder="Keterangan" required>
+                                                </div>
+                                                <button type="button" onclick="this.closest('.barang-masuk-tambahan').remove()" class="btn-delete">Hapus</button>
+                                            </div>
+                                        `;
             container.appendChild(newBarangMasuk);
         }
 
@@ -329,18 +322,18 @@
             const newBarangKeluar = document.createElement('div');
             newBarangKeluar.classList.add('barang-keluar-tambahan');
             newBarangKeluar.innerHTML = `
-                                    <div style="position: relative; margin-top: 20px;">
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="nama_barang_keluar[]" placeholder="Nama" required>
-                                            <input type="text" class="form-control" name="jumlah_barang_keluar[]" placeholder="Jumlah" required>
-                                        </div>
-                                        <div class="split">
-                                            <input type="text" class="form-control" name="berat_barang_keluar[]" placeholder="Berat (kg)" required>
-                                            <input type="text" class="form-control" name="keterangan_barang_keluar[]" placeholder="Keterangan" required>
-                                        </div>
-                                        <button type="button" onclick="this.closest('.barang-keluar-tambahan').remove()" class="btn-delete">Hapus</button>
-                                    </div>
-                                `;
+                                            <div style="position: relative; margin-top: 20px;">
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="nama_barang_keluar[]" placeholder="Nama" required>
+                                                    <input type="text" class="form-control" name="jumlah_barang_keluar[]" placeholder="Jumlah" required>
+                                                </div>
+                                                <div class="split">
+                                                    <input type="text" class="form-control" name="berat_barang_keluar[]" placeholder="Berat (kg)" required>
+                                                    <input type="text" class="form-control" name="keterangan_barang_keluar[]" placeholder="Keterangan" required>
+                                                </div>
+                                                <button type="button" onclick="this.closest('.barang-keluar-tambahan').remove()" class="btn-delete">Hapus</button>
+                                            </div>
+                                        `;
             container.appendChild(newBarangKeluar);
         }
 

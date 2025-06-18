@@ -239,7 +239,7 @@
     <tr>
       <td class="section-number">9</td>
       <td class="label">Deskripsi Pekerjaan</td>
-      <td colspan="3">: </td>
+      <td colspan="3">: {{ $dcaf->deskripsi_pekerjaan ?? '' }}</td>
     </tr>
     <tr>
       <td></td>
