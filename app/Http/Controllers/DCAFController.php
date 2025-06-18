@@ -64,12 +64,13 @@ class DCAFController extends Controller
         $user = auth()->user();
 
         $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
-            ->where('milik', auth()->id()) 
+            ->where('milik', auth()->id())
             ->distinct()
             ->get();
 
         $dcafs = VerifikasiDcaf::all();
         $activeNdas = VerifikasiNda::where('user_id', $user->id)
+            ->where('user_id', auth()->id())
             ->where('status', 'diterima')
             ->where('masaberlaku', '>=', Carbon::now())
             ->orderBy('masaberlaku', 'desc')
@@ -91,11 +92,12 @@ class DCAFController extends Controller
     public function pendaftaranDCAF()
     {
         $racks = Rack::select('kode_region', 'kode_site', 'no_rack')
-            ->where('milik', auth()->id()) 
+            ->where('milik', auth()->id())
             ->distinct()
             ->get();
 
         $activeNdas = VerifikasiNda::where('status', 'diterima')
+            ->where('user_id', auth()->id())
             ->where('masaberlaku', '>', now())
             ->get();
 
@@ -117,8 +119,8 @@ class DCAFController extends Controller
             'nda_id' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'waktu_mulai' => 'required',
-            'waktu_selesai' => 'required',
+            'waktu_mulai' => 'required|date_format:H:i',
+            'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
             'lokasi' => 'required|string|max:255',
             'no_rack' => 'required|string|max:255',
             'bagian' => 'required',
@@ -131,9 +133,9 @@ class DCAFController extends Controller
             'perusahaan_rekanan' => 'nullable|array',
             'perusahaan_rekanan.*' => 'required|string|max:255',
             'ktp_rekanan' => 'nullable|array',
-            'ktp_rekanan.*' => 'required|string|max:16',
+            'ktp_rekanan.*' => ['required', 'digits:16', 'regex:/^[0-9]+$/'],
             'telp_rekanan' => 'nullable|array',
-            'telp_rekanan.*' => 'required|string|max:15',
+            'telp_rekanan.*' => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
             'nama_perlengkapan' => 'nullable|array',
             'nama_perlengkapan.*' => 'required|string|max:255',
             'jumlah_perlengkapan' => 'nullable|array',
@@ -156,6 +158,14 @@ class DCAFController extends Controller
             'berat_barang_keluar.*' => 'required|numeric|min:0',
             'keterangan_barang_keluar' => 'nullable|array',
             'keterangan_barang_keluar.*' => 'required|string|max:255',
+        ], [
+            'signature.required' => 'Tanda tangan wajib diisi!',
+
+            'telp_rekanan.max' => 'No Telepon maksimal 15 karakter!',
+            'telp_rekanan.regex' => 'Format No Telepon hanya boleh angka, spasi, +, dan -',
+
+            'ktp_rekanan.digits' => 'No KTP harus terdiri dari 16 digit angka!',
+            'ktp_rekanan.regex' => 'No KTP hanya boleh berisi angka!',
         ]);
 
         $dcaf = VerifikasiDcaf::create([

@@ -201,7 +201,7 @@
                     "language": {
                         "search": "Cari",
                         "lengthMenu": "_MENU_",
-                        "zeroRecords": "Tidak ada data yang ditemukan",
+                        "zeroRecords":  "Tidak ada data yang ditemukan",
                         "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
                         "infoEmpty": "Tidak ada data yang tersedia",
                         "infoFiltered": "(difilter dari _MAX_ total data)",

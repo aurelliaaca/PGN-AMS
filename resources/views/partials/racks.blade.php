@@ -1,7 +1,7 @@
 @if($racks->isEmpty())
     <div class="no-data-message" style="text-align: center; padding: 20px;">
         <i class="fas fa-info-circle" style="color: #4f52ba; font-size: 24px;"></i>
-        <p style="color: #4f52ba; margin-top: 10px;">Tidak ada rack yang tersedia</p>
+        <p style="color: #4f52ba; margin-top: 10px;">Tidak ada rack yang ditemukan</p>
     </div>
 @else
     <div class="card-grid" style="margin-top: 20px;">

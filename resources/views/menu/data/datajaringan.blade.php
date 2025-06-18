@@ -122,7 +122,7 @@
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
                     "columnDefs": [
                         {
-                            "targets": 2,
+                            "targets": 3,
                             "orderable": false
                         }
                     ]

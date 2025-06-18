@@ -57,91 +57,83 @@
                                     <input type="hidden" name="status" value="ditolak">
                                 </form>
                             </td>
-                        </tr>                   
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
 
-        <div class="tables-container dua">
-            <div class="table-column">
-                <div class="title"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Data NDA yang Berlaku</h3>
-                </div>
-                <div class="table-responsive" style="margin-top: 20px;">
-                    <table id="activeTable" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama User</th>
-                                <th>Tanggal Upload</th>
-                                <th>Tanggal Verifikasi</th>
-                                <th>Masa Berlaku</th>
-                                <th>Catatan</th>
-                                <th>File</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($activeNdas as $index => $nda)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $nda->user->name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
-                                    </td>
-                                    <td>{{ $nda->catatan ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ asset($nda->file_path) }}" target="_blank"
-                                            class="btn btn-sm btn-info">Lihat File</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <h3>Data NDA yang Berlaku</h3>
+        </div>
+        <div class="table-responsive" style="margin-top: 20px;">
+            <table id="activeTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama User</th>
+                        <th>Tanggal Upload</th>
+                        <th>Tanggal Verifikasi</th>
+                        <th>Masa Berlaku</th>
+                        <th>Catatan</th>
+                        <th>File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($activeNdas as $index => $nda)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $nda->user->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                            </td>
+                            <td>{{ $nda->catatan ?? '-' }}</td>
+                            <td>
+                                <a href="{{ asset($nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    File</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-            <div class="table-column">
-                <div class="title"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Riwayat NDA yang Kadaluarsa</h3>
-                </div>
-                <div class="table-responsive" style="margin-top: 20px;">
-                    <table id="expiredTable" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama User</th>
-                                <th>Tanggal Upload</th>
-                                <th>Tanggal Verifikasi</th>
-                                <th>Masa Berlaku</th>
-                                <th>Catatan</th>
-                                <th>File</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($expiredNdas as $index => $nda)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $nda->user->name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
-                                    </td>
-                                    <td>{{ $nda->catatan ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ asset($nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
-                                            File</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <h3>Riwayat NDA yang Kadaluarsa</h3>
+        </div>
+        <div class="table-responsive" style="margin-top: 20px;">
+            <table id="expiredTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama User</th>
+                        <th>Tanggal Upload</th>
+                        <th>Tanggal Verifikasi</th>
+                        <th>Masa Berlaku</th>
+                        <th>Catatan</th>
+                        <th>File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($expiredNdas as $index => $nda)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $nda->user->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                            </td>
+                            <td>{{ $nda->catatan ?? '-' }}</td>
+                            <td>
+                                <a href="{{ asset($nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    File</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 

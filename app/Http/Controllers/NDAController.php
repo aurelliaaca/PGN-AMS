@@ -22,7 +22,7 @@ class NDAController extends Controller
         $queryActive = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '>=', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
         $queryExpired = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '<', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $queryPending->where('user_id', $user->id);
             $queryActive->where('user_id', $user->id);
             $queryExpired->where('user_id', $user->id);
@@ -41,7 +41,7 @@ class NDAController extends Controller
         $user = auth()->user();
         $role = $user->role;
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $ndas = VerifikasiNda::with('user')
                 ->where('user_id', $user->id)
                 ->orderBy('id', 'desc')
@@ -56,7 +56,7 @@ class NDAController extends Controller
         $queryActive = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '>', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
         $queryExpired = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '<=', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
 
-        if ($role == 3 || $role == 4) {
+        if ($role == 4 || $role == 5) {
             $queryPending->where('user_id', $user->id);
             $queryActive->where('user_id', $user->id);
             $queryExpired->where('user_id', $user->id);
@@ -82,6 +82,8 @@ class NDAController extends Controller
             'perusahaan' => 'nullable',
             'bagian' => 'nullable',
             'signature' => 'required',
+        ], [
+            'signature.required' => 'Tanda tangan wajib diisi!',
         ]);
 
         $user->update([
@@ -102,7 +104,7 @@ class NDAController extends Controller
             'updated_at' => null,
         ]);
 
-        $type = ($user->role == 3) ? 'internal' : 'eksternal';
+        $type = ($user->role == 4) ? 'internal' : 'eksternal';
 
         $pdf = PDF::loadView('exports.nda' . $type . 'pdf', ['nda' => $ndaBaru, 'user' => $user]);
 
@@ -140,7 +142,7 @@ class NDAController extends Controller
 
                 $nda->save();
 
-                $type = ($nda->user->role == 3) ? 'internal' : 'eksternal';
+                $type = ($nda->user->role == 4) ? 'internal' : 'eksternal';
 
                 if ($nda->file_path && file_exists(public_path($nda->file_path))) {
                     $publicPath = $nda->file_path;

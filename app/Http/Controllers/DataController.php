@@ -13,6 +13,7 @@ use App\Models\Region;
 use App\Models\Site;
 use App\Models\User;
 use App\Models\TipeJaringan;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\Hash;
 
@@ -427,7 +428,7 @@ class DataController extends Controller
     public function indexUser()
     {
         $users = User::all();
-        $regions = Region::all(); 
+        $regions = Region::all();
         return view('menu.data.datauser', compact('users', 'regions'));
     }
 
@@ -436,10 +437,46 @@ class DataController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'role' => 'required|string',
+            'password' => $request->isMethod('post') ? 'required|string|min:6' : 'nullable|string|min:6',
+            'role' => 'required|in:1,2,3,4,5',
             'region' => 'required|string',
-            'mobile_number' => 'required|string|max:15',
+            'mobile_number' => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
+            'perusahaan' => 'required|string|max:255',
+            'noktp' => ['required', 'digits:16', 'regex:/^[0-9]+$/'],
+            'alamat' => 'required|string|max:255',
+            'bagian' => 'required|string|max:255',
+        ], [
+            'name.required' => 'Nama wajib diisi!',
+            'name.max' => 'Nama maksimal 255 karakter!',
+
+            'email.required' => 'Email wajib diisi!',
+            'email.email' => 'Format email tidak valid!',
+            'email.unique' => 'Email sudah digunakan!',
+
+            'password.required' => 'Password wajib diisi!',
+            'password.min' => 'Password minimal 6 karakter!',
+
+            'role.required' => 'Role wajib dipilih!',
+            'role.in' => 'Role yang dipilih tidak valid!',
+
+            'region.required' => 'Region wajib diisi!',
+
+            'mobile_number.required' => 'No Telepon wajib diisi!',
+            'mobile_number.max' => 'No Telepon maksimal 15 karakter!',
+            'mobile_number.regex' => 'Format No Telepon hanya boleh angka, spasi, +, dan -',
+
+            'perusahaan.required' => 'Perusahaan wajib diisi!',
+            'perusahaan.max' => 'Perusahaan maksimal 255 karakter!',
+
+            'noktp.required' => 'No KTP wajib diisi!',
+            'noktp.digits' => 'No KTP harus terdiri dari 16 digit angka!',
+            'noktp.regex' => 'No KTP hanya boleh berisi angka!',
+
+            'alamat.required' => 'Alamat wajib diisi!',
+            'alamat.max' => 'Alamat maksimal 255 karakter!',
+
+            'bagian.required' => 'Bagian wajib diisi!',
+            'bagian.max' => 'Bagian maksimal 255 karakter!',
         ]);
 
         User::create([
@@ -449,6 +486,10 @@ class DataController extends Controller
             'role' => $request->role,
             'region' => $request->region,
             'mobile_number' => $request->mobile_number,
+            'noktp' => $request->noktp,
+            'perusahaan' => $request->perusahaan,
+            'bagian' => $request->bagian,
+            'alamat' => $request->alamat,
         ]);
 
         return redirect()->route('datauser.index')->with('success', 'User berhasil ditambahkan.');
@@ -457,7 +498,7 @@ class DataController extends Controller
     public function editUser($id_user)
     {
         $user = User::findOrFail($id_user);
-        $regions = Region::all(); 
+        $regions = Region::all();
         return view('user.edit', compact('user', 'regions'));
     }
 
@@ -465,18 +506,55 @@ class DataController extends Controller
     {
         $user = User::findOrFail($id_user);
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id . ',id',
-            'region' => 'required|string',
-            'role' => 'required',
             'password' => 'nullable|string|min:6',
-            'alamat' => 'required',
-            'perusahaan' => 'required',
-            'bagian' => 'required',
-            'noktp' => 'required',
-            'mobile_number' => 'required|string|max:15',
+            'role' => 'required|in:1,2,3,4,5',
+            'region' => 'required|string',
+            'mobile_number' => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
+            'perusahaan' => 'required|string|max:255',
+            'noktp' => ['required', 'digits:16', 'regex:/^[0-9]+$/'],
+            'alamat' => 'required|string|max:255',
+            'bagian' => 'required|string|max:255',
+        ], [
+            'name.required' => 'Nama wajib diisi!',
+            'name.max' => 'Nama maksimal 255 karakter!',
+
+            'email.required' => 'Email wajib diisi!',
+            'email.email' => 'Format email tidak valid!',
+            'email.unique' => 'Email sudah digunakan!',
+
+            'password.min' => 'Password minimal 6 karakter!',
+
+            'role.required' => 'Role wajib dipilih!',
+            'role.in' => 'Role yang dipilih tidak valid!',
+
+            'region.required' => 'Region wajib diisi!',
+
+            'mobile_number.required' => 'No Telepon wajib diisi!',
+            'mobile_number.max' => 'No Telepon maksimal 15 karakter!',
+            'mobile_number.regex' => 'Format No Telepon hanya boleh angka, spasi, +, dan -',
+
+            'perusahaan.required' => 'Perusahaan wajib diisi!',
+            'perusahaan.max' => 'Perusahaan maksimal 255 karakter!',
+
+            'noktp.required' => 'No KTP wajib diisi!',
+            'noktp.digits' => 'No KTP harus terdiri dari 16 digit angka!',
+            'noktp.regex' => 'No KTP hanya boleh berisi angka!',
+
+            'alamat.required' => 'Alamat wajib diisi!',
+            'alamat.max' => 'Alamat maksimal 255 karakter!',
+
+            'bagian.required' => 'Bagian wajib diisi!',
+            'bagian.max' => 'Bagian maksimal 255 karakter!',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->with('error', 'Gagal update user, silakan coba lagi.');
+        }
 
         $data = $request->only('name', 'email', 'region', 'role', 'alamat', 'perusahaan', 'bagian', 'noktp', 'mobile_number');
 

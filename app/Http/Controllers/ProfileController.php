@@ -35,9 +35,21 @@ class ProfileController extends Controller
             'perusahaan' => ['nullable', 'string', 'max:255'],
             'bagian' => ['nullable', 'string', 'max:255'],
             'region' => ['nullable', 'string', 'max:255'],
-            'noktp' => ['nullable', 'string', 'max:50'],
-            'mobile_number' => ['nullable', 'string', 'max:20'],
+            'noktp' => ['required', 'digits:16', 'regex:/^[0-9]+$/'],
+            'mobile_number' => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
             'alamat' => ['nullable', 'string'],
+        ], [
+            'email.required' => 'Email wajib diisi!',
+            'email.email' => 'Format email tidak valid!',
+            'email.unique' => 'Email sudah digunakan!',
+
+            'mobile_number.required' => 'No Telepon wajib diisi!',
+            'mobile_number.max' => 'No Telepon maksimal 15 karakter!',
+            'mobile_number.regex' => 'Format No Telepon hanya boleh angka, spasi, +, dan -',
+
+            'noktp.required' => 'No KTP wajib diisi!',
+            'noktp.digits' => 'No KTP harus terdiri dari 16 digit angka!',
+            'noktp.regex' => 'No KTP hanya boleh berisi angka!',
         ]);
 
         $user = Auth::user();
@@ -56,7 +68,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.show')->with('success', 'Your profile has been updated successfully!');
+        return Redirect::route('profile.show')->with('success', 'Profil kamu berhasil diperbarui!');
     }
 
     public function sendVerification(Request $request)

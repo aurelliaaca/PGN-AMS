@@ -42,7 +42,12 @@
                                         {{ ucfirst($dcaf->nda->status) }}
                                     </span>
                                 </td>
-                                <td>{{ $dcaf->nda->masa_berlaku ? $dcaf->nda->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
+                                <td>
+                                    {{ $dcaf->nda->masaberlaku 
+                                        ? \Carbon\Carbon::parse($dcaf->nda->masaberlaku)->translatedFormat('j F Y H:i') 
+                                        : '-' 
+                                    }}
+                                </td>
                                 <td>
                                     <span style="display: inline-flex; align-items: center;">
                                     <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: 
@@ -53,7 +58,11 @@
                                         {{ ucfirst($dcaf->status) }}
                                     </span>
                                 </td>
-                                <td>{{ $dcaf->masa_berlaku ? $dcaf->masa_berlaku->format('d/m/Y H:i') : '-' }}</td>
+                                <td>{{ $dcaf->masaberlaku 
+                                        ? \Carbon\Carbon::parse($dcaf->masaberlaku)->translatedFormat('j F Y H:i') 
+                                        : '-' 
+                                    }}
+                                </td>
                                 <td>
                                     @if($dcaf->nda->status == 'diterima')
                                         <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat NDA</a>

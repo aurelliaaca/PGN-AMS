@@ -18,9 +18,9 @@
                 <div class="form-group">
                     <select name="nda_id" id="nda_id" class="form-control select2" required>
                         <option value="">Pilih NDA</option>
-                        @foreach ($ndas as $nda)
+                        @foreach ($activeNdas as $nda)
                             <option value="{{ $nda->id }}">
-                                NDA - Berlaku s/d {{ \Carbon\Carbon::parse($nda->masa_berlaku)->translatedFormat('d M Y') }}
+                                NDA {{ $nda->user->name }} - Berlaku s/d {{ \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('d M Y') }}
                             </option>
                         @endforeach
                     </select>
@@ -123,6 +123,7 @@
                             <label>Nomor Rack</label>
                             <select name="no_rack" class="form-control" required>
                                 <option value="" disabled selected>Pilih No Rack</option>
+                                <option value="-">-</option> 
                                 @foreach($racks as $rack)
                                     <option value="{{ $rack->no_rack }}">
                                         Rack {{ $rack->no_rack }}, {{ $rack->site->nama_site }} {{ $rack->region->nama_region }}

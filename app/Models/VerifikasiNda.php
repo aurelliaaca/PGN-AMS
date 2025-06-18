@@ -12,7 +12,7 @@ class VerifikasiNda extends Model
     protected $table = 'verifikasinda';
 
     protected $casts = [
-        'masa_berlaku' => 'datetime'
+        'masaberlaku' => 'datetime'
     ];
 
     protected $fillable = [
@@ -24,7 +24,7 @@ class VerifikasiNda extends Model
         'created_at',
         'signed_by',
         'catatan',
-        'masa_berlaku'
+        'masaberlaku'
     ];
 
     public $timestamps = false;

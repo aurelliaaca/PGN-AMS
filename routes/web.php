@@ -25,8 +25,6 @@ use App\Http\Controllers\DataController;
 use App\Http\Controllers\HistoriController;
 use App\Http\Controllers\RackController;
 
-
-use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\ProfileController;
 
 use Maatwebsite\Excel\Facades\Excel;
@@ -264,7 +262,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/verifikasi/user/dcaf', [DCAFController::class, 'indexDcafUser'])->name('verifikasi.user.dcaf');
     Route::get('/pendaftaran/dcaf', [DCAFController::class, 'pendaftaranDCAF'])->name('pendaftarandcaf');
-    Route::get('/pendaftaran/ajukan-dcs', [PendaftaranController::class, 'ajukanDCS'])->name('pendaftaran.ajukan-dcs');
     Route::post('/dcaf', [DCAFController::class, 'store'])->name('dcaf.store');
     Route::get('/verifikasi/admin/dcaf', [DCAFController::class, 'indexDcafSuperadmin'])->name('verifikasi.superadmin.dcaf');
     Route::put('/dcaf/{dcaf}', [DCAFController::class, 'update'])->name('dcaf.update');
@@ -274,9 +271,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/upload-photo', [SemantikController::class, 'uploadPhoto'])->name('upload.photo');
     Route::delete('/photos/{id}', [SemantikController::class, 'deletePhoto'])->name('photos.delete');
     Route::get('/semantik', [SemantikController::class, 'semantik'])->name('semantik');
-
-    Route::post('/pendaftaran-vms', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
-    Route::get('/pendaftaran/download/{filename}', [PendaftaranController::class, 'download'])->name('pendaftaran.download');
 
     // ------------------------------------------------------------------------ PROFILE ------------------------------------------------------------------------
 

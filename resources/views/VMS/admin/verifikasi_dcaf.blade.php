@@ -74,7 +74,7 @@
                                     <button type="submit" class="btn btn-primary">Terima</button>
                                 </form>
                             </div>
-                        </div>                    
+                        </div>
                     @endforeach
                 </tbody>
             </table>
@@ -110,92 +110,80 @@
             </div>
         </div>
 
-        <div class="tables-container dua">
-            <div class="table-column">
-                <div class="title"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Data DCAF yang Berlaku</h3>
-                </div>
-                <div class="table-responsive" style="margin-top: 20px;">
-                    <table id="activeTable" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama User</th>
-                                <th>Tanggal Upload</th>
-                                <th>Tanggal Verifikasi</th>
-                                <th>Masa Berlaku</th>
-                                <th>File NDA</th>
-                                <th>File DCAF</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($activeDcafs as $index => $dcaf)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $dcaf->user->name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($dcaf->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($dcaf->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ $dcaf->masaberlaku ? \Carbon\Carbon::parse($dcaf->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
-                                    <td>
-                                        <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank"
-                                            class="btn btn-sm btn-info">Lihat
-                                            NDA</a>
-                                    </td>
-                                    <td>
-                                        <a href="{{ asset($dcaf->file_path) }}" target="_blank"
-                                            class="btn btn-sm btn-info">Lihat
-                                            DCAF</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <h3>Data DCAF yang Berlaku</h3>
+        </div>
+        <div class="table-responsive" style="margin-top: 20px;">
+            <table id="activeTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama User</th>
+                        <th>Tanggal Upload</th>
+                        <th>Tanggal Verifikasi</th>
+                        <th>Masa Berlaku</th>
+                        <th>File NDA</th>
+                        <th>File DCAF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($activeDcafs as $index => $dcaf)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $dcaf->user->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($dcaf->created_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($dcaf->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ $dcaf->masaberlaku ? \Carbon\Carbon::parse($dcaf->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                            <td>
+                                <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    NDA</a>
+                            </td>
+                            <td>
+                                <a href="{{ asset($dcaf->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    DCAF</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-            <div class="table-column">
-                <div class="title"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h3>Riwayat DCAF yang Kadaluarsa</h3>
-                </div>
-                <div class="table-responsive" style="margin-top: 20px;">
-                    <table id="expiredTable" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama User</th>
-                                <th>Tanggal Upload</th>
-                                <th>Tanggal Verifikasi</th>
-                                <th>Masa Berlaku</th>
-                                <th>File NDA</th>
-                                <th>File DCAF</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($expiredDcafs as $index => $dcaf)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $dcaf->user->name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($dcaf->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($dcaf->updated_at)->translatedFormat('j F Y H:i') }}</td>
-                                    <td>{{ $dcaf->masaberlaku ? \Carbon\Carbon::parse($dcaf->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
-                                    <td>
-                                        <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank"
-                                            class="btn btn-sm btn-info">Lihat
-                                            NDA</a>
-                                    </td>
-                                    <td>
-                                        <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank"
-                                            class="btn btn-sm btn-info">Lihat
-                                            DCAF</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <h3>Riwayat DCAF yang Kadaluarsa</h3>
+        </div>
+        <div class="table-responsive" style="margin-top: 20px;">
+            <table id="expiredTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama User</th>
+                        <th>Tanggal Upload</th>
+                        <th>Tanggal Verifikasi</th>
+                        <th>Masa Berlaku</th>
+                        <th>File NDA</th>
+                        <th>File DCAF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($expiredDcafs as $index => $dcaf)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $dcaf->user->name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($dcaf->created_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($dcaf->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                            <td>{{ $dcaf->masaberlaku ? \Carbon\Carbon::parse($dcaf->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                            <td>
+                                <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    NDA</a>
+                            </td>
+                            <td>
+                                <a href="{{ asset($dcaf->nda->file_path) }}" target="_blank" class="btn btn-sm btn-info">Lihat
+                                    DCAF</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
     @section('scripts')

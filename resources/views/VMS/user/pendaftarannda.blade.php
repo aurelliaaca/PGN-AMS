@@ -163,7 +163,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($ndas as $index => $nda)
+                                @foreach($pendingNdas as $index => $nda)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
