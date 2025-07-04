@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Dashboard') {{-- Ini buat title di tab browser --}}
-@section('page_title', 'Dashboard') {{-- Ini buat judul yang tampil di halaman --}}
+@section('title', 'Dasbor') 
+@section('page_title', 'Dasbor') 
 @section('content')
     <div class="main">
         @if(auth()->user()->role == '1' || auth()->user()->role == '2')

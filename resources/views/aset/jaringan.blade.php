@@ -13,10 +13,8 @@
         @if (auth()->user()->role == '1' || auth()->user()->role == '2')
             <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahJaringan')">+ Tambah Jaringan</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data
-                    Jaringan</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data
-                    Jaringan</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Jaringan</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Ekspor Data Jaringan</button>
             </div>
 
             <form method="GET" action="{{ route('jaringan.index') }}" id="filterForm">

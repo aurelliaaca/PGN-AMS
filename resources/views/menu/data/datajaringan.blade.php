@@ -68,7 +68,7 @@
                                         value="{{ old('nama_tipejaringan', $tj->nama_tipejaringan) }}" class="form-control"
                                         required>
 
-                                    <button type="submit" class="btn btn-primary mt-3">Perbarui</button>
+                                    <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
                                 </form>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
                     <label>Nama Tipe Jaringan</label>
                     <input type="text" name="nama_tipejaringan" class="form-control" required>
 
-                    <button type="submit" class="btn btn-primary mt-3">Simpan</button>
+                    <button type="submit" class="btn btn-primary mt-3">Tambah</button>
                 </form>
             </div>
         </div>

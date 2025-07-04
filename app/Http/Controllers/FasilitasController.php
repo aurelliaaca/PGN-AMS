@@ -30,7 +30,7 @@ class FasilitasController extends Controller
         $role = $user->role;
 
         $query = ListFasilitas::with(['region', 'site', 'jenisfasilitas', 'brandfasilitas']);
-        
+
         if ($role == 4 || $role == 5) {
             $query->where('milik', $user->id);
         } elseif ($role == 3) {
@@ -244,6 +244,10 @@ class FasilitasController extends Controller
                     $query->whereNotNull('id_perangkat')
                         ->orWhereNotNull('id_fasilitas');
                 })
+                ->where(function ($query) use ($id) {
+                    $query->where('id_fasilitas', '!=', $id)
+                        ->orWhereNull('id_fasilitas');
+                })
                 ->exists();
 
             if ($existingRack) {
@@ -268,6 +272,13 @@ class FasilitasController extends Controller
             'milik' => $request->milik,
         ]);
 
+        Rack::where('id_fasilitas', $fasilitas->id_fasilitas)
+            ->update([
+                'id_fasilitas' => null,
+                'milik' => null,
+                'updated_at' => now(),
+            ]);
+
         if ($request->no_rack) {
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 Rack::updateOrInsert(
@@ -278,7 +289,7 @@ class FasilitasController extends Controller
                         'u' => $u,
                     ],
                     [
-                        'id_fasilitas' => $request->id_fasilitas,
+                        'id_fasilitas' => $fasilitas->id_fasilitas,
                         'milik' => $request->milik,
                         'updated_at' => now(),
                         'created_at' => now(),
@@ -286,6 +297,7 @@ class FasilitasController extends Controller
                 );
             }
         }
+
         return redirect()->route('fasilitas.index')
             ->with('success', 'Fasilitas berhasil diupdate.')
             ->with('warning', 'Periksa kembali data yang dimasukkan sebelum melanjutkan.')

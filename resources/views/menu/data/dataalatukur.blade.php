@@ -72,7 +72,7 @@
                                                 <input type="text" name="kode_alatukur" class="form-control"
                                                     value="{{ $item->kode_alatukur }}" readonly>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                         </form>
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@
                                                 <input type="text" name="kode_brand" class="form-control"
                                                     value="{{ $item->kode_brand }}" readonly>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                         </form>
                                     </div>
                                 </div>

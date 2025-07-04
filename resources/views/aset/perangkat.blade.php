@@ -13,7 +13,7 @@
         <div class="button-wrapper" style="margin-top: 20px;">
             <button class="btn btn-primary mb-3" onclick="openModal('modalTambahPerangkat')">+ Tambah Perangkat</button>
             <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Perangkat</button>
-            <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Perangkat</button>
+            <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Ekspor Data Perangkat</button>
         </div>
 
         <form method="GET" action="{{ route('perangkat.index') }}" id="filterForm">
@@ -419,7 +419,6 @@
                     },
                     allowClear: true
                 });
-
                 $('select[name="kode_region[]"]').on('change', function() {
                     const selectedRegions = $(this).val();
                     const siteSelect = $('select[name="kode_site[]"]');
@@ -447,21 +446,11 @@
                             siteSelect.val(validSites);
                         }
                     }
-                    
                     siteSelect.select2({
                         width: '100%',
                         placeholder: 'Pilih Site',
                         allowClear: true
                     });
-
-                    $('#filterForm').submit();
-                });
-
-                $('select[name="kode_site[]"]').on('change', function() {
-                    $('#filterForm').submit();
-                });
-
-                $('select[name="kode_perangkat[]"]').on('change', function() {
                     $('#filterForm').submit();
                 });
 
@@ -585,59 +574,58 @@
                 });
             });
 
+            // document.getElementById('no_rack').addEventListener('input', function () {
+            //     const noRack = this.value;
+            //     const uawalField = document.getElementById('uawal');
+            //     const uakhirField = document.getElementById('uakhir');
 
-            document.getElementById('no_rack').addEventListener('input', function () {
-                const noRack = this.value;
-                const uawalField = document.getElementById('uawal');
-                const uakhirField = document.getElementById('uakhir');
+            //     if (noRack) {
+            //         uawalField.setAttribute('required', 'required');
+            //         uakhirField.setAttribute('required', 'required');
+            //     } else {
+            //         uawalField.removeAttribute('required');
+            //         uakhirField.removeAttribute('required');
+            //     }
+            // });
 
-                if (noRack) {
-                    uawalField.setAttribute('required', 'required');
-                    uakhirField.setAttribute('required', 'required');
-                } else {
-                    uawalField.removeAttribute('required');
-                    uakhirField.removeAttribute('required');
-                }
-            });
+            // document.getElementById('formTambahPerangkat').addEventListener('submit', function (event) {
+            //     const uawal = parseFloat(document.getElementById('uawal').value);
+            //     const uakhir = parseFloat(document.getElementById('uakhir').value);
 
-            document.getElementById('formTambahPerangkat').addEventListener('submit', function (event) {
-                const uawal = parseFloat(document.getElementById('uawal').value);
-                const uakhir = parseFloat(document.getElementById('uakhir').value);
+            //     if (uawal >= uakhir) {
+            //         alert('U Awal harus lebih kecil dari U Akhir.');
+            //         event.preventDefault(); 
+            //     }
 
-                if (uawal >= uakhir) {
-                    alert('U Awal harus lebih kecil dari U Akhir.');
-                    event.preventDefault(); 
-                }
+            //     if (uawal < 0 || uakhir < 0) {
+            //         alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
+            //         event.preventDefault(); 
+            //     }
+            // });
 
-                if (uawal < 0 || uakhir < 0) {
-                    alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
-                    event.preventDefault(); 
-                }
-            });
+            // document.querySelectorAll('form[action*="perangkat/update"]').forEach(form => {
+            //     form.addEventListener('submit', function(event) {
+            //         const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
+            //         const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);
+            //         const noRack = this.querySelector('input[name="no_rack"]').value;
 
-            document.querySelectorAll('form[action*="perangkat/update"]').forEach(form => {
-                form.addEventListener('submit', function(event) {
-                    const uawal = parseFloat(this.querySelector('input[name="uawal"]').value);
-                    const uakhir = parseFloat(this.querySelector('input[name="uakhir"]').value);
-                    const noRack = this.querySelector('input[name="no_rack"]').value;
+            //         if (noRack && (!uawal || !uakhir)) {
+            //             alert('U Awal dan U Akhir wajib diisi jika No Rack diisi.');
+            //             event.preventDefault();
+            //             return;
+            //         }
 
-                    if (noRack && (!uawal || !uakhir)) {
-                        alert('U Awal dan U Akhir wajib diisi jika No Rack diisi.');
-                        event.preventDefault();
-                        return;
-                    }
+            //         if (uawal >= uakhir) {
+            //             alert('U Awal harus lebih kecil dari U Akhir.');
+            //             event.preventDefault();
+            //         }
 
-                    if (uawal >= uakhir) {
-                        alert('U Awal harus lebih kecil dari U Akhir.');
-                        event.preventDefault();
-                    }
-
-                    if (uawal < 0 || uakhir < 0) {
-                        alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
-                        event.preventDefault();
-                    }
-                });
-            });
+            //         if (uawal < 0 || uakhir < 0) {
+            //             alert('U Awal dan U Akhir tidak boleh bernilai negatif.');
+            //             event.preventDefault();
+            //         }
+            //     });
+            // });
         </script>
     @endsection
 @endsection

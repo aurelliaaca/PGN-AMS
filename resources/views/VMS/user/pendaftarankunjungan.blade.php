@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Pendaftaran Kunjungan')
-@section('page_title', 'Pendaftaran Kunjungan')
+@section('title', 'DCAF')
+@section('page_title', 'DCAF')
 
 @section('styles')
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
@@ -11,7 +11,7 @@
     <div class="main">
         <div class="container">
             <button class="btn btn-primary" style="margin-top: 20px; margin-bottom: 10px;"
-                onclick="window.location.href='{{ route('pendaftarandcaf') }}'">Buat DCAF
+                onclick="window.location.href='{{ route('pendaftarandcaf') }}'">Ajukan DCAF
             </button>
 
             <div class="table-responsive">

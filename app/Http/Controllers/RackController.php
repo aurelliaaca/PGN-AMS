@@ -95,12 +95,22 @@ class RackController extends Controller
                             if (auth()->user()->role == 1 || auth()->user()->role == 2) {
                                 return !is_null($detail->id_perangkat);
                             }
+                            if  (auth()->user()->role == 3) {
+                                return
+                                    $detail->kode_region == auth()->user()->region &&
+                                    !is_null($detail->id_perangkat);
+                            }
                             return (string) $detail->milik === (string) auth()->user()->id && !is_null($detail->id_perangkat);
                         })->pluck('listperangkat.id_perangkat')->unique()->filter()->count();
 
                         $uniqueFacilities = $rackDetails->filter(function ($detail) {
                             if (auth()->user()->role == 1 || auth()->user()->role == 2) {
                                 return !is_null($detail->id_fasilitas);
+                            }
+                            if  (auth()->user()->role == 3) {
+                                return
+                                    $detail->kode_region == auth()->user()->region &&
+                                    !is_null($detail->id_fasilitas);
                             }
                             return (string) $detail->milik === (string) auth()->user()->id && !is_null($detail->id_fasilitas);
                         })->pluck('listfasilitas.id_fasilitas')->unique()->filter()->count();
@@ -163,6 +173,9 @@ class RackController extends Controller
                 'id_perangkat' => null,
             ]);
         }
+        \DB::table('site')
+            ->where('kode_site', $validated['kode_site'])
+            ->increment('jml_rack');
 
         return redirect()->back()->with('success', 'Rack berhasil ditambahkan!');
     }
@@ -197,17 +210,21 @@ class RackController extends Controller
             ->delete();
 
         if ($deleted) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Rack berhasil dihapus'
-            ]);
-        }
+        \DB::table('site')
+            ->where('kode_site', $validated['kode_site'])
+            ->decrement('jml_rack');
 
         return response()->json([
-            'success' => false,
-            'message' => 'Gagal menghapus rack'
+            'success' => true,
+            'message' => 'Rack berhasil dihapus'
         ]);
     }
+
+    return response()->json([
+        'success' => false,
+        'message' => 'Gagal menghapus rack'
+    ]);
+}
 
     public function destroyData(Request $request)
     {
@@ -231,7 +248,7 @@ class RackController extends Controller
                 $perangkat->no_rack = null;
                 $perangkat->uawal = null;
                 $perangkat->uakhir = null;
-                $perangkat->save(); 
+                $perangkat->save();
             }
         }
 
@@ -244,7 +261,7 @@ class RackController extends Controller
                 $fasilitas->no_rack = null;
                 $fasilitas->uawal = null;
                 $fasilitas->uakhir = null;
-                $fasilitas->save(); 
+                $fasilitas->save();
             }
         }
 
@@ -253,5 +270,4 @@ class RackController extends Controller
             'message' => 'Perangkat/Fasilitas berhasil dihapus dari rack'
         ]);
     }
-
 }

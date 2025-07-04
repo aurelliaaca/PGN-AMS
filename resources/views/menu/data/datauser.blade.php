@@ -144,7 +144,7 @@
                                                 required>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary mt-3">Perbarui</button>
+                                    <button type="submit" class="btn btn-primary mt-3">Simpan Perubahan</button>
                                 </form>
                             </div>
                         </div>
@@ -206,7 +206,7 @@
                             <input type="tel" name="mobile_number" class="form-control" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Simpan</button>
+                    <button type="submit" class="btn btn-primary mt-3">Tambah</button>
                 </form>
             </div>
         </div>

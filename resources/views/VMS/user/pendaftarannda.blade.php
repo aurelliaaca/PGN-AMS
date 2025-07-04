@@ -151,50 +151,14 @@
                                     NDA</button>
                             @endif
                         </div>
-                        <h3>Pengajuan NDA</h3>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="buatTable" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tanggal Pengajuan</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($pendingNdas as $index => $nda)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
-                                        <td>
-                                            <span style="display: inline-flex; align-items: center;">
-                                            <span style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color:
-                                                {{ $nda->status == 'menunggu persetujuan' ? '#ffc107' :
-                                                ($nda->status == 'diterima' ? '#28a745' : '#dc3545') }};">
-                                            </span>
-                                                {{ ucfirst($nda->status) }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="table-column">
-                    <div class="title"
-                        style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: -9px;">
-                        <div class="button-wrapper">
-                        </div>
-                        <h3 style="margin-bottom: 23px;">NDA Aktif</h3>
+                        <h3>Riwayat NDA</h3>
                     </div>
                     <div class="table-responsive">
                         <table id="ajukanTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>Tanggal Pengajuan</th>
                                     <th>Tanggal Disetujui</th>
                                     <th>Masa Berlaku</th>
                                     <th>Catatan</th>
@@ -202,10 +166,62 @@
                                     <th>Status</th>
                                 </tr>
                             </thead>
+                            @php $no = 1; @endphp
                             <tbody>
-                                @foreach($activeNdas->where('status', 'diterima') as $index => $nda)
+                                @foreach($pendingNdas as $index => $nda)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                                        <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                                        <td>{{ $nda->catatan ?? '-' }}</td>
+                                        <td>
+                                            @if($nda->file_path)
+                                                <a href="{{ asset($nda->file_path) }}" target="_blank"
+                                                    class="btn btn-sm btn-info">Lihat File</a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span style="display: inline-flex; align-items: center;">
+                                                <span
+                                                    style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #f6b26b;">
+                                                </span>
+                                                Menunggu persetujuan
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                @foreach($rejectedNdas as $index => $nda)
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
+                                        <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
+                                        <td>{{ $nda->catatan ?? '-' }}</td>
+                                        <td>
+                                            @if($nda->file_path)
+                                                <a href="{{ asset($nda->file_path) }}" target="_blank"
+                                                    class="btn btn-sm btn-info">Lihat File</a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span style="display: inline-flex; align-items: center;">
+                                                <span
+                                                    style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #dc3545;">
+                                                </span>
+                                                Ditolak
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                @foreach($activeNdas as $index => $nda)
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($nda->created_at)->translatedFormat('j F Y H:i') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
                                         <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
                                         <td>{{ $nda->catatan ?? '-' }}</td>
@@ -227,9 +243,9 @@
                                         </td>
                                     </tr>
                                 @endforeach
-                                @foreach($expiredNdas->where('status', 'diterima') as $index => $nda)
+                                @foreach($expiredNdas as $index => $nda)
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $no++ }}</td>
                                         <td>{{ \Carbon\Carbon::parse($nda->updated_at)->translatedFormat('j F Y H:i') }}</td>
                                         <td>{{ $nda->masaberlaku ? \Carbon\Carbon::parse($nda->masaberlaku)->translatedFormat('j F Y H:i') : '-' }}
                                         <td>{{ $nda->catatan ?? '-' }}</td>
@@ -244,7 +260,7 @@
                                         <td>
                                             <span style="display: inline-flex; align-items: center;">
                                                 <span
-                                                    style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #dc3545;">
+                                                    style="width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background-color: #bcbcbc;">
                                                 </span>
                                                 Kadaluarsa
                                             </span>

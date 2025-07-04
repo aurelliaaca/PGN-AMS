@@ -116,7 +116,7 @@
                                     <label>Jumlah Rack</label>
                                     <input type="number" name="jml_rack" class="form-control">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Tambah Site</button>
+                                <button type="submit" class="btn btn-primary">Tambah</button>
                             </form>
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                                         <input type="number" name="jml_rack" class="form-control" value="{{ $site->jml_rack }}"
                                             required>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                 </form>
                             </div>
                         </div>
@@ -227,7 +227,7 @@
                             <label>Koordinat</label>
                             <input type="text" name="koordinat" class="form-control" value="{{ $region->koordinat }}">
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                     </form>
                 </div>
             </div>

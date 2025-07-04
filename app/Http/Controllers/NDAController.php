@@ -53,6 +53,7 @@ class NDAController extends Controller
         }
 
         $queryPending = VerifikasiNda::with('user')->where('status', 'pending')->orderBy('created_at', 'desc');
+        $queryRejected = VerifikasiNda::with('user')->where('status', 'ditolak')->orderBy('created_at', 'desc');
         $queryActive = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '>', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
         $queryExpired = VerifikasiNda::with('user')->where('status', 'diterima')->where('masaberlaku', '<=', Carbon::now('Asia/Jakarta'))->orderBy('masaberlaku', 'desc');
 
@@ -63,10 +64,11 @@ class NDAController extends Controller
         }
 
         $pendingNdas = $queryPending->get();
+        $rejectedNdas = $queryRejected->get();
         $activeNdas = $queryActive->get();
         $expiredNdas = $queryExpired->get();
 
-        return view('VMS.user.pendaftarannda', compact('regions', 'ndas', 'pendingNdas', 'activeNdas', 'expiredNdas'));
+        return view('VMS.user.pendaftarannda', compact('regions', 'ndas', 'pendingNdas', 'rejectedNdas', 'activeNdas', 'expiredNdas'));
     }
 
     public function store(Request $request)

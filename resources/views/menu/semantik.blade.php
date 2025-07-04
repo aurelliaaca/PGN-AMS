@@ -11,7 +11,6 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 10px;
-                border: 2px solid rgb(209, 210, 241);
                 border-radius: 12px;
                 padding: 10px;
                 box-sizing: border-box;
@@ -21,7 +20,8 @@
 
             .photo-wrapper {
                 width: calc(25% - 10px);
-                /* biar 4 per baris */
+                border-radius: 12px;
+                border: 2px solid rgb(209, 210, 241);
                 padding: 8px;
             }
 
@@ -37,7 +37,7 @@
     </head>
     <div class="main">
         <div class="button-wrapper" style="margin-top: 20px; margin-bottom: 20px;">
-            <button class="btn btn-primary mb-3" onclick="showModal('uploadModal')">Tambah Foto</button>
+            <button class="btn btn-primary mb-3" onclick="showModal('uploadModal')">+ Tambah Foto</button>
         </div>
 
         <div id="uploadModal" class="modal">
@@ -71,34 +71,35 @@
                     <div class="card-content">
                         <img src="{{ asset($photo->file_path) }}" alt="{{ $photo->title }}"
                             onclick="showImage('{{ asset($photo->file_path) }}', '{{ $photo->title }}')" class="photo-img">
-                            <h2>{{ $photo->title }}</h2>
-                            <h5>{{ $photo->text }}</h5>
-                            <h5 class="text-muted">
-                                Diunggah pada
-                                {{ $photo->created_at->setTimezone('Asia/Jakarta')->format('d-m-Y H:i:s') }}
-                            </h5>
-                            <form action="{{ route('photos.delete', $photo->id) }}" method="POST" class="delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="btn btn-delete" style="margin-top: 10px;" data-title="{{ $photo->title }}">
-                                    Hapus
-                                </button>
-                            </form>
-                        </div>
+                        <h2 style="margin-top: 10px; margin-bottom: 3px;">{{ $photo->title }}</h2>
+                        <h5>{{ $photo->text }}</h5>
+                        <h5 class="text-muted">
+                            Diunggah pada
+                            {{ \Carbon\Carbon::parse($photo->created_at)->translatedFormat('j F Y H:i') }}
+                        </h5>
+                        <form action="{{ route('photos.delete', $photo->id) }}" method="POST" class="delete-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-delete" style="margin-top: 10px;"
+                                data-title="{{ $photo->title }}">
+                                Hapus
+                            </button>
+                        </form>
                     </div>
                 </div>
             @endforeach
         </div>
+    </div>
 
 
-        <div id="imageModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('imageModal')">&times;</span>
-                <h5 id="modalImageTitle" style="text-align: center;"></h5>
-                <img id="modalImage" src="" alt="Foto Besar"
-                    style="width: 100%; height: auto; max-height: 80vh; object-fit: contain;">
-            </div>
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('imageModal')">&times;</span>
+            <h5 id="modalImageTitle" style="text-align: center;"></h5>
+            <img id="modalImage" src="" alt="Foto Besar"
+                style="width: 100%; height: auto; max-height: 80vh; object-fit: contain;">
         </div>
+    </div>
     </div>
     <script>
         document.getElementById('uploadPhotoForm').addEventListener('submit', function (e) {
@@ -124,24 +125,24 @@
                     if (data.success) {
                         const photoGallery = document.getElementById('photoGallery');
                         const card = `
-                                                    <div class="col-md-3 mb-4">
-                                                        <div class="card">
-                                                            <img class="card-img-top" src="${data.photoUrl}" alt="Card image cap" style="height: 150px; object-fit: cover;" onclick="showImage('${data.photoUrl}', '${data.title}')">
-                                                            <div class="card-body">
-                                                                <h5 class="card-title">${data.title}</h5>
-                                                                <p class="card-text">${data.text}</p>
-                                                            </div>
-                                                            <div class="card-footer">
-                                                                <small class="text-muted">Uploaded on: ${data.timestamp}</small>
-                                                                <form action="/photos/${data.id}" method="POST" style="display:inline;">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                `;
+                                                                    <div class="col-md-3 mb-4">
+                                                                        <div class="card">
+                                                                            <img class="card-img-top" src="${data.photoUrl}" alt="Card image cap" style="height: 150px; object-fit: cover;" onclick="showImage('${data.photoUrl}', '${data.title}')">
+                                                                            <div class="card-body">
+                                                                                <h5 class="card-title">${data.title}</h5>
+                                                                                <p class="card-text">${data.text}</p>
+                                                                            </div>
+                                                                            <div class="card-footer">
+                                                                                <small class="text-muted">Uploaded on: ${data.timestamp}</small>
+                                                                                <form action="/photos/${data.id}" method="POST" style="display:inline;">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                `;
                         photoGallery.insertAdjacentHTML('beforeend', card);
                         closeModal('uploadModal'); // Menutup modal upload
                         location.reload(); // Reload halaman untuk memperbarui galeri foto

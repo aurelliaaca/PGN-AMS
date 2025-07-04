@@ -81,7 +81,7 @@
                         <input type="number" name="total_u" class="form-control" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Tambah Rack</button>
+                    <button type="submit" class="btn btn-primary">Tambah</button>
                 </form>
             </div>
         </div>

@@ -13,7 +13,7 @@
             <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahAlatukur')">+ Tambah Alatukur</button>
                 <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Alatukur</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Alatukur</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Ekspor Data Alatukur</button>
             </div>
 
             <form method="GET" action="{{ route('alatukur.index') }}" id="filterForm">

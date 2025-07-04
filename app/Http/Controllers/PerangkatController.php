@@ -85,7 +85,6 @@ class PerangkatController extends Controller
             'milik' => 'required',
         ]);
 
-
         if ($request->filled('no_rack')) {
             if (!$request->filled('uawal') || !$request->filled('uakhir')) {
                 return redirect()->back()->withErrors([
@@ -233,7 +232,6 @@ class PerangkatController extends Controller
                 })
                 ->exists();
 
-
             if ($existingRack) {
                 return redirect()->route('perangkat.index')
                     ->with('error', "Rentang U yang dimasukkan bertabrakan dengan data lain pada rack yang sama.");
@@ -253,6 +251,13 @@ class PerangkatController extends Controller
             'milik' => $request->milik,
         ]);
 
+        Rack::where('id_perangkat', $perangkat->id_perangkat)
+            ->update([
+                'id_perangkat' => null,
+                'milik' => null,
+                'updated_at' => now(),
+            ]);
+            
         if ($request->no_rack) {
             for ($u = $request->uawal; $u <= $request->uakhir; $u++) {
                 Rack::updateOrInsert(
@@ -263,7 +268,7 @@ class PerangkatController extends Controller
                         'u' => $u,
                     ],
                     [
-                        'id_perangkat' => $perangkat->id,
+                        'id_perangkat' => $perangkat->id_perangkat,
                         'milik' => $request->milik,
                         'updated_at' => now(),
                         'created_at' => now(),

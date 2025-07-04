@@ -13,7 +13,7 @@
             <div class="button-wrapper" style="margin-top: 20px;">
                 <button class="btn btn-primary mb-3" onclick="openModal('modalTambahFasilitas')">+ Tambah Fasilitas</button>
                 <button type="button" class="btn btn-primary mb-3" onclick="openModal('importModal')">Impor Data Fasilitas</button>
-                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Export Data Fasilitas</button>
+                <button type="button" class="btn btn-primary mb-3" onclick="openModal('exportModal')">Ekspor Data Fasilitas</button>
             </div>
 
         <form method="GET" action="{{ route('fasilitas.index') }}" id="filterForm">
