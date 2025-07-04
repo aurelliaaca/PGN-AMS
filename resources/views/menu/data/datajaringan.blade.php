@@ -36,11 +36,9 @@
                                         onclick="openModal('modalEditTipeJaringan{{ $tj->kode_tipejaringan }}')">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-delete btn-sm"
-                                        onclick="confirmDelete('{{ $tj->kode_tipejaringan }}')">
+                                    <button class="btn btn-delete btn-sm" onclick="confirmDelete('{{ $tj->kode_tipejaringan }}')">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
-
                                     <form id="delete-form-{{ $tj->kode_tipejaringan }}"
                                         action="{{ route('tipejaringan.destroy', $tj->kode_tipejaringan) }}" method="POST"
                                         style="display: none;">
@@ -135,12 +133,6 @@
 
             function closeModal(modalId) {
                 document.getElementById(modalId).style.display = "none";
-            }
-
-            function confirmDelete(kode) {
-                if (confirm('Apakah Anda yakin ingin menghapus tipe jaringan ini?')) {
-                    document.getElementById('delete-form-' + kode).submit();
-                }
             }
 
             window.onclick = function (event) {

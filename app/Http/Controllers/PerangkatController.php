@@ -227,7 +227,12 @@ class PerangkatController extends Controller
                     $query->whereNotNull('id_perangkat')
                         ->orWhereNotNull('id_fasilitas');
                 })
+                ->where(function ($query) use ($id) {
+                    $query->where('id_perangkat', '!=', $id)
+                        ->orWhereNull('id_perangkat');
+                })
                 ->exists();
+
 
             if ($existingRack) {
                 return redirect()->route('perangkat.index')
@@ -258,7 +263,7 @@ class PerangkatController extends Controller
                         'u' => $u,
                     ],
                     [
-                        'id_perangkat' => $request->id_perangkat,
+                        'id_perangkat' => $perangkat->id,
                         'milik' => $request->milik,
                         'updated_at' => now(),
                         'created_at' => now(),

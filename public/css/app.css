@@ -344,6 +344,12 @@ body {
     border: 2px solid rgb(209, 210, 241);
 }
 
+.table th:last-child,
+.table td:last-child {
+    width: 80px; /* atau ukuran lain sesuai kebutuhan */
+    white-space: nowrap;
+}
+
 .table thead {
     background: #f1f1fb;
     position: sticky;

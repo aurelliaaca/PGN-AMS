@@ -16,7 +16,8 @@
         <div class="tables-container dua" style="margin-top: 20px;">
             <div class="table-column">
                 <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn btn-primary mb-3" style="margin-bottom: 10px;" onclick="openModal('modalTambahJenis')">+ Tambah Jenis</button>
+                    <button class="btn btn-primary mb-3" style="margin-bottom: 10px;"
+                        onclick="openModal('modalTambahJenis')">+ Tambah Jenis</button>
                     <h3>Data Jenis</h3>
                 </div>
                 <div class="table-responsive">
@@ -39,13 +40,16 @@
                                                 onclick="openModal('modalEditJenis{{ $item->kode_perangkat }}')">
                                                 <i class="fas fa-edit"></i> Edit
                                             </button>
-                                            <form action="{{ route('jenisperangkat.destroy', $item->kode_perangkat) }}"
-                                                method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
+                                            <button class="btn btn-delete btn-sm"
+                                                onclick="confirmDelete('{{ $item->kode_perangkat }}')">
+                                                <i class="fas fa-trash-alt"></i> Hapus
+                                            </button>
+
+                                            <form id="delete-form-{{ $item->kode_perangkat }}"
+                                                action="{{ route('jenisperangkat.destroy', $item->kode_perangkat) }}"
+                                                method="POST" style="display: none;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete btn-sm">
-                                                    <i class="fas fa-trash-alt"></i> Hapus
-                                                </button>
                                             </form>
                                         </div>
                                     </td>
@@ -85,7 +89,8 @@
 
             <div class="table-column">
                 <div class="title" style="display: flex; justify-content: space-between; align-items: center;">
-                    <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="openModal('modalTambahBrand')">+ Tambah Brand</button>
+                    <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="openModal('modalTambahBrand')">+
+                        Tambah Brand</button>
                     <h3>Data Brand</h3>
                 </div>
                 <div class="table-responsive">
@@ -108,13 +113,16 @@
                                                 onclick="openModal('modalEdit{{ $item->kode_brand }}')">
                                                 <i class="fas fa-edit"></i> Edit
                                             </button>
-                                            <form action="{{ route('brandperangkat.destroy', $item->kode_brand) }}"
-                                                method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
+                                            <button class="btn btn-delete btn-sm"
+                                                onclick="confirmDelete('{{ $item->kode_brand }}')">
+                                                <i class="fas fa-trash-alt"></i> Hapus
+                                            </button>
+
+                                            <form id="delete-form-{{ $item->kode_brand }}"
+                                                action="{{ route('brandperangkat.destroy', $item->kode_brand) }}" method="POST"
+                                                style="display: none;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete btn-sm">
-                                                    <i class="fas fa-trash-alt"></i> Hapus
-                                                </button>
                                             </form>
                                         </div>
                                     </td>
@@ -201,7 +209,7 @@
                     "language": {
                         "search": "Cari",
                         "lengthMenu": "_MENU_",
-                        "zeroRecords":  "Tidak ada data yang ditemukan",
+                        "zeroRecords": "Tidak ada data yang ditemukan",
                         "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
                         "infoEmpty": "Tidak ada data yang tersedia",
                         "infoFiltered": "(difilter dari _MAX_ total data)",

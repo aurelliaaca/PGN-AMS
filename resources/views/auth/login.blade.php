@@ -51,12 +51,12 @@
             </div>
 
             <!-- Register -->
-            <a href="{{ route('register') }}">Register</a>
+            <!-- <a href="{{ route('register') }}">Register</a> -->
 
             <!-- Forgot Password -->
-            @if (Route::has('password.request'))
+            <!-- @if (Route::has('password.request'))
                 <a href="{{ route('password.request') }}">Forgot Password?</a>
-            @endif
+            @endif -->
         </div>
 
         <!-- Login Button -->

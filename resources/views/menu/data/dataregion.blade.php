@@ -5,7 +5,8 @@
 
 @section('content')
     <div class="main">
-        <button class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px;" onclick="openModal('modalTambahRegion')">+ Tambah Region</button>
+        <button class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px;"
+            onclick="openModal('modalTambahRegion')">+ Tambah Region</button>
         <div class="card-grid">
             @foreach($regions as $region)
                 <div class="toggle">
@@ -16,21 +17,22 @@
                             <p>{{ $region->alamat }}</p>
                             <p>{{ $region->koordinat }}</p>
 
-                            <div
-                                class="action-buttons">
+                            <div class="action-buttons">
                                 <button class="btn btn-eye mb-3" onclick="toggleSites('{{ $region->kode_region }}')">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn btn-edit mb-3" onclick="openModal('modalEditRegion{{ $region->id_region }}')">
+                                <button class="btn btn-edit mb-3"
+                                    onclick="openModal('modalEditRegion{{ $region->id_region }}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <form action="{{ route('region.destroy', $region->id_region) }}" method="POST"
-                                    onsubmit="return confirm('Are you sure you want to delete this region?')">
+                                <button class="btn btn-delete btn-sm" onclick="confirmDelete({{ $region->id_region }})">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+
+                                <form id="delete-form-{{ $region->id_region }}" action="{{ route('region.destroy', $region->id_region) }}"
+                                    method="POST" style="display: none;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-delete mb-3">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
                                 </form>
                                 <button class="btn btn-primary mb-3" style="width:125px"
                                     onclick="openModal('modalTambahSite{{ $region->id_region }}')">+ Tambah Site</button>
@@ -51,7 +53,7 @@
                                             <th>Jenis Site</th>
                                             <th>Kode Region</th>
                                             <th>Jumlah Rack</th>
-                                            <th>Actions</th>
+                                            <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,16 +70,15 @@
                                                         onclick="openModal('modalEditSite{{ $site->id_site }}')">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
+                                                    <button class="btn btn-delete btn-sm" onclick="confirmDelete({{ $site->id_site }})">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
 
-                                                    <!-- Delete Button -->
-                                                    <form action="{{ route('site.destroy', $site->id_site) }}" method="POST"
-                                                        style="display:inline;">
+                                                    <form id="delete-form-{{ $site->id_site }}"
+                                                        action="{{ route('site.destroy', $site->id_site) }}" method="POST"
+                                                        style="display: none;">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-delete mb-3"
-                                                            onclick="return confirm('Are you sure you want to delete this site?')">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
                                                     </form>
                                                 </td>
                                             </tr>

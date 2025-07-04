@@ -39,13 +39,16 @@
                                                 onclick="openModal('modalEditJenis{{ $item->kode_fasilitas }}')">
                                                 <i class="fas fa-edit"></i> Edit
                                             </button>
-                                            <form action="{{ route('jenisfasilitas.destroy', $item->kode_fasilitas) }}"
-                                                method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
+                                            <button class="btn btn-delete btn-sm"
+                                                onclick="confirmDelete('{{ $item->kode_fasilitas }}')">
+                                                <i class="fas fa-trash-alt"></i> Hapus
+                                            </button>
+
+                                            <form id="delete-form-{{ $item->kode_fasilitas }}"
+                                                action="{{ route('jenisfasilitas.destroy', $item->kode_fasilitas) }}"
+                                                method="POST" style="display: none;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete btn-sm">
-                                                    <i class="fas fa-trash-alt"></i> Hapus
-                                                </button>
                                             </form>
                                         </div>
                                     </td>
@@ -108,13 +111,16 @@
                                                 onclick="openModal('modalEdit{{ $item->kode_brand }}')">
                                                 <i class="fas fa-edit"></i> Edit
                                             </button>
-                                            <form action="{{ route('brandfasilitas.destroy', $item->kode_brand) }}"
-                                                method="POST" onsubmit="return confirm('Yakin ingin hapus?')">
+                                            <button class="btn btn-delete btn-sm"
+                                                onclick="confirmDelete('{{ $item->kode_brand }}')">
+                                                <i class="fas fa-trash-alt"></i> Hapus
+                                            </button>
+
+                                            <form id="delete-form-{{ $item->kode_brand }}"
+                                                action="{{ route('brandperangkat.destroy', $item->kode_brand) }}" method="POST"
+                                                style="display: none;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-delete btn-sm">
-                                                    <i class="fas fa-trash-alt"></i> Hapus
-                                                </button>
                                             </form>
                                         </div>
                                     </td>
